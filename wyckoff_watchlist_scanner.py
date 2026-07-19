@@ -21,6 +21,7 @@ import wyckoff_notify as notify
 from wyckoff_common import BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr, build_close_by_date
 from wyckoff_patterns import trading_range, climax_events, sos_sow_events, lps_lpsy_events, abc_pattern
 from wyckoff_charts import plot_signal_chart
+from pretrade import expected_move, format_line
 
 TICKER_FILE = Path(__file__).with_name("Core Watchlist.csv")
 CHART_WINDOW = 90
@@ -120,6 +121,11 @@ def scan_ticker(sym, bars, spy_by_date):
 
     if not new_events:
         return None
+
+    # Pre-trade context (free): realized-vol expected move over ~30 trading
+    # days, to sanity-check strikes/targets. IV rank NOT included (paid).
+    em = expected_move(bars, 30)
+    new_events.append("Context: " + format_line(em) + " | check IV rank + earnings in broker before entry")
 
     chart_path = plot_signal_chart(
         sym, bars, res=res[-1], sup=sup[-1],
