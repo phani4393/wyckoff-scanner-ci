@@ -1,16 +1,16 @@
 """
-Wyckoff scanner -- top 50 S&P 500 names by market cap plus a handful of
-AI-relevant tickers not already in that top 50 (see Top50 Plus AI.csv).
+Wyckoff S&P 500 scanner.
 
 Python port of the logic already in Weis Wave Volume.pine and
-Wyckoff Wheel Zones.pine, run once across every ticker in the list instead
-of one symbol at a time on a TradingView chart. Reports only NEW signals
-(today, not already true yesterday) so it can be run on a schedule without
-repeating the same alert every day a price sits in a zone.
+Wyckoff Wheel Zones.pine, run once across every ticker in SP500 Tickers.csv
+instead of one symbol at a time on a TradingView chart. Reports only NEW
+signals (today, not already true yesterday) so it can be run on a schedule
+without repeating the same alert every day a price sits in a zone.
 
 Data source: Twelve Data's time_series endpoint (official, documented,
 free-tier API key required). The free tier caps out at 8 API credits/minute
-(1 credit = 1 symbol); at ~59 tickers this finishes in well under 10 minutes.
+(1 credit = 1 symbol), so this scans sequentially, paced to stay under that
+cap -- a full S&P 500 scan takes roughly 60-90 minutes on the free tier.
 
 Usage: python wyckoff_scanner.py
 Prints one line per ticker with a fresh signal, plus a one-line summary
@@ -150,17 +150,27 @@ def scan(tickers, api_key, progress=False):
         if not bars:
             skipped.append(sym)
         else:
-            wheel = wheel_signals(bars, spy_by_date)
-            weis = weis_wave_signal(bars)
+            # Textbook spring/upthrust (undercut-and-recover / poke-and-fail),
+            # edge-triggered on today. These are DISCRETIONARY REVIEW TRIGGERS
+            # for a long option -- backtesting shows they don't beat naive
+            # swing-trading, so direction is a bias to review, not an edge.
+            res, sup = pivots(bars)
+            m = len(bars)
             signals = []
-            if wheel:
-                if wheel["sellPutNew"]:
-                    signals.append(f"SELL-PUT zone (spring/support + rising RS) @ {wheel['close']:.2f}")
-                if wheel["sellCallNew"]:
-                    signals.append(f"SELL-CALL zone (upthrust/resistance) @ {wheel['close']:.2f}")
+            if m >= 2 and sup[-1] is not None:
+                sp_now = bars[-1]["low"] < sup[-1] and bars[-1]["close"] > sup[-1]
+                sp_prev = sup[-2] is not None and bars[-2]["low"] < sup[-2] and bars[-2]["close"] > sup[-2]
+                if sp_now and not sp_prev:
+                    signals.append(f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL")
+            if m >= 2 and res[-1] is not None:
+                ut_now = bars[-1]["high"] > res[-1] and bars[-1]["close"] < res[-1]
+                ut_prev = res[-2] is not None and bars[-2]["high"] > res[-2] and bars[-2]["close"] < res[-2]
+                if ut_now and not ut_prev:
+                    signals.append(f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT")
+            weis = weis_wave_signal(bars)
             if weis and weis["newWaveToday"] and weis["flagged"]:
                 direction = "up" if weis["direction"] == 1 else "down"
-                signals.append(f"Weis Wave exhaustion flag on new {direction} wave")
+                signals.append(f"Weis Wave volume-exhaustion flag on new {direction} wave -- context only")
             if signals:
                 hits.append((sym, signals))
         if progress and idx % 25 == 0:
@@ -181,7 +191,7 @@ def main():
     print()
 
     if len(skipped) > len(tickers) / 2:
-        notify.send_message(f"Wyckoff S&P 500 scan degraded: {len(skipped)}/{len(tickers)} tickers failed to fetch.")
+        notify.send_message(f"Wyckoff S&P scan degraded: {len(skipped)}/{len(tickers)} tickers failed to fetch.")
 
     if not hits:
         print("No new Wyckoff signals today.")
@@ -194,9 +204,12 @@ def main():
     tickers_str = ", ".join(sym for sym, _ in hits[:8])
     more = f" +{len(hits) - 8} more" if len(hits) > 8 else ""
     print()
-    print(f"SUMMARY: {len(hits)} new setup(s) -- {tickers_str}{more}")
+    print(f"SUMMARY: {len(hits)} ticker(s) flagged for review -- {tickers_str}{more}")
 
-    notify.notify_signals(f"Wyckoff S&P 500 scan: {len(hits)} new setup(s)", hits)
+    header = (f"Wyckoff top-50 scan: {len(hits)} ticker(s) flagged for REVIEW. "
+              "Discretionary review triggers, NOT validated edges -- backtesting shows none "
+              "beat naive swing-trading. Apply your own judgment before any entry.")
+    notify.notify_signals(header, hits)
 
 
 if __name__ == "__main__":

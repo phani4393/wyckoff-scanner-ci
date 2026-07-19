@@ -203,7 +203,13 @@ def abc_pattern(bars, min_b_retrace=0.30, max_b_retrace=0.79,
         return None
 
     n = len(bars)
-    is_new = p3["idx"] >= n - 1 - RIGHT_BARS  # C leg just confirmed
+    # Fire ONLY on the exact confirmation day: point C's pivot is RIGHT_BARS
+    # bars back, which is the first bar with enough right-side data to confirm
+    # it as a pivot under the zigzag rule. This (a) makes the live signal match
+    # what the backtest measured (entry at p3.idx + RIGHT_BARS), and (b) means
+    # the C pivot cannot repaint -- earlier we fired on an unconfirmed C that
+    # could still dissolve, so the live signal didn't match the tested one.
+    is_new = p3["idx"] == n - 1 - RIGHT_BARS
     direction = "bullish (C down, expect resumption up)" if c_dir < 0 else "bearish (C up, expect resumption down)"
     return {
         "isNew": is_new,

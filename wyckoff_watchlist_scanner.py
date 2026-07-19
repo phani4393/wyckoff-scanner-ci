@@ -19,7 +19,6 @@ from pathlib import Path
 
 import wyckoff_notify as notify
 from wyckoff_common import BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr, build_close_by_date
-from wyckoff_scanner import wheel_signals
 from wyckoff_patterns import trading_range, climax_events, sos_sow_events, lps_lpsy_events, abc_pattern
 from wyckoff_charts import plot_signal_chart
 
@@ -42,18 +41,26 @@ def scan_ticker(sym, bars, spy_by_date):
     new_events = []   # human-readable strings for the notification
     markers = []       # chart annotations, {"idx", "kind", "text"}
 
-    # ---- Wheel Zones: spring/upthrust, reusing the already-verified logic ----
-    wheel = wheel_signals(bars, spy_by_date)
-    if wheel:
-        if wheel["sellPutNew"]:
-            new_events.append(f"Spring at support (rising RS) @ {wheel['close']:.2f}")
-        if wheel["sellCallNew"]:
-            new_events.append(f"Upthrust at resistance @ {wheel['close']:.2f}")
-    # mark recent springs/upthrusts in the chart window regardless of "new", for context
+    # ---- Spring / upthrust: TEXTBOOK definition only (undercut-and-recover /
+    # poke-and-fail), no RS gate, no 'near the level' dilution. Edge-triggered
+    # on today. NOTE: backtesting (see BACKTEST_FINDINGS.md) shows neither of
+    # these beats naive swing-trading -- they are DISCRETIONARY REVIEW TRIGGERS,
+    # not a validated mechanical edge. Direction is stated for a LONG option.
+    def _pure_spring(j):
+        return sup[j] is not None and bars[j]["low"] < sup[j] and bars[j]["close"] > sup[j]
+
+    def _pure_upthrust(j):
+        return res[j] is not None and bars[j]["high"] > res[j] and bars[j]["close"] < res[j]
+
+    if _pure_spring(n - 1) and not _pure_spring(n - 2):
+        new_events.append(f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL")
+    if _pure_upthrust(n - 1) and not _pure_upthrust(n - 2):
+        new_events.append(f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT")
+    # mark recent springs/upthrusts in the chart window for context
     for i in range(max(0, n - CHART_WINDOW), n):
-        if sup[i] is not None and bars[i]["low"] < sup[i] and bars[i]["close"] > sup[i]:
+        if _pure_spring(i):
             markers.append({"idx": i, "kind": "spring"})
-        if res[i] is not None and bars[i]["high"] > res[i] and bars[i]["close"] < res[i]:
+        if _pure_upthrust(i):
             markers.append({"idx": i, "kind": "upthrust"})
 
     # ---- Trading range: flag just entering one ----
@@ -70,11 +77,12 @@ def scan_ticker(sym, bars, spy_by_date):
         if e["arIdx"] is not None and e["arIdx"] >= max(0, n - CHART_WINDOW):
             markers.append({"idx": e["arIdx"], "kind": "AR", "text": "AR", "price": e["arPrice"]})
         if e["idx"] == n - 1:
-            label = "Selling Climax" if e["type"] == "SC" else "Buying Climax"
-            new_events.append(f"{label} today @ {e['price']:.2f} (watch for the Automatic Rally/Reaction)")
+            label, bias = ("Selling Climax", "bullish bias, review for a LONG CALL") if e["type"] == "SC" \
+                else ("Buying Climax", "bearish bias, review for a LONG PUT")
+            new_events.append(f"{label} @ {e['price']:.2f} -- {bias}")
         if e["arIdx"] == n - 1:
             label = "Automatic Rally" if e["type"] == "SC" else "Automatic Reaction"
-            new_events.append(f"{label} just confirmed @ {e['arPrice']:.2f} (range boundary set from the {e['date']} {e['type']})")
+            new_events.append(f"{label} @ {e['arPrice']:.2f} (range boundary from the {e['date']} {e['type']}) -- context, not an entry")
 
     # ---- Sign of Strength/Weakness ----
     sos_sow = sos_sow_events(bars, res, sup, atr)
@@ -82,8 +90,9 @@ def scan_ticker(sym, bars, spy_by_date):
         if e["idx"] >= max(0, n - CHART_WINDOW):
             markers.append({"idx": e["idx"], "kind": e["type"], "text": e["type"]})
         if e["idx"] == n - 1:
-            label = "Sign of Strength (breakout held)" if e["type"] == "SOS" else "Sign of Weakness (breakdown held)"
-            new_events.append(f"{label} @ {e['level']:.2f}")
+            label, bias = ("Sign of Strength (breakout held)", "bullish bias, review for a LONG CALL") if e["type"] == "SOS" \
+                else ("Sign of Weakness (breakdown held)", "bearish bias, review for a LONG PUT")
+            new_events.append(f"{label} @ {e['level']:.2f} -- {bias}")
 
     # ---- Last Point of Support/Supply ----
     lps = lps_lpsy_events(bars, sos_sow, atr)
@@ -91,8 +100,9 @@ def scan_ticker(sym, bars, spy_by_date):
         if e["idx"] >= max(0, n - CHART_WINDOW):
             markers.append({"idx": e["idx"], "kind": e["type"], "text": e["type"]})
         if e["idx"] == n - 1:
-            label = "Last Point of Support" if e["type"] == "LPS" else "Last Point of Supply"
-            new_events.append(f"{label} @ {e['level']:.2f} (classic entry after the earlier breakout)")
+            label, bias = ("Last Point of Support", "bullish bias, review for a LONG CALL") if e["type"] == "LPS" \
+                else ("Last Point of Supply", "bearish bias, review for a LONG PUT")
+            new_events.append(f"{label} @ {e['level']:.2f} -- {bias}")
 
     # ---- ABC correction ----
     abc = abc_pattern(bars)
@@ -104,7 +114,9 @@ def scan_ticker(sym, bars, spy_by_date):
             if pt["idx"] >= max(0, n - CHART_WINDOW):
                 markers.append({"idx": pt["idx"], "kind": kind, "text": abc_labels[key], "price": pt["price"]})
         if abc["isNew"]:
-            new_events.append(f"ABC correction complete, {abc['direction']} (B retraced {abc['bRetrace']*100:.0f}% of A, C extended {abc['cExtension']*100:.0f}% of A)")
+            opt = "LONG CALL" if abc["direction"].startswith("bullish") else "LONG PUT"
+            new_events.append(f"ABC correction complete, {abc['direction']} -- review for a {opt} "
+                              f"(B retraced {abc['bRetrace']*100:.0f}% of A, C extended {abc['cExtension']*100:.0f}% of A)")
 
     if not new_events:
         return None
@@ -170,7 +182,10 @@ def main():
 
     events_only = [(sym, result["events"]) for sym, result in hits]
     chart_paths = {sym: result["chart"] for sym, result in hits}
-    notify.notify_signals(f"Wyckoff watchlist scan: {len(hits)} ticker(s) with new signals", events_only, chart_paths)
+    header = (f"Wyckoff watchlist: {len(hits)} ticker(s) flagged for REVIEW. "
+              "Discretionary review triggers, NOT validated edges -- backtesting shows none "
+              "beat naive swing-trading. Apply your own judgment (context, IV, news) before any entry.")
+    notify.notify_signals(header, events_only, chart_paths)
 
 
 if __name__ == "__main__":
