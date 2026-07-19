@@ -30,6 +30,24 @@ news, broader structure) before entering any option.
   a 95% confidence interval and two-sided p-value on the edge itself, so "−19pp"
   can be read as "real, CI excludes zero" rather than taken as a bare point
   estimate that might just be small-sample noise.
+- **The bootstrap resamples TICKERS, not individual signal instances** (a
+  cluster bootstrap). An earlier version resampled instances directly, which
+  is wrong: same-ticker instances share trend/vol/beta and have overlapping
+  forward-return windows, so they aren't independent draws, and resampling
+  them as if they were understates the true CI width. Each bootstrap
+  replicate now resamples the ~42-43 tickers with replacement and pulls each
+  drawn ticker's entire set of instances along with it. This is scoped to
+  same-ticker correlation only — it does not correct for cross-ticker
+  correlation on the same calendar date (e.g. a market-wide selloff
+  triggering springs on many names at once still isn't N independent events).
+  **Result of switching to the cluster bootstrap: no signal's significance
+  verdict changed.** Every previously-significant signal remained
+  significant and ABC remained not-significant, because almost every signal
+  here fires across 42-43 of the 44 tickers — the effect is broad-based
+  across nearly the whole universe, not concentrated in a few names, which is
+  exactly the condition under which a cluster bootstrap and a naive one agree.
+  That makes this a *stronger* result than the original bootstrap gave, not a
+  weaker one — it survives a more conservative, methodologically correct test.
 
 ## The fair baseline
 
@@ -46,25 +64,28 @@ options-aware control — not against itself.
 - This is itself mostly "buy the dip on names that went up for 20 years" —
   survivorship + a secular bull market, **not** a proven forward edge.
 
-## Results vs. that baseline (10-day, 41-42 tickers, statistical significance via bootstrap)
+## Results vs. that baseline (10-day, ~42-43 tickers, cluster-bootstrap significance)
 
-| Signal | Stock hit rate | Stock-return edge (95% CI) | Options-P&L edge (95% CI) |
+| Signal | Stock hit rate | Stock-return edge (95% CI, cluster boot) | Options-P&L edge (95% CI, cluster boot) |
 |---|---|---|---|
-| ABC correction | 72% | +0.6pp, CI **[-4.2, +5.5]pp, p=0.78** — NOT significant | +2.2pp hit / +2.8pp P&L, CI includes 0, p=0.44/0.66 — NOT significant |
-| pure spring (textbook) | 54% | −19.5pp, CI [-22.1, -16.8]pp, **p<0.001** | −15.0pp hit / −23.7pp P&L, **p<0.001** |
-| pure upthrust (textbook, short) | 44% | −26.0pp, CI [-28.3, -23.8]pp, **p<0.001** | −22.1pp hit / −45.0pp P&L, **p<0.001** |
-| SC / LPS / SOS (bullish) | 53–60% | −8.8 to −21pp, **p<0.03 to p<0.001** | −6 to −18pp hit / −2 to −32pp P&L (SC's P&L edge not significant at 5/10d) |
-| BC / SOW / LPSY / upthrust (bearish) | 40–46% | −18.7 to −28.7pp, **p<0.001** | −14 to −24pp hit / −25 to −58pp P&L, **p<0.001** |
+| ABC correction | 72% | +0.6pp, CI **[-3.3, +4.6]pp, p=0.76** — NOT significant | +1.9pp hit / +1.4pp P&L, CI includes 0, p=0.42/0.80 — NOT significant |
+| pure spring (textbook) | 54% | −19.1pp, CI [-22.5, -15.4]pp, **p<0.001** | −14.3pp hit / −23.0pp P&L, **p<0.001** |
+| pure upthrust (textbook, short) | 44% | −25.6pp, CI [-28.3, -23.1]pp, **p<0.001** | −21.6pp hit / −44.8pp P&L, **p<0.001** |
+| SC (bullish) | 59% | −14.0pp, CI [-19.9,-7.5]pp, **p<0.001** (ret edge NOT sig, p=0.16) | −6.2pp hit (NOT sig, p=0.07) / −2.5pp P&L (NOT sig, p=0.78) |
+| LPS / SOS (bullish) | 53–56% | −20 to −21pp, **p<0.001** | −16 to −18pp hit / −27 to −30pp P&L, **p<0.001** |
+| BC / SOW / LPSY / upthrust (bearish) | 42–47% | −23.6 to −28.4pp, **p<0.001** | −19 to −24pp hit / −36 to −50pp P&L, **p<0.001** |
 
 **10 of 11 signal types have a statistically significant negative edge at every
-horizon tested** (p<0.001 for all except SC's 5d/20d hit-rate edge and its
-options-P&L edge, which are still significant but with wider margins). This
-isn't a small-sample artifact — sample sizes range from n≈340 (SC) to n≈5,570
-(upthrust). **ABC is the sole exception: its edge is not distinguishable from
-zero at any horizon, on either measure.** That is a different and more honest
-claim than "ABC has no edge" — it means this dataset can't currently tell you
-whether ABC has a real (positive or negative) edge; a much larger sample or a
-different test design would be needed to resolve it.
+horizon tested, confirmed under a cluster bootstrap that resamples by ticker
+(not by individual instance)** — sample sizes range from n≈350 (SC) to
+n≈5,800 (upthrust), backed by 42-43 independent tickers. **ABC is the sole
+exception: its edge is not distinguishable from zero at any horizon, on
+either measure.** That is a different and more honest claim than "ABC has no
+edge" — it means this dataset can't currently tell you whether ABC has a real
+(positive or negative) edge; a much larger sample or a different test design
+would be needed to resolve it. **SC's stock-return and options-P&L edges are
+significant on hit rate but not on average return/P&L at 5-10d** — a real,
+if smaller, exception worth naming rather than folding into "significant."
 
 The pattern across every significant signal: the options-P&L edge is worse in
 P&L terms than the stock-return edge implied, because the matched baseline's

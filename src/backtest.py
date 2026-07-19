@@ -268,6 +268,15 @@ def run_backtest(tickers, api_key, progress=True):
     swing_bear_opt = {h: [] for h in HORIZONS}
     trend_bull_opt = {h: [] for h in HORIZONS}
     trend_bear_opt = {h: [] for h in HORIZONS}
+    # Same values as swing_bull/swing_bear/*_opt above, but grouped by ticker
+    # instead of flattened -- feeds the cluster bootstrap in stats_utils.py.
+    # Same-ticker signal instances share trend/vol/beta and overlapping
+    # forward-return windows, so they are NOT independent draws; resampling
+    # individual instances (as if they were) understates the true CI width.
+    swing_bull_by_ticker = {h: {} for h in HORIZONS}
+    swing_bear_by_ticker = {h: {} for h in HORIZONS}
+    swing_bull_opt_by_ticker = {h: {} for h in HORIZONS}
+    swing_bear_opt_by_ticker = {h: {} for h in HORIZONS}
     running_totals = {}
 
     for i, sym in enumerate(tickers, 1):
@@ -313,16 +322,20 @@ def run_backtest(tickers, api_key, progress=True):
                 opt_pnl = opt.option_pnl_pct(bars, entry_idx, h, direction)
                 if direction == "bullish":
                     swing_bull[h].append(signed)
+                    swing_bull_by_ticker[h].setdefault(sym, []).append(signed)
                     if opt_pnl is not None:
                         swing_bull_opt[h].append(opt_pnl)
+                        swing_bull_opt_by_ticker[h].setdefault(sym, []).append(opt_pnl)
                     if aligned:
                         trend_bull[h].append(signed)
                         if opt_pnl is not None:
                             trend_bull_opt[h].append(opt_pnl)
                 else:
                     swing_bear[h].append(signed)
+                    swing_bear_by_ticker[h].setdefault(sym, []).append(signed)
                     if opt_pnl is not None:
                         swing_bear_opt[h].append(opt_pnl)
+                        swing_bear_opt_by_ticker[h].setdefault(sym, []).append(opt_pnl)
                     if aligned:
                         trend_bear[h].append(signed)
                         if opt_pnl is not None:
@@ -346,12 +359,13 @@ def run_backtest(tickers, api_key, progress=True):
                 "bullish_options": _dist_stats(swing_bull_opt), "bearish_options": _dist_stats(swing_bear_opt),
                 "trend_bullish_options": _dist_stats(trend_bull_opt),
                 "trend_bearish_options": _dist_stats(trend_bear_opt)}
-    # Raw (non-aggregated) pools, kept alongside the summarized `matched` above
-    # so summarize() can bootstrap a confidence interval on the edge deltas --
-    # _dist_stats() only keeps point estimates, which isn't enough to tell a
-    # real edge from a small-sample fluke.
-    raw_matched = {"bullish": swing_bull, "bearish": swing_bear,
-                   "bullish_options": swing_bull_opt, "bearish_options": swing_bear_opt}
+    # Raw pools grouped BY TICKER, kept alongside the summarized `matched`
+    # above so summarize() can run a cluster bootstrap on the edge deltas --
+    # _dist_stats() only keeps point estimates, and a flat (non-clustered)
+    # resample would treat same-ticker instances as independent when they
+    # aren't (shared trend/vol/beta, overlapping forward-return windows).
+    raw_matched = {"bullish": swing_bull_by_ticker, "bearish": swing_bear_by_ticker,
+                   "bullish_options": swing_bull_opt_by_ticker, "bearish_options": swing_bear_opt_by_ticker}
     return records, skipped, ticker_meta, baseline_returns, matched, raw_matched
 
 
@@ -388,11 +402,13 @@ def summarize(records, matched, raw_matched=None):
         frac_bull = sum(1 for r in recs if _is_bullish(r["direction"])) / len(recs)
         for h in HORIZONS:
             vals = []
+            val_syms = []
             for r in recs:
                 ret = r["returns"].get(h)
                 if ret is None:
                     continue
                 vals.append(ret if _is_bullish(r["direction"]) else -ret)
+                val_syms.append(r["sym"])
             if not vals:
                 continue
             wins = [v for v in vals if v > 0]
@@ -410,7 +426,14 @@ def summarize(records, matched, raw_matched=None):
             # instead of the raw stock return -- theta and vol are already
             # priced in, so this is a much closer proxy for whether the
             # signal would actually make money as a call/put trade.
-            opt_vals = [r["options_pnl"].get(h) for r in recs if r["options_pnl"].get(h) is not None]
+            opt_vals = []
+            opt_val_syms = []
+            for r in recs:
+                ov = r["options_pnl"].get(h)
+                if ov is None:
+                    continue
+                opt_vals.append(ov)
+                opt_val_syms.append(r["sym"])
             opt_hit = opt_ret = opt_base_hit = opt_base_ret = None
             if opt_vals:
                 opt_wins = [v for v in opt_vals if v > 0]
@@ -427,13 +450,13 @@ def summarize(records, matched, raw_matched=None):
             # this sample size" rather than taken as a bare point estimate.
             stock_boot = opt_boot = None
             if raw_matched:
-                bull_pool = raw_matched.get("bullish", {}).get(h, [])
-                bear_pool = raw_matched.get("bearish", {}).get(h, [])
-                stock_boot = stats_utils.bootstrap_edge_ci(vals, bull_pool, bear_pool, frac_bull)
+                bull_pool = raw_matched.get("bullish", {}).get(h, {})
+                bear_pool = raw_matched.get("bearish", {}).get(h, {})
+                stock_boot = stats_utils.bootstrap_edge_ci(vals, val_syms, bull_pool, bear_pool, frac_bull)
                 if opt_vals:
-                    bull_pool_o = raw_matched.get("bullish_options", {}).get(h, [])
-                    bear_pool_o = raw_matched.get("bearish_options", {}).get(h, [])
-                    opt_boot = stats_utils.bootstrap_edge_ci(opt_vals, bull_pool_o, bear_pool_o, frac_bull)
+                    bull_pool_o = raw_matched.get("bullish_options", {}).get(h, {})
+                    bear_pool_o = raw_matched.get("bearish_options", {}).get(h, {})
+                    opt_boot = stats_utils.bootstrap_edge_ci(opt_vals, opt_val_syms, bull_pool_o, bear_pool_o, frac_bull)
 
             summary[sig_type][h] = {
                 "n": len(vals),
@@ -460,6 +483,7 @@ def summarize(records, matched, raw_matched=None):
                 "options_edge_hit_p": opt_boot["hit_edge_p"] if opt_boot else None,
                 "options_edge_pnl_ci_pp": tuple(x * 100 for x in opt_boot["mean_edge_ci"]) if opt_boot else None,
                 "options_edge_pnl_p": opt_boot["mean_edge_p"] if opt_boot else None,
+                "n_signal_clusters": stock_boot["n_signal_clusters"] if stock_boot else None,
             }
         summary[sig_type]["_frac_bull"] = frac_bull
         summary[sig_type]["_tickers_contributing"] = tickers_contributing
@@ -511,7 +535,8 @@ def main():
                 print(f"    {h}d: n={m['n']:6d}  hit_rate={m['pct_positive']*100:5.1f}%  avg_pnl={m['avg_return_pct']:+6.1f}%")
 
     print("\nBootstrapping confidence intervals on the edge deltas "
-          f"({stats_utils.N_BOOT} resamples per signal/horizon)...", flush=True)
+          f"({stats_utils.N_BOOT} CLUSTER resamples per signal/horizon, resampling by ticker "
+          "-- same-ticker instances aren't independent draws)...", flush=True)
     summary = summarize(records, matched, raw_matched)
     with open("backtest_results.json", "w") as f:
         json.dump({"records": records, "summary": summary, "ticker_meta": ticker_meta,
@@ -542,10 +567,13 @@ def main():
                   f"win={s['avg_win_pct']:+6.2f}%  loss={s['avg_loss_pct']:+6.2f}%{edge_str}")
             hci, hp = s.get("edge_hit_ci_pp"), s.get("edge_hit_p")
             rci, rp = s.get("edge_ret_ci_pp"), s.get("edge_ret_p")
+            ncl = s.get("n_signal_clusters")
             if hci is not None:
                 sig = "significant" if hp < 0.05 else "NOT significant"
-                print(f"      95% CI: hit edge [{hci[0]:+5.1f}, {hci[1]:+5.1f}]pp (p={hp:.3f}), "
+                print(f"      95% CI (cluster boot, {ncl} tickers): hit edge [{hci[0]:+5.1f}, {hci[1]:+5.1f}]pp (p={hp:.3f}), "
                       f"ret edge [{rci[0]:+5.1f}, {rci[1]:+5.1f}]pp (p={rp:.3f}) -- {sig} at 5% level")
+            elif ncl is None and s.get("n", 0) > 0:
+                print("      95% CI: not enough independent tickers to compute a cluster bootstrap")
             oh = s.get("options_edge_hit_pp")
             opnl = s.get("options_edge_pnl_pp")
             if s.get("options_n"):

@@ -155,9 +155,11 @@ stock return, and once on a **modeled long-option round-trip P&L**
 (`options_pricing.py`: Black-Scholes with realized vol as an IV proxy, theta
 decay, and an assumed bid-ask spread), since a signal can look mildly behind
 on stock returns and be dramatically worse once actually priced as a call/put.
-Every edge is reported with a **bootstrap 95% confidence interval and p-value**
-(`stats_utils.py`), so a gap like "−19pp" can be read as "real" or "noise given
-this sample size" rather than taken as a bare point estimate. Read
+Every edge is reported with a **cluster-bootstrap 95% confidence interval and
+p-value** (`stats_utils.py` — resamples by ticker, not by individual signal
+instance, since same-ticker instances aren't independent draws), so a gap
+like "−19pp" can be read as "real" or "noise given this sample size" rather
+than taken as a bare point estimate. Read
 [`docs/BACKTEST_FINDINGS.md`](docs/BACKTEST_FINDINGS.md) for the conclusions.
 
 ```
