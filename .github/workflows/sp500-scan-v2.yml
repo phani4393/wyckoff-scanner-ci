@@ -1,0 +1,27 @@
+name: Wyckoff S&P 500 Scan
+
+on:
+  schedule:
+    # 20:20 UTC = 4:20pm EDT / 3:20pm CDT during US daylight time (spring-fall).
+    # Drifts an hour off "market close + buffer" during US standard time
+    # (winter) since GitHub Actions cron is fixed UTC -- adjust by +1 hour
+    # (21 20) around early November, back to (20 20) around mid-March, if
+    # you want it pinned to the close rather than ~40min early in winter.
+    - cron: "20 20 * * 1-5"
+  workflow_dispatch: {}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python wyckoff_scanner.py
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
