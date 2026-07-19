@@ -19,6 +19,8 @@ import json
 import statistics
 from pathlib import Path
 
+import options_pricing as opt
+import stats_utils
 import wyckoff_common as c
 from wyckoff_patterns import climax_events, sos_sow_events, lps_lpsy_events
 
@@ -259,6 +261,13 @@ def run_backtest(tickers, api_key, progress=True):
     # Trend-aligned variants: dip-buy only above 200d SMA, short only below it.
     trend_bull = {h: [] for h in HORIZONS}
     trend_bear = {h: [] for h in HORIZONS}
+    # Same four controls, but P&L is the modeled long-option round-trip
+    # (options_pricing.option_pnl_pct) instead of the raw stock return, so
+    # signals can be compared against a fair options-P&L baseline too.
+    swing_bull_opt = {h: [] for h in HORIZONS}
+    swing_bear_opt = {h: [] for h in HORIZONS}
+    trend_bull_opt = {h: [] for h in HORIZONS}
+    trend_bear_opt = {h: [] for h in HORIZONS}
     running_totals = {}
 
     for i, sym in enumerate(tickers, 1):
@@ -280,8 +289,9 @@ def run_backtest(tickers, api_key, progress=True):
         per_type = {}
         for e in events:
             returns = {h: forward_return(bars, e["idx"], h) for h in HORIZONS}
+            options_pnl = {h: opt.option_pnl_pct(bars, e["idx"], h, e["direction"]) for h in HORIZONS}
             records.append({"sym": sym, "date": e["date"], "type": e["type"],
-                             "direction": e["direction"], "returns": returns})
+                             "direction": e["direction"], "returns": returns, "options_pnl": options_pnl})
             per_type[e["type"]] = per_type.get(e["type"], 0) + 1
             running_totals[e["type"]] = running_totals.get(e["type"], 0) + 1
 
@@ -297,14 +307,26 @@ def run_backtest(tickers, api_key, progress=True):
                 if r is None:
                     continue
                 signed = r if direction == "bullish" else -r
+                # option_pnl_pct already prices a call for 'bullish' and a
+                # put for 'bearish', so its sign is already the long-option
+                # P&L -- no sign flip needed (unlike the raw stock return).
+                opt_pnl = opt.option_pnl_pct(bars, entry_idx, h, direction)
                 if direction == "bullish":
                     swing_bull[h].append(signed)
+                    if opt_pnl is not None:
+                        swing_bull_opt[h].append(opt_pnl)
                     if aligned:
                         trend_bull[h].append(signed)
+                        if opt_pnl is not None:
+                            trend_bull_opt[h].append(opt_pnl)
                 else:
                     swing_bear[h].append(signed)
+                    if opt_pnl is not None:
+                        swing_bear_opt[h].append(opt_pnl)
                     if aligned:
                         trend_bear[h].append(signed)
+                        if opt_pnl is not None:
+                            trend_bear_opt[h].append(opt_pnl)
 
         ticker_meta.append({"sym": sym, "bars": len(bars), "from": bars[0]["date"], "to": bars[-1]["date"],
                              "events": len(events), "events_by_type": per_type})
@@ -320,8 +342,17 @@ def run_backtest(tickers, api_key, progress=True):
                   f"~{remaining/60:.1f} min left", flush=True)
 
     matched = {"bullish": _dist_stats(swing_bull), "bearish": _dist_stats(swing_bear),
-                "trend_bullish": _dist_stats(trend_bull), "trend_bearish": _dist_stats(trend_bear)}
-    return records, skipped, ticker_meta, baseline_returns, matched
+                "trend_bullish": _dist_stats(trend_bull), "trend_bearish": _dist_stats(trend_bear),
+                "bullish_options": _dist_stats(swing_bull_opt), "bearish_options": _dist_stats(swing_bear_opt),
+                "trend_bullish_options": _dist_stats(trend_bull_opt),
+                "trend_bearish_options": _dist_stats(trend_bear_opt)}
+    # Raw (non-aggregated) pools, kept alongside the summarized `matched` above
+    # so summarize() can bootstrap a confidence interval on the edge deltas --
+    # _dist_stats() only keeps point estimates, which isn't enough to tell a
+    # real edge from a small-sample fluke.
+    raw_matched = {"bullish": swing_bull, "bearish": swing_bear,
+                   "bullish_options": swing_bull_opt, "bearish_options": swing_bear_opt}
+    return records, skipped, ticker_meta, baseline_returns, matched, raw_matched
 
 
 def _dist_stats(by_h):
@@ -343,7 +374,7 @@ def _is_bullish(direction):
     return direction.startswith("bullish")
 
 
-def summarize(records, matched):
+def summarize(records, matched, raw_matched=None):
     by_type = {}
     for r in records:
         by_type.setdefault(r["type"], []).append(r)
@@ -374,6 +405,36 @@ def summarize(records, matched):
             if mb and mbear:
                 base_hit = frac_bull * mb["pct_positive"] + (1 - frac_bull) * mbear["pct_positive"]
                 base_ret = frac_bull * mb["avg_return_pct"] + (1 - frac_bull) * mbear["avg_return_pct"]
+
+            # Same comparison, but on MODELED LONG-OPTION P&L (options_pricing.py)
+            # instead of the raw stock return -- theta and vol are already
+            # priced in, so this is a much closer proxy for whether the
+            # signal would actually make money as a call/put trade.
+            opt_vals = [r["options_pnl"].get(h) for r in recs if r["options_pnl"].get(h) is not None]
+            opt_hit = opt_ret = opt_base_hit = opt_base_ret = None
+            if opt_vals:
+                opt_wins = [v for v in opt_vals if v > 0]
+                opt_hit = len(opt_wins) / len(opt_vals)
+                opt_ret = statistics.mean(opt_vals) * 100
+            mb_opt = matched.get("bullish_options", {}).get(h)
+            mbear_opt = matched.get("bearish_options", {}).get(h)
+            if mb_opt and mbear_opt:
+                opt_base_hit = frac_bull * mb_opt["pct_positive"] + (1 - frac_bull) * mbear_opt["pct_positive"]
+                opt_base_ret = frac_bull * mb_opt["avg_return_pct"] + (1 - frac_bull) * mbear_opt["avg_return_pct"]
+
+            # Bootstrap CI + p-value on the edge itself, so a gap like "-19pp"
+            # can be read as "real, CI excludes zero" vs. "within noise given
+            # this sample size" rather than taken as a bare point estimate.
+            stock_boot = opt_boot = None
+            if raw_matched:
+                bull_pool = raw_matched.get("bullish", {}).get(h, [])
+                bear_pool = raw_matched.get("bearish", {}).get(h, [])
+                stock_boot = stats_utils.bootstrap_edge_ci(vals, bull_pool, bear_pool, frac_bull)
+                if opt_vals:
+                    bull_pool_o = raw_matched.get("bullish_options", {}).get(h, [])
+                    bear_pool_o = raw_matched.get("bearish_options", {}).get(h, [])
+                    opt_boot = stats_utils.bootstrap_edge_ci(opt_vals, bull_pool_o, bear_pool_o, frac_bull)
+
             summary[sig_type][h] = {
                 "n": len(vals),
                 "hit_rate": len(wins) / len(vals),
@@ -384,6 +445,21 @@ def summarize(records, matched):
                 "matched_avg_return_pct": base_ret,
                 "edge_hit_pp": (len(wins) / len(vals) - base_hit) * 100 if base_hit is not None else None,
                 "edge_ret_pp": (statistics.mean(vals) * 100 - base_ret) if base_ret is not None else None,
+                "edge_hit_ci_pp": tuple(x * 100 for x in stock_boot["hit_edge_ci"]) if stock_boot else None,
+                "edge_hit_p": stock_boot["hit_edge_p"] if stock_boot else None,
+                "edge_ret_ci_pp": tuple(x * 100 for x in stock_boot["mean_edge_ci"]) if stock_boot else None,
+                "edge_ret_p": stock_boot["mean_edge_p"] if stock_boot else None,
+                "options_n": len(opt_vals),
+                "options_hit_rate": opt_hit,
+                "options_avg_pnl_pct": opt_ret,
+                "options_matched_hit_rate": opt_base_hit,
+                "options_matched_avg_pnl_pct": opt_base_ret,
+                "options_edge_hit_pp": (opt_hit - opt_base_hit) * 100 if opt_hit is not None and opt_base_hit is not None else None,
+                "options_edge_pnl_pp": (opt_ret - opt_base_ret) if opt_ret is not None and opt_base_ret is not None else None,
+                "options_edge_hit_ci_pp": tuple(x * 100 for x in opt_boot["hit_edge_ci"]) if opt_boot else None,
+                "options_edge_hit_p": opt_boot["hit_edge_p"] if opt_boot else None,
+                "options_edge_pnl_ci_pp": tuple(x * 100 for x in opt_boot["mean_edge_ci"]) if opt_boot else None,
+                "options_edge_pnl_p": opt_boot["mean_edge_p"] if opt_boot else None,
             }
         summary[sig_type]["_frac_bull"] = frac_bull
         summary[sig_type]["_tickers_contributing"] = tickers_contributing
@@ -393,7 +469,7 @@ def summarize(records, matched):
 def main():
     api_key = c.load_api_key()
     tickers = load_tickers()
-    records, skipped, ticker_meta, baseline_returns, matched = run_backtest(tickers, api_key)
+    records, skipped, ticker_meta, baseline_returns, matched, raw_matched = run_backtest(tickers, api_key)
 
     print("\n" + "=" * 78)
     print("WHAT THIS RAN AGAINST")
@@ -422,7 +498,21 @@ def main():
             if m:
                 print(f"    {h}d: n={m['n']:6d}  hit_rate={m['pct_positive']*100:5.1f}%  avg={m['avg_return_pct']:+6.2f}%")
 
-    summary = summarize(records, matched)
+    print("\nMATCHED baseline, MODELED LONG-OPTION P&L (same swing control, priced as a "
+          "call/put via options_pricing.py -- theta + spread + realized-vol-as-IV already netted in):")
+    for label in ("bullish_options", "bearish_options", "trend_bullish_options", "trend_bearish_options"):
+        desc = {"bullish_options": "long calls at ALL swing lows", "bearish_options": "long puts at ALL swing highs",
+                "trend_bullish_options": "long calls at swing lows ONLY above 200d SMA",
+                "trend_bearish_options": "long puts at swing highs ONLY below 200d SMA"}[label]
+        print(f"  {label} ({desc}):")
+        for h in HORIZONS:
+            m = matched.get(label, {}).get(h)
+            if m:
+                print(f"    {h}d: n={m['n']:6d}  hit_rate={m['pct_positive']*100:5.1f}%  avg_pnl={m['avg_return_pct']:+6.1f}%")
+
+    print("\nBootstrapping confidence intervals on the edge deltas "
+          f"({stats_utils.N_BOOT} resamples per signal/horizon)...", flush=True)
+    summary = summarize(records, matched, raw_matched)
     with open("backtest_results.json", "w") as f:
         json.dump({"records": records, "summary": summary, "ticker_meta": ticker_meta,
                     "baseline": baseline, "matched_baseline": matched, "skipped": skipped}, f, indent=2)
@@ -450,6 +540,25 @@ def main():
                         if eh is not None else "")
             print(f"  {h}d: n={s['n']:4d}  hit={s['hit_rate']*100:5.1f}%  avg={s['avg_return_pct']:+6.2f}%  "
                   f"win={s['avg_win_pct']:+6.2f}%  loss={s['avg_loss_pct']:+6.2f}%{edge_str}")
+            hci, hp = s.get("edge_hit_ci_pp"), s.get("edge_hit_p")
+            rci, rp = s.get("edge_ret_ci_pp"), s.get("edge_ret_p")
+            if hci is not None:
+                sig = "significant" if hp < 0.05 else "NOT significant"
+                print(f"      95% CI: hit edge [{hci[0]:+5.1f}, {hci[1]:+5.1f}]pp (p={hp:.3f}), "
+                      f"ret edge [{rci[0]:+5.1f}, {rci[1]:+5.1f}]pp (p={rp:.3f}) -- {sig} at 5% level")
+            oh = s.get("options_edge_hit_pp")
+            opnl = s.get("options_edge_pnl_pp")
+            if s.get("options_n"):
+                opt_edge_str = (f"  EDGE vs swing (options): hit {oh:+5.1f}pp, pnl {opnl:+5.1f}pp"
+                                 if oh is not None else "")
+                print(f"      OPTIONS: n={s['options_n']:4d}  hit={s['options_hit_rate']*100:5.1f}%  "
+                      f"avg_pnl={s['options_avg_pnl_pct']:+6.1f}%{opt_edge_str}")
+                ohci, ohp = s.get("options_edge_hit_ci_pp"), s.get("options_edge_hit_p")
+                opci, opp = s.get("options_edge_pnl_ci_pp"), s.get("options_edge_pnl_p")
+                if ohci is not None:
+                    osig = "significant" if ohp < 0.05 else "NOT significant"
+                    print(f"      95% CI (options): hit edge [{ohci[0]:+5.1f}, {ohci[1]:+5.1f}]pp (p={ohp:.3f}), "
+                          f"pnl edge [{opci[0]:+5.1f}, {opci[1]:+5.1f}]pp (p={opp:.3f}) -- {osig} at 5% level")
     print("\nFull records saved to backtest_results.json")
 
 

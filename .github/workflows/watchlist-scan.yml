@@ -2,9 +2,12 @@ name: Wyckoff Watchlist Scan
 
 on:
   schedule:
-    # 20:35 UTC = 4:35pm EDT / 3:35pm CDT during US daylight time -- same
-    # DST caveat as the S&P 500 workflow (fixed UTC, drifts ~1hr in winter).
-    - cron: "35 20 * * 1-5"
+    # Same month-keyed DST split as sp500-scan.yml -- see that file for the
+    # full explanation. Mar-Oct uses the daylight-time offset, Nov-Feb uses
+    # the standard-time offset, so this self-adjusts without a manual nudge
+    # (modulo the ~1-2 week transition windows each March/November).
+    - cron: "35 20 * 3-10 1-5"
+    - cron: "35 21 * 11,12,1,2 1-5"
   workflow_dispatch: {}
 
 jobs:

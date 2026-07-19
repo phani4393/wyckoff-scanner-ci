@@ -2,12 +2,18 @@ name: Wyckoff S&P 500 Scan
 
 on:
   schedule:
-    # 20:20 UTC = 4:20pm EDT / 3:20pm CDT during US daylight time (spring-fall).
-    # Drifts an hour off "market close + buffer" during US standard time
-    # (winter) since GitHub Actions cron is fixed UTC -- adjust by +1 hour
-    # (21 20) around early November, back to (20 20) around mid-March, if
-    # you want it pinned to the close rather than ~40min early in winter.
-    - cron: "20 20 * * 1-5"
+    # GitHub Actions cron is fixed UTC and can't itself follow US DST, so
+    # this is split into two entries keyed by month instead of one that
+    # drifts an hour off "market close + buffer" for half the year:
+    #   - Mar-Oct (US daylight time, EDT/UTC-4): 20:20 UTC = 4:20pm ET
+    #   - Nov-Feb (US standard time, EST/UTC-5): 21:20 UTC = 4:20pm ET
+    # DST's actual boundary (2nd Sun in March / 1st Sun in Nov) doesn't line
+    # up exactly with calendar months, so there's still up to ~1hr drift in
+    # the 1-2 week transition windows each March/November -- but that's a
+    # small, bounded, self-healing gap instead of a full season of drift that
+    # needed a manual nudge to fix.
+    - cron: "20 20 * 3-10 1-5"
+    - cron: "20 21 * 11,12,1,2 1-5"
   workflow_dispatch: {}
 
 jobs:

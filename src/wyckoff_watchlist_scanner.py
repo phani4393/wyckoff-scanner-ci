@@ -15,8 +15,10 @@ reported to a push notification.
 """
 
 import csv
+import os
 from pathlib import Path
 
+import trade_journal
 import wyckoff_notify as notify
 from wyckoff_common import BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr, build_close_by_date
 from wyckoff_patterns import trading_range, climax_events, sos_sow_events, lps_lpsy_events, abc_pattern
@@ -25,6 +27,20 @@ from pretrade import expected_move, format_line
 
 TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "core_watchlist.csv"
 CHART_WINDOW = 90
+
+# Auto-drafting into trades.csv only makes sense for a local run -- the
+# GitHub Actions runner's filesystem is discarded when the job ends, so a
+# draft written there would vanish immediately with no benefit.
+DRAFT_JOURNAL = not os.environ.get("GITHUB_ACTIONS")
+
+
+def _draft(sym, setup, direction, thesis, close):
+    if not DRAFT_JOURNAL:
+        return
+    try:
+        trade_journal.add_draft(sym, setup, direction, thesis, close)
+    except OSError as e:
+        print(f"  (could not write trade journal draft for {sym}: {e})")
 
 
 def load_tickers():
@@ -54,9 +70,13 @@ def scan_ticker(sym, bars, spy_by_date):
         return res[j] is not None and bars[j]["high"] > res[j] and bars[j]["close"] < res[j]
 
     if _pure_spring(n - 1) and not _pure_spring(n - 2):
-        new_events.append(f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL")
+        thesis = f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL"
+        new_events.append(thesis)
+        _draft(sym, "spring", "long_call", thesis, bars[-1]["close"])
     if _pure_upthrust(n - 1) and not _pure_upthrust(n - 2):
-        new_events.append(f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT")
+        thesis = f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT"
+        new_events.append(thesis)
+        _draft(sym, "upthrust", "long_put", thesis, bars[-1]["close"])
     # mark recent springs/upthrusts in the chart window for context
     for i in range(max(0, n - CHART_WINDOW), n):
         if _pure_spring(i):
@@ -80,7 +100,9 @@ def scan_ticker(sym, bars, spy_by_date):
         if e["idx"] == n - 1:
             label, bias = ("Selling Climax", "bullish bias, review for a LONG CALL") if e["type"] == "SC" \
                 else ("Buying Climax", "bearish bias, review for a LONG PUT")
-            new_events.append(f"{label} @ {e['price']:.2f} -- {bias}")
+            thesis = f"{label} @ {e['price']:.2f} -- {bias}"
+            new_events.append(thesis)
+            _draft(sym, e["type"].lower(), "long_call" if e["type"] == "SC" else "long_put", thesis, e["price"])
         if e["arIdx"] == n - 1:
             label = "Automatic Rally" if e["type"] == "SC" else "Automatic Reaction"
             new_events.append(f"{label} @ {e['arPrice']:.2f} (range boundary from the {e['date']} {e['type']}) -- context, not an entry")
@@ -93,7 +115,9 @@ def scan_ticker(sym, bars, spy_by_date):
         if e["idx"] == n - 1:
             label, bias = ("Sign of Strength (breakout held)", "bullish bias, review for a LONG CALL") if e["type"] == "SOS" \
                 else ("Sign of Weakness (breakdown held)", "bearish bias, review for a LONG PUT")
-            new_events.append(f"{label} @ {e['level']:.2f} -- {bias}")
+            thesis = f"{label} @ {e['level']:.2f} -- {bias}"
+            new_events.append(thesis)
+            _draft(sym, e["type"].lower(), "long_call" if e["type"] == "SOS" else "long_put", thesis, bars[-1]["close"])
 
     # ---- Last Point of Support/Supply ----
     lps = lps_lpsy_events(bars, sos_sow, atr)
@@ -103,7 +127,9 @@ def scan_ticker(sym, bars, spy_by_date):
         if e["idx"] == n - 1:
             label, bias = ("Last Point of Support", "bullish bias, review for a LONG CALL") if e["type"] == "LPS" \
                 else ("Last Point of Supply", "bearish bias, review for a LONG PUT")
-            new_events.append(f"{label} @ {e['level']:.2f} -- {bias}")
+            thesis = f"{label} @ {e['level']:.2f} -- {bias}"
+            new_events.append(thesis)
+            _draft(sym, e["type"].lower(), "long_call" if e["type"] == "LPS" else "long_put", thesis, bars[-1]["close"])
 
     # ---- ABC correction ----
     abc = abc_pattern(bars)
@@ -116,8 +142,10 @@ def scan_ticker(sym, bars, spy_by_date):
                 markers.append({"idx": pt["idx"], "kind": kind, "text": abc_labels[key], "price": pt["price"]})
         if abc["isNew"]:
             opt = "LONG CALL" if abc["direction"].startswith("bullish") else "LONG PUT"
-            new_events.append(f"ABC correction complete, {abc['direction']} -- review for a {opt} "
-                              f"(B retraced {abc['bRetrace']*100:.0f}% of A, C extended {abc['cExtension']*100:.0f}% of A)")
+            thesis = (f"ABC correction complete, {abc['direction']} -- review for a {opt} "
+                      f"(B retraced {abc['bRetrace']*100:.0f}% of A, C extended {abc['cExtension']*100:.0f}% of A)")
+            new_events.append(thesis)
+            _draft(sym, "abc", "long_call" if opt == "LONG CALL" else "long_put", thesis, bars[-1]["close"])
 
     if not new_events:
         return None
