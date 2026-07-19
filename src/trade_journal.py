@@ -31,7 +31,7 @@ import csv
 import datetime as _dt
 from pathlib import Path
 
-JOURNAL = Path(__file__).with_name("trades.csv")
+JOURNAL = Path(__file__).resolve().parent.parent / "trades.csv"
 
 FIELDS = [
     "id", "status", "open_date", "ticker", "direction", "setup", "thesis",

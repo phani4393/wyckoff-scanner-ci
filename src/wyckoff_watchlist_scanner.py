@@ -23,7 +23,7 @@ from wyckoff_patterns import trading_range, climax_events, sos_sow_events, lps_l
 from wyckoff_charts import plot_signal_chart
 from pretrade import expected_move, format_line
 
-TICKER_FILE = Path(__file__).with_name("Core Watchlist.csv")
+TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "core_watchlist.csv"
 CHART_WINDOW = 90
 
 
@@ -184,7 +184,7 @@ def main():
     more = f" +{len(hits) - 8} more" if len(hits) > 8 else ""
     print()
     print(f"SUMMARY: {len(hits)} watchlist ticker(s) with new signals -- {tickers_str}{more}")
-    print(f"Charts saved in: {Path(__file__).with_name('charts')}")
+    print(f"Charts saved in: {Path(__file__).resolve().parent.parent / 'charts'}")
 
     events_only = [(sym, result["events"]) for sym, result in hits]
     chart_paths = {sym: result["chart"] for sym, result in hits}

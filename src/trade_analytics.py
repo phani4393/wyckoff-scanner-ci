@@ -17,7 +17,7 @@ import datetime as _dt
 import statistics
 from pathlib import Path
 
-JOURNAL = Path(__file__).with_name("trades.csv")
+JOURNAL = Path(__file__).resolve().parent.parent / "trades.csv"
 EARNINGS_WINDOW = 10  # days; "traded near earnings" if opened within this many days before earnings
 
 

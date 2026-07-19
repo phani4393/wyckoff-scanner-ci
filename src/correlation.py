@@ -32,7 +32,7 @@ from pathlib import Path
 
 import wyckoff_common as c
 
-JOURNAL = Path(__file__).with_name("trades.csv")
+JOURNAL = Path(__file__).resolve().parent.parent / "trades.csv"
 CORR_WINDOW = 90       # trading days of returns for correlation
 HIGH_CORR = 0.70       # avg pairwise correlation above this = "effectively one bet"
 

@@ -16,7 +16,7 @@ import urllib.request
 from collections import deque
 from pathlib import Path
 
-API_KEY_FILE = Path(__file__).with_name("twelvedata_api_key.txt")
+API_KEY_FILE = Path(__file__).resolve().parent.parent / "twelvedata_api_key.txt"
 API_KEY_ENV_VAR = "TWELVEDATA_API_KEY"
 BENCHMARK = "SPY"
 

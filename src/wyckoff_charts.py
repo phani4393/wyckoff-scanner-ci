@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from pathlib import Path
 
-CHART_DIR = Path(__file__).with_name("charts")
+CHART_DIR = Path(__file__).resolve().parent.parent / "charts"
 
 MARKER_STYLE = {
     "spring": dict(color="green", marker="^", label="Spring"),

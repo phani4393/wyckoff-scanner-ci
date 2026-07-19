@@ -22,7 +22,7 @@ from pathlib import Path
 import wyckoff_common as c
 from wyckoff_patterns import climax_events, sos_sow_events, lps_lpsy_events
 
-TICKER_FILE = Path(__file__).with_name("Core Watchlist.csv")
+TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "core_watchlist.csv"
 HORIZONS = (5, 10, 20)
 OUTPUT_SIZE = 5000  # ~20yr of daily bars, same 1 credit as any other size
 

@@ -33,7 +33,7 @@ from wyckoff_common import (
     build_close_by_date,
 )
 
-TICKER_FILE = Path(__file__).with_name("Top50 Plus AI.csv")
+TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "top50_plus_ai.csv"
 
 # ---- Weis Wave params (match Weis Wave Volume.pine defaults, Percent mode) ----
 REVERSAL_PCT = 1.0
