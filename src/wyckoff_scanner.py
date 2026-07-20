@@ -23,14 +23,9 @@ from pathlib import Path
 import wyckoff_notify as notify
 from wyckoff_common import (
     BENCHMARK,
-    LEFT_BARS,
-    RIGHT_BARS,
-    ZONE_MULT,
     fetch_bars,
     load_api_key,
     pivots,
-    wilder_atr,
-    build_close_by_date,
 )
 
 TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "top50_plus_ai.csv"
@@ -38,45 +33,6 @@ TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "top50_plus_ai.c
 # ---- Weis Wave params (match Weis Wave Volume.pine defaults, Percent mode) ----
 REVERSAL_PCT = 1.0
 FLAG_RATIO = 1.5
-
-
-def wheel_signals(bars, spy_by_date):
-    n = len(bars)
-    if n < LEFT_BARS + RIGHT_BARS + 10:
-        return None
-    res, sup = pivots(bars)
-    atr = wilder_atr(bars)
-
-    rs = [None] * n
-    for i, b in enumerate(bars):
-        spy_close = spy_by_date.get(b["date"])
-        rs[i] = (b["close"] / spy_close) if spy_close else None
-
-    def sell_put(j):
-        if res[j] is None and sup[j] is None:
-            return False
-        b = bars[j]
-        spring = sup[j] is not None and b["low"] < sup[j] and b["close"] > sup[j]
-        near_sup = sup[j] is not None and atr[j] and abs(b["close"] - sup[j]) <= ZONE_MULT * atr[j]
-        rs_rising = j >= 5 and rs[j] is not None and rs[j - 5] is not None and rs[j] > rs[j - 5]
-        return (spring or near_sup) and rs_rising
-
-    def sell_call(j):
-        b = bars[j]
-        upthrust = res[j] is not None and b["high"] > res[j] and b["close"] < res[j]
-        near_res = res[j] is not None and atr[j] and abs(b["close"] - res[j]) <= ZONE_MULT * atr[j]
-        return upthrust or near_res
-
-    last = n - 1
-    put_today, put_yday = sell_put(last), sell_put(last - 1)
-    call_today, call_yday = sell_call(last), sell_call(last - 1)
-    return {
-        "sellPutNew": put_today and not put_yday,
-        "sellCallNew": call_today and not call_yday,
-        "close": bars[last]["close"],
-        "res": res[last],
-        "sup": sup[last],
-    }
 
 
 def weis_wave_signal(bars):
@@ -140,7 +96,6 @@ def scan(tickers, api_key, progress=False):
     spy_bars = fetch_bars(BENCHMARK, api_key)
     if not spy_bars:
         raise RuntimeError("Could not fetch benchmark (SPY) data -- aborting scan.")
-    spy_by_date = build_close_by_date(spy_bars)
 
     hits = []
     skipped = []
