@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Wyckoff scanner — end-to-end flow</title>
+<title>Wyckoff watchlist scanner — end-to-end flow</title>
 <style>
   :root{
     --bg:#ffffff; --fg:#1f2933; --muted:#64748b; --border:#e2e8f0;
@@ -21,7 +21,9 @@
   body{background:var(--bg);color:var(--fg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
        max-width:760px;margin:0 auto;padding:32px 20px 60px;line-height:1.5;}
   h1{font-size:20px;font-weight:600;margin:0 0 4px;}
-  p.lede{color:var(--muted);font-size:14px;margin:0 0 24px;}
+  p.lede{color:var(--muted);font-size:14px;margin:0 0 16px;}
+  .scope-note{font-size:13px;color:var(--fg);background:var(--amber-bg);border:1px solid var(--amber-border);
+       border-radius:8px;padding:12px 14px;margin-bottom:24px;}
   .controls{margin-bottom:20px;}
   .controls button{font-size:13px;padding:6px 12px;border:1px solid var(--border);background:var(--bg);
        color:var(--fg);border-radius:6px;cursor:pointer;margin-right:8px;}
@@ -34,8 +36,10 @@
   .stage::before{content:"";position:absolute;left:-28px;top:16px;width:10px;height:10px;border-radius:50%;
        background:var(--blue-border);}
   .head{display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid var(--border);
-       border-radius:8px;padding:12px 14px;background:var(--blue-bg);}
+       border-radius:8px;padding:12px 14px;background:var(--blue-bg);width:100%;text-align:left;
+       font-family:inherit;color:inherit;}
   .head:hover{border-color:var(--blue-border);}
+  .head:focus-visible, .sub-head:focus-visible{outline:2px solid var(--blue-border);outline-offset:1px;}
   .chev{color:var(--muted);font-size:12px;width:14px;flex:none;}
   .title{font-weight:600;font-size:14px;color:var(--blue-fg);}
   .sub{color:var(--muted);font-size:12px;margin-left:auto;text-align:right;padding-left:12px;}
@@ -46,7 +50,7 @@
   .substeps{margin-top:10px;padding-left:14px;border-left:2px dashed var(--border);}
   .sub-item{margin-bottom:8px;}
   .sub-head{display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid var(--border);
-       border-radius:6px;padding:8px 10px;}
+       border-radius:6px;padding:8px 10px;width:100%;text-align:left;font-family:inherit;color:inherit;}
   .sub-head.guard{background:var(--amber-bg);}
   .sub-head.proc{background:var(--blue-bg);}
   .sub-head .stitle{font-weight:600;font-size:13px;}
@@ -61,8 +65,18 @@
 </head>
 <body>
 
-<h1>Wyckoff scanner — end-to-end flow</h1>
+<h1>Wyckoff watchlist scanner — end-to-end flow</h1>
 <p class="lede">Click any stage to expand its detail. The per-ticker loop expands into five sub-steps of its own.</p>
+
+<div class="scope-note">
+  <strong>Scope:</strong> this is <code>wyckoff_watchlist_scanner.py</code> — the deep scan of
+  <code>data/core_watchlist.csv</code> (44 names). The separate S&amp;P 500 + AI sweep
+  (<code>wyckoff_scanner.py</code>, driven by <code>data/top50_plus_ai.csv</code>) is a lighter
+  pipeline: only textbook spring/upthrust plus a Weis Wave context flag, no climax/SOS/SOW/LPS/ABC,
+  no charts, no journal drafts, and no explicit bar-count floor. It shares this loop's fetch-level
+  guardrails (rate limiter, retry, unsettled-bar drop) but not the detector or notification stages
+  described below.
+</div>
 
 <div class="controls">
   <button onclick="setAll(true)">Expand all</button>
@@ -77,11 +91,11 @@
 <div class="timeline">
 
   <div class="stage">
-    <div class="head" onclick="toggle('d1')">
+    <button type="button" class="head" onclick="toggle('d1')" aria-expanded="false" aria-controls="d1">
       <span class="chev" id="d1-chev">&#9656;</span>
       <span class="title">1. Trigger</span>
       <span class="sub">Cron, manual, or local run</span>
-    </div>
+    </button>
     <div class="detail" id="d1">
       Three ways this runs: GitHub Actions cron (split into a daylight-time and standard-time schedule
       keyed by month, so it doesn't drift an hour off market close for half the year), a manual
@@ -91,18 +105,18 @@
   </div>
 
   <div class="stage">
-    <div class="head" onclick="toggle('d2')">
+    <button type="button" class="head" onclick="toggle('d2')" aria-expanded="false" aria-controls="d2">
       <span class="chev" id="d2-chev">&#9656;</span>
       <span class="title">2. Setup</span>
       <span class="sub">API key, tickers, SPY fetch</span>
-    </div>
+    </button>
     <div class="detail" id="d2">
       <ul>
         <li><strong>API key</strong> — reads <code>TWELVEDATA_API_KEY</code> env var first (a GitHub
             secret in CI), falls back to the local gitignored <code>twelvedata_api_key.txt</code>.
             Fails loudly if neither exists — no silent skip.</li>
-        <li><strong>Ticker list</strong> — <code>data/core_watchlist.csv</code> (44 names, deep scan)
-            or <code>data/top50_plus_ai.csv</code> (S&amp;P sweep).</li>
+        <li><strong>Ticker list</strong> — <code>data/core_watchlist.csv</code>, the 44-name deep-scan
+            list this flow runs against.</li>
         <li><strong>Guardrail</strong> — fetches SPY as the RS benchmark first. If that single fetch
             fails, the whole scan aborts immediately rather than run partially against a broken benchmark.</li>
       </ul>
@@ -110,22 +124,22 @@
   </div>
 
   <div class="stage">
-    <div class="head" onclick="toggle('d3')">
+    <button type="button" class="head" onclick="toggle('d3')" aria-expanded="false" aria-controls="d3">
       <span class="chev" id="d3-chev">&#9656;</span>
       <span class="title">3. Per-ticker scan loop</span>
       <span class="sub">Fetch, detect, apply guardrails</span>
-    </div>
+    </button>
     <div class="detail" id="d3">
       Runs once per ticker in the list. Five sub-steps, alternating processing and guardrails:
 
       <div class="substeps">
 
         <div class="sub-item">
-          <div class="sub-head guard" onclick="toggleSub('s1')">
+          <button type="button" class="sub-head guard" onclick="toggleSub('s1')" aria-expanded="false" aria-controls="s1">
             <span class="chev" id="s1-chev">&#9656;</span>
             <span class="stitle">Rate limiter</span>
             <span class="ssub">max 7 calls/min</span>
-          </div>
+          </button>
           <div class="sub-detail" id="s1">
             Twelve Data's free tier caps at 8 credits/minute; a rolling window throttle stays at 7 for
             headroom, sleeping rather than risking a 429.
@@ -133,11 +147,11 @@
         </div>
 
         <div class="sub-item">
-          <div class="sub-head proc" onclick="toggleSub('s2')">
+          <button type="button" class="sub-head proc" onclick="toggleSub('s2')" aria-expanded="false" aria-controls="s2">
             <span class="chev" id="s2-chev">&#9656;</span>
             <span class="stitle">Fetch bars</span>
             <span class="ssub">retry 2x, skip bad symbols</span>
-          </div>
+          </button>
           <div class="sub-detail" id="s2">
             Retries twice with a 1s pause on network/timeout errors. On an HTTP 429 it backs off 10s
             and retries. On a bad symbol or empty response it returns <code>None</code> immediately —
@@ -146,11 +160,11 @@
         </div>
 
         <div class="sub-item">
-          <div class="sub-head guard" onclick="toggleSub('s3')">
+          <button type="button" class="sub-head guard" onclick="toggleSub('s3')" aria-expanded="false" aria-controls="s3">
             <span class="chev" id="s3-chev">&#9656;</span>
             <span class="stitle">Data checks</span>
             <span class="ssub">drop unsettled bar, need 60+ bars</span>
-          </div>
+          </button>
           <div class="sub-detail" id="s3">
             <code>drop_unconfirmed_last_bar()</code> discards the newest bar if its volume is under 10%
             of the trailing 20-day average — a heuristic for "the session hasn't settled yet." Fewer
@@ -159,11 +173,11 @@
         </div>
 
         <div class="sub-item">
-          <div class="sub-head proc" onclick="toggleSub('s4')">
+          <button type="button" class="sub-head proc" onclick="toggleSub('s4')" aria-expanded="false" aria-controls="s4">
             <span class="chev" id="s4-chev">&#9656;</span>
             <span class="stitle">Run detectors</span>
             <span class="ssub">spring, upthrust, climax, SOS/SOW, ABC</span>
-          </div>
+          </button>
           <div class="sub-detail" id="s4">
             All built on Wilder ATR-14, pivot highs/lows over a 20-left/5-right bar window, and zigzag
             swings:
@@ -179,11 +193,11 @@
         </div>
 
         <div class="sub-item">
-          <div class="sub-head guard" onclick="toggleSub('s5')">
+          <button type="button" class="sub-head guard" onclick="toggleSub('s5')" aria-expanded="false" aria-controls="s5">
             <span class="chev" id="s5-chev">&#9656;</span>
             <span class="stitle">Signal guardrails</span>
             <span class="ssub">edge-triggered, ABC confirm-day only</span>
-          </div>
+          </button>
           <div class="sub-detail" id="s5">
             Every detector is edge-triggered — it fires only the day a condition becomes true, not
             every day it stays true, so the same alert doesn't repeat for a week. ABC specifically
@@ -199,11 +213,11 @@
   </div>
 
   <div class="stage">
-    <div class="head" onclick="toggle('d4')">
+    <button type="button" class="head" onclick="toggle('d4')" aria-expanded="false" aria-controls="d4">
       <span class="chev" id="d4-chev">&#9656;</span>
       <span class="title">4. Aggregate results</span>
       <span class="sub">Skip / degraded-scan check</span>
-    </div>
+    </button>
     <div class="detail" id="d4">
       If more than half the tickers failed to fetch, that alone triggers a "scan degraded" Telegram
       message, separate from any signal alert — so a data outage doesn't read as "no signals today."
@@ -212,17 +226,17 @@
   </div>
 
   <div class="stage">
-    <div class="head" onclick="toggle('d5')">
+    <button type="button" class="head" onclick="toggle('d5')" aria-expanded="false" aria-controls="d5">
       <span class="chev" id="d5-chev">&#9656;</span>
       <span class="title">5. Notify and archive</span>
       <span class="sub">Telegram alert + chart upload</span>
-    </div>
+    </button>
     <div class="detail" id="d5">
       Every alert carries the same disclaimer: <em>"discretionary review triggers, NOT validated
       edges — backtesting shows none beat naive swing-trading."</em> That's load-bearing, not
       boilerplate — the backtest confirmed 10 of 11 signal types have a statistically significant
-      <strong>negative</strong> edge (cluster-bootstrapped, p&lt;0.001). The watchlist scanner
-      additionally generates an annotated chart PNG per signal, uploads it as a 14-day GitHub Actions
+      <strong>negative</strong> edge (cluster-bootstrapped, p&lt;0.001). This scanner also generates
+      an annotated chart PNG per signal, uploads it as a 14-day GitHub Actions
       artifact, and — only on local runs, guarded by a <code>GITHUB_ACTIONS</code> env var check since
       a CI runner's filesystem disappears when the job ends — auto-drafts a <code>trades.csv</code> row
       so the signal doesn't need transcribing by hand later.
@@ -239,20 +253,22 @@
 </div>
 
 <script>
+function setOpen(id, open){
+  var el = document.getElementById(id);
+  el.classList.toggle('open', open);
+  document.getElementById(id + '-chev').innerHTML = open ? '&#9662;' : '&#9656;';
+  var btn = document.querySelector('[aria-controls="' + id + '"]');
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
 function toggle(id){
   var el = document.getElementById(id);
-  var open = el.classList.toggle('open');
-  document.getElementById(id + '-chev').innerHTML = open ? '&#9662;' : '&#9656;';
+  setOpen(id, !el.classList.contains('open'));
 }
 function toggleSub(id){
-  var el = document.getElementById(id);
-  var open = el.classList.toggle('open');
-  document.getElementById(id + '-chev').innerHTML = open ? '&#9662;' : '&#9656;';
+  toggle(id);
 }
 function setAll(open){
-  document.querySelectorAll('.detail').forEach(function(el){ el.classList.toggle('open', open); });
-  document.querySelectorAll('.sub-detail').forEach(function(el){ el.classList.toggle('open', open); });
-  document.querySelectorAll('[id$="-chev"]').forEach(function(el){ el.innerHTML = open ? '&#9662;' : '&#9656;'; });
+  document.querySelectorAll('.detail, .sub-detail').forEach(function(el){ setOpen(el.id, open); });
 }
 </script>
 

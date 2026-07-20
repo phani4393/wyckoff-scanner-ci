@@ -1,7 +1,16 @@
-# Scanner flow — end to end, with guardrails
+# Watchlist scanner flow — end to end, with guardrails
 
 An interactive breakdown of exactly what happens on every scan run, and every
-check/guardrail along the way.
+check/guardrail along the way, for `wyckoff_watchlist_scanner.py` — the deep
+scan of `data/core_watchlist.csv` (44 names).
+
+**This does not describe `wyckoff_scanner.py`** (the separate S&P 500 + AI
+sweep, driven by `data/top50_plus_ai.csv`). That's a lighter pipeline: only
+textbook spring/upthrust plus a Weis Wave context flag, no
+climax/SOS/SOW/LPS/ABC, no charts, no journal drafts, and no explicit
+bar-count floor. It shares stage 3's fetch-level guardrails (rate limiter,
+retry, unsettled-bar drop, both scanners call the same `wyckoff_common.fetch_bars()`)
+but not the detector or notification stages below.
 
 **[Open the interactive diagram](diagrams/scanner_flow.html)** — click any
 stage to expand its detail; the per-ticker loop expands into five sub-steps of
@@ -20,8 +29,8 @@ browser to interact with it.
    - API key: `TWELVEDATA_API_KEY` env var first (a GitHub secret in CI),
      falls back to the local gitignored `twelvedata_api_key.txt`. Fails
      loudly if neither exists.
-   - Loads the ticker list (`data/core_watchlist.csv`, 44 names, or
-     `data/top50_plus_ai.csv`).
+   - Loads the ticker list — `data/core_watchlist.csv`, the 44-name deep-scan
+     list this flow runs against.
    - Fetches SPY as the RS benchmark. **Guardrail:** if that fetch fails, the
      whole scan aborts immediately — no partial run against a broken benchmark.
 
@@ -60,7 +69,7 @@ browser to interact with it.
    none beat naive swing-trading."* That's load-bearing: the backtest
    confirmed 10 of 11 signal types have a statistically significant
    **negative** edge (cluster-bootstrapped, p<0.001; see
-   [`BACKTEST_FINDINGS.md`](BACKTEST_FINDINGS.md)). The watchlist scanner also
+   [`BACKTEST_FINDINGS.md`](BACKTEST_FINDINGS.md)). This scanner also
    generates an annotated chart PNG per signal, uploads it as a 14-day GitHub
    Actions artifact, and — only on local runs, guarded by a `GITHUB_ACTIONS`
    env var check — auto-drafts a `trades.csv` row.
