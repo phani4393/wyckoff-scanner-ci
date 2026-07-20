@@ -48,7 +48,10 @@ wyckoff-scanner-ci/
 │   ├── core_watchlist.csv        <- the 44-name deep-scan list
 │   └── top50_plus_ai.csv         <- top 50 by market cap + AI names
 └── docs/
-    └── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
+    ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
+    ├── SCANNER_FLOW.md            <- end-to-end flow + every guardrail, explained
+    └── diagrams/
+        └── scanner_flow.html      <- interactive version of the above (open in a browser)
 ```
 
 **Not committed (private / local only):** `twelvedata_api_key.txt`,
@@ -59,16 +62,22 @@ wyckoff-scanner-ci/
 ## The automated scanner
 
 **How it runs:** GitHub Actions runs the two workflows on a weekday cron and
-pushes results to Telegram. Nothing needs to stay open on your machine.
+pushes results to Telegram. Nothing needs to stay open on your machine. For
+the full end-to-end flow — every fetch/data/signal guardrail, with an
+interactive diagram — see [`docs/SCANNER_FLOW.md`](docs/SCANNER_FLOW.md).
 
 - `watchlist-scan.yml` — deep-scans `data/core_watchlist.csv`, generates an
   annotated chart per flagged name, and pushes a Telegram message + chart
-  images. Runs ~20:35 UTC on weekdays.
-- `sp500-scan.yml` — lighter scan of `data/top50_plus_ai.csv`. Runs ~20:20 UTC.
+  images. Runs ~20:35 UTC on weekdays (~16:35 ET, see DST note below).
+- `sp500-scan.yml` — lighter scan of `data/top50_plus_ai.csv`. Runs ~20:20 UTC
+  (~16:20 ET).
 
-> **DST note:** GitHub cron is fixed UTC. The times above line up with ~market
-> close during US daylight time; in US winter they drift ~1 hour. Nudge the
-> `cron:` lines by +1 hour around early November if you want them re-pinned.
+> **DST note:** GitHub cron is fixed UTC and can't itself follow US DST, so
+> each workflow's `schedule:` has two `cron:` entries keyed by month — one
+> daylight-time offset (Mar-Oct), one standard-time offset (Nov-Feb) — instead
+> of drifting an hour off market close for half the year. There's still up to
+> ~1hr of drift in the 1-2 week transition windows each March/November, since
+> calendar months don't line up exactly with the actual DST switchover date.
 
 **Signals it flags** (all discretionary review triggers): textbook spring /
 upthrust, trading-range entry, Buying/Selling Climax + Automatic Reaction,

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wyckoff scanner — end-to-end flow</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1f2933; --muted:#64748b; --border:#e2e8f0;
+    --blue-bg:#eff6ff; --blue-border:#93c5fd; --blue-fg:#1e3a8a;
+    --amber-bg:#fffbeb; --amber-border:#fbbf24; --amber-fg:#92400e;
+    --line:#94a3b8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --border:#1e293b;
+      --blue-bg:#132447; --blue-border:#3b82f6; --blue-fg:#bfdbfe;
+      --amber-bg:#3a2a06; --amber-border:#d97706; --amber-fg:#fde68a;
+      --line:#475569;
+    }
+  }
+  body{background:var(--bg);color:var(--fg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+       max-width:760px;margin:0 auto;padding:32px 20px 60px;line-height:1.5;}
+  h1{font-size:20px;font-weight:600;margin:0 0 4px;}
+  p.lede{color:var(--muted);font-size:14px;margin:0 0 24px;}
+  .controls{margin-bottom:20px;}
+  .controls button{font-size:13px;padding:6px 12px;border:1px solid var(--border);background:var(--bg);
+       color:var(--fg);border-radius:6px;cursor:pointer;margin-right:8px;}
+  .controls button:hover{border-color:var(--line);}
+  .legend{display:flex;gap:18px;margin-bottom:24px;font-size:13px;color:var(--muted);}
+  .legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;}
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:2px;background:var(--line);}
+  .stage{position:relative;margin-bottom:14px;}
+  .stage::before{content:"";position:absolute;left:-28px;top:16px;width:10px;height:10px;border-radius:50%;
+       background:var(--blue-border);}
+  .head{display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid var(--border);
+       border-radius:8px;padding:12px 14px;background:var(--blue-bg);}
+  .head:hover{border-color:var(--blue-border);}
+  .chev{color:var(--muted);font-size:12px;width:14px;flex:none;}
+  .title{font-weight:600;font-size:14px;color:var(--blue-fg);}
+  .sub{color:var(--muted);font-size:12px;margin-left:auto;text-align:right;padding-left:12px;}
+  .detail{display:none;padding:12px 14px 12px 24px;font-size:13px;color:var(--fg);}
+  .detail.open{display:block;}
+  .detail ul{margin:6px 0 0;padding-left:18px;}
+  .detail li{margin-bottom:6px;}
+  .substeps{margin-top:10px;padding-left:14px;border-left:2px dashed var(--border);}
+  .sub-item{margin-bottom:8px;}
+  .sub-head{display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid var(--border);
+       border-radius:6px;padding:8px 10px;}
+  .sub-head.guard{background:var(--amber-bg);}
+  .sub-head.proc{background:var(--blue-bg);}
+  .sub-head .stitle{font-weight:600;font-size:13px;}
+  .sub-head.guard .stitle{color:var(--amber-fg);}
+  .sub-head.proc .stitle{color:var(--blue-fg);}
+  .sub-head .ssub{color:var(--muted);font-size:12px;margin-left:auto;}
+  .sub-detail{display:none;padding:8px 10px 4px 30px;font-size:12px;color:var(--fg);}
+  .sub-detail.open{display:block;}
+  .footer-note{margin-top:28px;padding:14px;border:1px solid var(--border);border-radius:8px;
+       font-size:13px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<h1>Wyckoff scanner — end-to-end flow</h1>
+<p class="lede">Click any stage to expand its detail. The per-ticker loop expands into five sub-steps of its own.</p>
+
+<div class="controls">
+  <button onclick="setAll(true)">Expand all</button>
+  <button onclick="setAll(false)">Collapse all</button>
+</div>
+
+<div class="legend">
+  <span><span class="sw" style="background:var(--blue-border)"></span>processing step</span>
+  <span><span class="sw" style="background:var(--amber-border)"></span>guardrail / check</span>
+</div>
+
+<div class="timeline">
+
+  <div class="stage">
+    <div class="head" onclick="toggle('d1')">
+      <span class="chev" id="d1-chev">&#9656;</span>
+      <span class="title">1. Trigger</span>
+      <span class="sub">Cron, manual, or local run</span>
+    </div>
+    <div class="detail" id="d1">
+      Three ways this runs: GitHub Actions cron (split into a daylight-time and standard-time schedule
+      keyed by month, so it doesn't drift an hour off market close for half the year), a manual
+      <code>workflow_dispatch</code> button on GitHub, or running
+      <code>python src/wyckoff_watchlist_scanner.py</code> locally.
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="head" onclick="toggle('d2')">
+      <span class="chev" id="d2-chev">&#9656;</span>
+      <span class="title">2. Setup</span>
+      <span class="sub">API key, tickers, SPY fetch</span>
+    </div>
+    <div class="detail" id="d2">
+      <ul>
+        <li><strong>API key</strong> — reads <code>TWELVEDATA_API_KEY</code> env var first (a GitHub
+            secret in CI), falls back to the local gitignored <code>twelvedata_api_key.txt</code>.
+            Fails loudly if neither exists — no silent skip.</li>
+        <li><strong>Ticker list</strong> — <code>data/core_watchlist.csv</code> (44 names, deep scan)
+            or <code>data/top50_plus_ai.csv</code> (S&amp;P sweep).</li>
+        <li><strong>Guardrail</strong> — fetches SPY as the RS benchmark first. If that single fetch
+            fails, the whole scan aborts immediately rather than run partially against a broken benchmark.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="head" onclick="toggle('d3')">
+      <span class="chev" id="d3-chev">&#9656;</span>
+      <span class="title">3. Per-ticker scan loop</span>
+      <span class="sub">Fetch, detect, apply guardrails</span>
+    </div>
+    <div class="detail" id="d3">
+      Runs once per ticker in the list. Five sub-steps, alternating processing and guardrails:
+
+      <div class="substeps">
+
+        <div class="sub-item">
+          <div class="sub-head guard" onclick="toggleSub('s1')">
+            <span class="chev" id="s1-chev">&#9656;</span>
+            <span class="stitle">Rate limiter</span>
+            <span class="ssub">max 7 calls/min</span>
+          </div>
+          <div class="sub-detail" id="s1">
+            Twelve Data's free tier caps at 8 credits/minute; a rolling window throttle stays at 7 for
+            headroom, sleeping rather than risking a 429.
+          </div>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-head proc" onclick="toggleSub('s2')">
+            <span class="chev" id="s2-chev">&#9656;</span>
+            <span class="stitle">Fetch bars</span>
+            <span class="ssub">retry 2x, skip bad symbols</span>
+          </div>
+          <div class="sub-detail" id="s2">
+            Retries twice with a 1s pause on network/timeout errors. On an HTTP 429 it backs off 10s
+            and retries. On a bad symbol or empty response it returns <code>None</code> immediately —
+            no retry, since that's not a transient failure.
+          </div>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-head guard" onclick="toggleSub('s3')">
+            <span class="chev" id="s3-chev">&#9656;</span>
+            <span class="stitle">Data checks</span>
+            <span class="ssub">drop unsettled bar, need 60+ bars</span>
+          </div>
+          <div class="sub-detail" id="s3">
+            <code>drop_unconfirmed_last_bar()</code> discards the newest bar if its volume is under 10%
+            of the trailing 20-day average — a heuristic for "the session hasn't settled yet." Fewer
+            than 60 bars of history and the ticker is skipped outright.
+          </div>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-head proc" onclick="toggleSub('s4')">
+            <span class="chev" id="s4-chev">&#9656;</span>
+            <span class="stitle">Run detectors</span>
+            <span class="ssub">spring, upthrust, climax, SOS/SOW, ABC</span>
+          </div>
+          <div class="sub-detail" id="s4">
+            All built on Wilder ATR-14, pivot highs/lows over a 20-left/5-right bar window, and zigzag
+            swings:
+            <ul>
+              <li>Textbook spring / upthrust — undercut-and-recover / poke-and-fail, no dilution.</li>
+              <li>Buying/Selling Climax + Automatic Reaction — needs a 2x volume spike <em>and</em> a
+                  1.8x ATR range spike.</li>
+              <li>Sign of Strength / Weakness — 1.5x volume, 1.3x range, closing beyond the level.</li>
+              <li>Last Point of Support / Supply — pullback holding within 0.6x ATR of the broken level.</li>
+              <li>Elliott-style ABC correction — leg-B retrace 30–79% of leg A, leg-C extension 61.8–161.8%.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-head guard" onclick="toggleSub('s5')">
+            <span class="chev" id="s5-chev">&#9656;</span>
+            <span class="stitle">Signal guardrails</span>
+            <span class="ssub">edge-triggered, ABC confirm-day only</span>
+          </div>
+          <div class="sub-detail" id="s5">
+            Every detector is edge-triggered — it fires only the day a condition becomes true, not
+            every day it stays true, so the same alert doesn't repeat for a week. ABC specifically
+            fires only on its exact confirmation day (<code>pivot_idx + RIGHT_BARS</code>), never
+            earlier — the anti-repaint fix for a real lookahead bug found during backtesting, now
+            pinned down by a regression test (<code>tests/test_wyckoff_patterns.py</code>) so it
+            can't silently regress.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="head" onclick="toggle('d4')">
+      <span class="chev" id="d4-chev">&#9656;</span>
+      <span class="title">4. Aggregate results</span>
+      <span class="sub">Skip / degraded-scan check</span>
+    </div>
+    <div class="detail" id="d4">
+      If more than half the tickers failed to fetch, that alone triggers a "scan degraded" Telegram
+      message, separate from any signal alert — so a data outage doesn't read as "no signals today."
+      If nothing fired, the scan exits quietly with no notification.
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="head" onclick="toggle('d5')">
+      <span class="chev" id="d5-chev">&#9656;</span>
+      <span class="title">5. Notify and archive</span>
+      <span class="sub">Telegram alert + chart upload</span>
+    </div>
+    <div class="detail" id="d5">
+      Every alert carries the same disclaimer: <em>"discretionary review triggers, NOT validated
+      edges — backtesting shows none beat naive swing-trading."</em> That's load-bearing, not
+      boilerplate — the backtest confirmed 10 of 11 signal types have a statistically significant
+      <strong>negative</strong> edge (cluster-bootstrapped, p&lt;0.001). The watchlist scanner
+      additionally generates an annotated chart PNG per signal, uploads it as a 14-day GitHub Actions
+      artifact, and — only on local runs, guarded by a <code>GITHUB_ACTIONS</code> env var check since
+      a CI runner's filesystem disappears when the job ends — auto-drafts a <code>trades.csv</code> row
+      so the signal doesn't need transcribing by hand later.
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  Guardrails that don't show up as boxes: secrets never touch git (<code>.gitignore</code> covers the
+  key file and <code>trades.csv</code>); there's no fallback data vendor if Twelve Data has an outage
+  (a documented single point of failure, not silently masked); and the entire "review trigger" framing
+  exists because the backtest, not intuition, proved there's no mechanical edge to trust blindly.
+</div>
+
+<script>
+function toggle(id){
+  var el = document.getElementById(id);
+  var open = el.classList.toggle('open');
+  document.getElementById(id + '-chev').innerHTML = open ? '&#9662;' : '&#9656;';
+}
+function toggleSub(id){
+  var el = document.getElementById(id);
+  var open = el.classList.toggle('open');
+  document.getElementById(id + '-chev').innerHTML = open ? '&#9662;' : '&#9656;';
+}
+function setAll(open){
+  document.querySelectorAll('.detail').forEach(function(el){ el.classList.toggle('open', open); });
+  document.querySelectorAll('.sub-detail').forEach(function(el){ el.classList.toggle('open', open); });
+  document.querySelectorAll('[id$="-chev"]').forEach(function(el){ el.innerHTML = open ? '&#9662;' : '&#9656;'; });
+}
+</script>
+
+</body>
+</html>
