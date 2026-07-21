@@ -26,6 +26,7 @@ wyckoff-scanner-ci/
 ├── .github/workflows/            <- the automation (GitHub Actions, cron)
 │   ├── sp500-scan.yml            <- daily scan of top-50 + AI names
 │   ├── watchlist-scan.yml        <- daily deep-scan of the core watchlist (+charts)
+│   ├── score-alerts.yml          <- daily: score alerts that have aged past a horizon
 │   └── tests.yml                 <- detector regression tests, runs on every push
 ├── src/                          <- all Python
 │   ├── wyckoff_common.py         <- data fetch (Twelve Data), ATR, pivots, zigzag
@@ -38,6 +39,7 @@ wyckoff-scanner-ci/
 │   ├── survivorship_sensitivity.py  <- quantifies how fragile the baseline is to survivorship bias
 │   ├── regime_analysis.py        <- tests whether SPY's own trend explains the edge (it doesn't)
 │   ├── alert_log.py              <- durable log of every alert sent, for later evaluation
+│   ├── score_alerts.py           <- scores alerts_log.csv against reality, live out-of-sample
 │   ├── wyckoff_scanner.py        <- top-50 + AI scanner
 │   ├── wyckoff_watchlist_scanner.py  <- core-watchlist deep scanner
 │   ├── backtest.py               <- the honest backtest (signals vs fair baseline)
@@ -45,16 +47,19 @@ wyckoff-scanner-ci/
 │   ├── trade_analytics.py        <- measure YOUR realized edge (local)
 │   └── correlation.py            <- portfolio concentration / heat monitor (local)
 ├── tests/
-│   └── test_wyckoff_patterns.py  <- detector regression tests (synthetic OHLC fixtures)
+│   ├── test_wyckoff_patterns.py  <- detector regression tests (synthetic OHLC fixtures)
+│   └── test_score_alerts.py      <- scoring-math + idempotency tests (synthetic bars/alerts)
 ├── data/
 │   ├── core_watchlist.csv        <- the 44-name deep-scan list
 │   ├── top50_plus_ai.csv         <- top 50 by market cap + AI names
-│   └── alerts_log.csv            <- every alert either scanner has sent (auto-committed by CI)
+│   ├── alerts_log.csv            <- every alert either scanner has sent (auto-committed by CI)
+│   └── alerts_scored.csv         <- alerts_log.csv rows scored once their horizon elapses
 └── docs/
     ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
     ├── SCANNER_FLOW.md            <- end-to-end flow + every guardrail, explained
+    ├── LIVE_SCORECARD.md          <- score_alerts.py explained end to end, worked example
     └── diagrams/
-        └── scanner_flow.html      <- interactive version of the above (open in a browser)
+        └── scanner_flow.html      <- interactive version of SCANNER_FLOW.md (open in a browser)
 ```
 
 **Not committed (private / local only):** `twelvedata_api_key.txt`,
@@ -95,7 +100,7 @@ back to the repo by a "Persist alert log" step after each scheduled run
 (the CI runner's own filesystem is discarded when the job ends, so the log
 would otherwise vanish). It's a real-time, out-of-sample complement to
 `backtest.py`: the backtest replays history, this builds an actual forward
-track record you can score later against what really happened.
+track record — and `score_alerts.py` (below) is what actually scores it.
 
 ### One-time setup (already done on this repo, documented for portability)
 1. Free API key from [twelvedata.com](https://twelvedata.com) → repo secret `TWELVEDATA_API_KEY`.
@@ -186,6 +191,32 @@ than taken as a bare point estimate. Read
 ```
 python src/backtest.py
 ```
+
+## Live scorecard — `score_alerts.py`
+**Full walkthrough, with a real worked example:**
+[`docs/LIVE_SCORECARD.md`](docs/LIVE_SCORECARD.md). Short version below.
+
+The out-of-sample complement to `backtest.py`: instead of replaying history,
+it scores `data/alerts_log.csv` against what actually happened once each
+alert ages past the 5/10/20-trading-day mark, using the exact same
+forward-return math, options-P&L model, and cluster-bootstrap significance
+test as the backtest — but compared against a **live, time-matched** "trade
+the swing" baseline (same tickers, same period since alerts started on
+2026-07-21), not the 20-year historical baseline pool. This is the thing that
+can actually tell you whether the backtest's negative findings were an
+artifact of tuning detectors against history everyone could already see, or
+hold up on signals fired blind. Idempotent — safe to run daily, only scores
+newly-eligible (alert, horizon) pairs each time.
+```
+python src/score_alerts.py              # score pending alerts, print the scorecard
+python src/score_alerts.py --telegram   # also push it to Telegram
+```
+Runs daily via `.github/workflows/score-alerts.yml`, after both scans, and
+commits `data/alerts_scored.csv` back to the repo the same way `alerts_log.csv`
+is persisted. **Read the numbers with real skepticism until the sample is
+large** — with only a handful of tickers involved so far, the cluster
+bootstrap will mostly report "not enough independent tickers yet," which is
+the honest answer, not a bug.
 
 ## Tests
 Regression tests for the pattern detectors (spring/upthrust/ABC) against

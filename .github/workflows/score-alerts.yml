@@ -1,0 +1,47 @@
+name: Score Alerts
+
+on:
+  schedule:
+    # ~1hr after watchlist-scan.yml (the later of the two daily scans), so
+    # both scans' alerts are already logged and the day's bar has settled.
+    # Same month-keyed DST split as the scan workflows -- see those for the
+    # full explanation.
+    - cron: "35 21 * 3-10 1-5"
+    - cron: "35 22 * 11,12,1,2 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python src/score_alerts.py
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # data/alerts_scored.csv is written by score_alerts.py during the run
+      # above -- this runner's filesystem is discarded when the job ends, so
+      # the log has to be committed back to the repo to survive, same as
+      # alerts_log.csv in the scan workflows.
+      - name: Persist scored alerts
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain -- data/alerts_scored.csv)" ]; then
+            git add data/alerts_scored.csv
+            git commit -m "Score alerts from $(date -u +%Y-%m-%dT%H:%M:%SZ) run"
+            git pull --rebase --autostash origin master
+            git push
+          else
+            echo "No newly-scored alerts this run."
+          fi

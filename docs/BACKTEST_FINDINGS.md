@@ -181,3 +181,12 @@ to the stock-return distribution.)
   walk-forward testing hasn't been done. A fully validated edge still needs a
   real survivorship-free universe (incl. delisted names) — the sensitivity
   analysis above bounds the risk but doesn't remove it.
+- **Update, 2026-07-21:** `src/score_alerts.py` has started closing the
+  walk-forward gap specifically — every live alert since that date is scored
+  against a time-matched swing baseline as it ages past 5/10/20 trading days.
+  Full explanation and a worked example: [`LIVE_SCORECARD.md`](LIVE_SCORECARD.md).
+  This is a genuine live/forward check (no detector-tuning-against-visible-
+  history risk), but it does **not** touch the survivorship-bias gap above —
+  that still needs paid, delisted-inclusive data — and the sample will be
+  small for a long time, so don't expect a statistically meaningful verdict
+  from it soon.
