@@ -1,0 +1,13 @@
+# data/alerts_log.csv and data/alerts_scored.csv are append-only logs that
+# two different scheduled workflows can write to in the same time window
+# (watchlist-scan.yml + sp500-scan.yml both append to alerts_log.csv;
+# score-alerts.yml appends to alerts_scored.csv). When both land a commit
+# around the same time, Git's default merge/rebase treats "both sides insert
+# new lines at the same anchor point (end of file)" as a real conflict --
+# verified directly: a plain `git merge` fails identically to `git rebase`
+# here, it is not a rebase-specific quirk. `merge=union` tells Git to
+# auto-resolve that specific case by keeping the union of both sides' new
+# lines instead of conflict-marking it, which is exactly correct for an
+# append-only log where every row is independent.
+data/alerts_log.csv merge=union
+data/alerts_scored.csv merge=union
