@@ -113,6 +113,37 @@ Notes:
 - **Spread cost is an assumption (6% round-trip), not measured.** Wider on
   small-caps/low-volume names than on AAPL/MSFT-tier liquidity.
 
+## Does the broader market regime explain the edge? (tested, not just asked)
+
+A reasonable hypothesis: springs/upthrusts might fail more often specifically
+*because* the broader market is fighting them — a spring's local demand test
+competing against systemic selling pressure, not just idiosyncratic noise.
+Tested with one definition, committed before looking at results (not fished
+across variants): **regime = "bull" if SPY's close is above its own 200-day
+SMA on the signal date, else "bear"** (`src/regime_analysis.py`). Every
+observation — signal AND matched baseline — is split by this regime and
+compared against a regime-matched control, same cluster bootstrap as above.
+
+| Signal | SPY regime | Signal's own hit rate | Edge vs. regime-matched baseline (10d) |
+|---|---|---|---|
+| pure spring | bull | 54.1% | −17.9pp, CI [-22.0,-13.5]pp, **p<0.001** |
+| pure spring | bear | 54.4% | −23.2pp, CI [-27.4,-18.7]pp, **p<0.001** |
+| pure upthrust | bull | 44.8% | −26.0pp, CI [-28.7,-23.4]pp, **p<0.001** |
+| pure upthrust | bear | 42.0% | −25.5pp, CI [-33.3,-18.3]pp, **p<0.001** |
+
+**Verdict: the regime split does not rescue the edge.** Both signals remain
+strongly, significantly negative in both regimes. Spring's own hit rate barely
+moves across regimes (54.1% vs 54.4% — if anything trivially higher when the
+market is down, the opposite of the hypothesis); its edge looks worse in the
+bear regime only because the naive baseline's own "buy the dip" bounce gets
+*even stronger* in down markets (77.6% baseline hit rate in bear vs. 72.0% in
+bull), not because springs themselves fail more. Upthrust does show a small
+move in the hypothesized direction (44.8% → 42.0% hit rate, bull → bear), but
+that's a ~3pp shift against a ~25pp gap — nowhere near enough to explain it.
+This is a genuinely useful negative result: it rules out the single most
+obvious confounding variable rather than leaving it as an open "maybe," without
+fishing across multiple regime definitions until one looked better.
+
 ## Survivorship-bias sensitivity (quantified, not just disclosed)
 
 Every ticker in this backtest is, by construction, a company still trading

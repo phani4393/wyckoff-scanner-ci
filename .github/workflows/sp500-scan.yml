@@ -16,6 +16,9 @@ on:
     - cron: "20 21 * 11,12,1,2 1-5"
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -31,3 +34,20 @@ jobs:
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # data/alerts_log.csv is written by alert_log.py during the scan above
+      # -- this runner's filesystem is discarded when the job ends, so the
+      # log has to be committed back to the repo to survive. if: always()
+      # so alerts logged before a mid-run failure aren't lost either.
+      - name: Persist alert log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain -- data/alerts_log.csv)" ]; then
+            git add data/alerts_log.csv
+            git commit -m "Log alerts from $(date -u +%Y-%m-%dT%H:%M:%SZ) S&P 500 sweep run"
+            git pull --rebase --autostash origin master
+            git push
+          else
+            echo "No new alerts logged this run."
+          fi

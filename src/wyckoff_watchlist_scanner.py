@@ -18,6 +18,7 @@ import csv
 import os
 from pathlib import Path
 
+import alert_log
 import trade_journal
 import wyckoff_notify as notify
 from wyckoff_common import BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr, build_close_by_date
@@ -30,11 +31,14 @@ CHART_WINDOW = 90
 
 # Auto-drafting into trades.csv only makes sense for a local run -- the
 # GitHub Actions runner's filesystem is discarded when the job ends, so a
-# draft written there would vanish immediately with no benefit.
+# draft written there would vanish immediately with no benefit. The alert
+# log is different: it's committed back to the repo by a workflow step, so
+# it's logged unconditionally, in CI and locally alike.
 DRAFT_JOURNAL = not os.environ.get("GITHUB_ACTIONS")
 
 
 def _draft(sym, setup, direction, thesis, close):
+    alert_log.log_alert("watchlist", sym, setup, direction, thesis, close)
     if not DRAFT_JOURNAL:
         return
     try:

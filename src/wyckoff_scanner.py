@@ -20,6 +20,7 @@ suitable for a push notification.
 import csv
 from pathlib import Path
 
+import alert_log
 import wyckoff_notify as notify
 from wyckoff_common import (
     BENCHMARK,
@@ -116,16 +117,22 @@ def scan(tickers, api_key, progress=False):
                 sp_now = bars[-1]["low"] < sup[-1] and bars[-1]["close"] > sup[-1]
                 sp_prev = sup[-2] is not None and bars[-2]["low"] < sup[-2] and bars[-2]["close"] > sup[-2]
                 if sp_now and not sp_prev:
-                    signals.append(f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL")
+                    thesis = f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL"
+                    signals.append(thesis)
+                    alert_log.log_alert("sp500_sweep", sym, "spring", "long_call", thesis, bars[-1]["close"])
             if m >= 2 and res[-1] is not None:
                 ut_now = bars[-1]["high"] > res[-1] and bars[-1]["close"] < res[-1]
                 ut_prev = res[-2] is not None and bars[-2]["high"] > res[-2] and bars[-2]["close"] < res[-2]
                 if ut_now and not ut_prev:
-                    signals.append(f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT")
+                    thesis = f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT"
+                    signals.append(thesis)
+                    alert_log.log_alert("sp500_sweep", sym, "upthrust", "long_put", thesis, bars[-1]["close"])
             weis = weis_wave_signal(bars)
             if weis and weis["newWaveToday"] and weis["flagged"]:
                 direction = "up" if weis["direction"] == 1 else "down"
-                signals.append(f"Weis Wave volume-exhaustion flag on new {direction} wave -- context only")
+                thesis = f"Weis Wave volume-exhaustion flag on new {direction} wave -- context only"
+                signals.append(thesis)
+                alert_log.log_alert("sp500_sweep", sym, "weis_wave", None, thesis, bars[-1]["close"])
             if signals:
                 hits.append((sym, signals))
         if progress and idx % 25 == 0:

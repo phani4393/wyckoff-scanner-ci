@@ -36,6 +36,8 @@ wyckoff-scanner-ci/
 │   ├── options_pricing.py        <- modeled long-option P&L (Black-Scholes + realized vol)
 │   ├── stats_utils.py            <- bootstrap CI/p-value for the backtest's edge deltas
 │   ├── survivorship_sensitivity.py  <- quantifies how fragile the baseline is to survivorship bias
+│   ├── regime_analysis.py        <- tests whether SPY's own trend explains the edge (it doesn't)
+│   ├── alert_log.py              <- durable log of every alert sent, for later evaluation
 │   ├── wyckoff_scanner.py        <- top-50 + AI scanner
 │   ├── wyckoff_watchlist_scanner.py  <- core-watchlist deep scanner
 │   ├── backtest.py               <- the honest backtest (signals vs fair baseline)
@@ -46,7 +48,8 @@ wyckoff-scanner-ci/
 │   └── test_wyckoff_patterns.py  <- detector regression tests (synthetic OHLC fixtures)
 ├── data/
 │   ├── core_watchlist.csv        <- the 44-name deep-scan list
-│   └── top50_plus_ai.csv         <- top 50 by market cap + AI names
+│   ├── top50_plus_ai.csv         <- top 50 by market cap + AI names
+│   └── alerts_log.csv            <- every alert either scanner has sent (auto-committed by CI)
 └── docs/
     ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
     ├── SCANNER_FLOW.md            <- end-to-end flow + every guardrail, explained
@@ -84,6 +87,15 @@ upthrust, trading-range entry, Buying/Selling Climax + Automatic Reaction,
 Sign of Strength / Weakness, Last Point of Support / Supply, Elliott-style
 ABC correction. Each alert states a **LONG CALL / LONG PUT** bias and a ~30-day
 expected move for strike/target sanity.
+
+**Every alert is logged** to `data/alerts_log.csv` (`src/alert_log.py`) —
+timestamp, ticker, setup, direction, and the exact thesis line sent to
+Telegram — from both scanners, in CI and locally alike. This is committed
+back to the repo by a "Persist alert log" step after each scheduled run
+(the CI runner's own filesystem is discarded when the job ends, so the log
+would otherwise vanish). It's a real-time, out-of-sample complement to
+`backtest.py`: the backtest replays history, this builds an actual forward
+track record you can score later against what really happened.
 
 ### One-time setup (already done on this repo, documented for portability)
 1. Free API key from [twelvedata.com](https://twelvedata.com) → repo secret `TWELVEDATA_API_KEY`.
