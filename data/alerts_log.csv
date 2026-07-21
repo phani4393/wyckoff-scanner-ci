@@ -2,3 +2,10 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-07-21T21:21:46Z,watchlist,OKTA,upthrust,long_put,"Upthrust at resistance 142.35 (close 141.71) -- bearish bias, review for a LONG PUT",141.71001
 2026-07-21T21:23:46Z,watchlist,XYZ,upthrust,long_put,"Upthrust at resistance 81.04 (close 80.38) -- bearish bias, review for a LONG PUT",80.38
 2026-07-21T21:24:46Z,watchlist,SMCI,spring,long_call,"Spring at support 25.41 (close 25.50) -- bullish bias, review for a LONG CALL",25.5
+2026-07-21T21:38:20Z,sp500_sweep,MA,upthrust,long_put,"Upthrust at resistance 543.65 (close 538.30) -- bearish bias, review for a LONG PUT",538.29999
+2026-07-21T21:39:20Z,sp500_sweep,ABBV,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,256.10001
+2026-07-21T21:40:20Z,sp500_sweep,UNH,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,436.35001
+2026-07-21T21:41:20Z,sp500_sweep,PM,upthrust,long_put,"Upthrust at resistance 189.70 (close 188.04) -- bearish bias, review for a LONG PUT",188.039993
+2026-07-21T21:42:20Z,sp500_sweep,GEV,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,1078.81006
+2026-07-21T21:43:20Z,sp500_sweep,QCOM,spring,long_call,"Spring at support 172.12 (close 173.50) -- bullish bias, review for a LONG CALL",173.5
+2026-07-21T21:44:20Z,sp500_sweep,SMCI,spring,long_call,"Spring at support 25.41 (close 25.50) -- bullish bias, review for a LONG CALL",25.5
