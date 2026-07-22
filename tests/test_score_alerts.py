@@ -117,6 +117,26 @@ def test_score_pending_horizon_not_yet_elapsed(monkeypatch, tmp_path):
     assert new_rows == []
 
 
+def test_format_new_scores_empty():
+    assert sa.format_new_scores([]) == []
+
+
+def test_format_new_scores_reports_verdict_and_horizon():
+    rows = [
+        {"sym": "AAPL", "setup": "spring", "direction": "long_call", "horizon_days": 5,
+         "entry_date": "2026-01-02", "exit_date": "2026-01-09", "stock_return_pct": 4.5,
+         "hit": 1, "options_pnl_pct": 18.2},
+        {"sym": "MSFT", "setup": "upthrust", "direction": "long_put", "horizon_days": 10,
+         "entry_date": "2026-01-02", "exit_date": "2026-01-16", "stock_return_pct": 3.2,
+         "hit": 0, "options_pnl_pct": ""},
+    ]
+    lines = sa.format_new_scores(rows)
+    assert lines[0].startswith("New scores this run (2)")
+    assert "AAPL spring (long_call), 5d" in lines[1] and "CORRECT" in lines[1] and "+18.2%" in lines[1]
+    assert "MSFT upthrust (long_put), 10d" in lines[2] and "INCORRECT" in lines[2]
+    assert "option P&L" not in lines[2]  # blank options_pnl_pct must not add a stray suffix
+
+
 def test_score_pending_is_idempotent(monkeypatch, tmp_path):
     alerts_log, scored_log = _patch_paths(monkeypatch, tmp_path)
     prices = [100.0] * 10 + [110.0] * 25

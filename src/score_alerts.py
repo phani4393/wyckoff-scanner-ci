@@ -139,6 +139,23 @@ def score_pending(api_key):
     return new_rows
 
 
+def format_new_scores(new_rows):
+    """Simple, direct per-alert lines for whatever became scoreable THIS run
+    -- "did the view pan out, and by how much" -- ahead of the fuller
+    statistical breakdown below. This is the part meant to be read on a
+    phone; the scorecard is for whoever wants to dig into whether it's
+    actually significant."""
+    if not new_rows:
+        return []
+    lines = [f"New scores this run ({len(new_rows)}):"]
+    for r in new_rows:
+        verdict = "CORRECT" if r["hit"] else "INCORRECT"
+        opt_str = f", option P&L {r['options_pnl_pct']:+.1f}%" if r["options_pnl_pct"] != "" else ""
+        lines.append(f"  {r['sym']} {r['setup']} ({r['direction']}), {r['horizon_days']}d: "
+                      f"{r['entry_date']} -> {r['exit_date']}  {r['stock_return_pct']:+.1f}%{opt_str} -- {verdict}")
+    return lines
+
+
 def _pool_stat(pool):
     wins = [v for v in pool if v > 0]
     return len(wins) / len(pool), statistics.mean(pool) * 100
@@ -278,15 +295,23 @@ def main():
     else:
         print("No newly-eligible (alert, horizon) instances this run.")
 
-    digest = build_digest(api_key)
+    new_lines = format_new_scores(new_rows)
+    scorecard = build_digest(api_key)
+    digest = ("\n".join(new_lines) + "\n\n" + scorecard) if new_lines else scorecard
     print("\n" + digest)
-    if a.telegram:
+
+    # Only push to Telegram when there's actually something new -- the
+    # scorecard alone doesn't change between runs with nothing newly scored,
+    # so sending it daily regardless would just be noise.
+    if a.telegram and new_rows:
         try:
             import wyckoff_notify as notify
             notify.send_message(digest[:4000])
             print("\n[pushed to Telegram]")
         except Exception as e:
             print(f"\n[Telegram push failed: {e}]")
+    elif a.telegram:
+        print("\n[nothing newly scored -- skipping Telegram push]")
 
 
 if __name__ == "__main__":
