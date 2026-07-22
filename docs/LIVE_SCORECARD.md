@@ -143,6 +143,10 @@ Once alerts start clearing horizons, the digest looks like this (illustrative
 — exact numbers will differ once there's real data):
 
 ```
+New scores this run (2):
+  OKTA upthrust (long_put), 5d: 2026-07-21 -> 2026-07-28  +3.4% -- CORRECT
+  SMCI spring (long_call), 5d: 2026-07-21 -> 2026-07-28  -2.1% -- INCORRECT
+
 LIVE ALERT SCORECARD -- 14/45 (alert, horizon) instances scored across 5 tickers since 2026-07-21
 (Out-of-sample complement to docs/BACKTEST_FINDINGS.md -- these signals fired
 blind, in real time, before today's outcome was known. Small samples are noisy;
@@ -155,10 +159,18 @@ don't trust a breakdown until the CI below actually excludes zero.)
 By setup: no setup has 5+ scored instances yet.
 ```
 
+The "New scores this run" block only appears when something actually became
+scoreable in that run (and is the only part gating a Telegram push — the
+statistical scorecard below it doesn't change run-to-run with nothing new, so
+resending it daily regardless would just be noise). It's meant to be read at
+a glance on your phone: did the view pan out, correct or not, before you dig
+into whether it's statistically meaningful.
+
 Field by field:
 
 | Line | What it means |
 |---|---|
+| `New scores this run (N): ... -- CORRECT/INCORRECT` | Direct, per-alert lines for whatever just became scoreable this run — one line per (alert, horizon) pair, with the plain verdict (`stock_return_pct > 0` or not). Only appears when `N > 0`. |
 | `N/M (alert, horizon) instances scored` | `M` = every alert logged × 3 horizons; `N` = how many have actually aged far enough to be graded. The gap between them is just "still pending," not missing data. |
 | `Xd horizon: n=... hit_rate=... avg_stock_ret=...` | Across every scored alert at that horizon (all setups pooled), direction-adjusted: a win is "the underlying moved the way the alert's call/put needed it to," regardless of which direction that was. |
 | `avg_option_pnl` | Same signals, priced as an actual long call/put round-trip (Black-Scholes, realized vol as IV, theta + spread already netted in) — a stricter, more honest number than the raw stock return. |
@@ -168,6 +180,35 @@ Field by field:
 
 If you pass `--telegram`, the exact same digest text is pushed to your phone
 via the existing Telegram bot (`wyckoff_notify.py`) — nothing new to set up.
+
+---
+
+## Reading the chart
+
+Numbers in a scrolling digest are hard to eyeball for a *trend* — is the
+signal line drifting further from the baseline over time, or converging with
+it? `python src/score_alerts.py --chart` renders that as an actual picture:
+`charts/live_scorecard_10d.png`, a cumulative-return line chart at the 10d
+horizon (the same "headline" horizon `backtest.py` itself ranks signals by).
+
+Two lines, both starting at 0% on 2026-07-21 and accumulating forward:
+- **Scored alerts (10d, cumulative)** — running sum of every scored alert's
+  direction-adjusted return, in chronological order by `entry_date`.
+- **Live swing baseline (cumulative)** — the same running-sum treatment
+  applied to the naive "just trade the confirmed swing" control, on the same
+  tickers, restricted to the same live period.
+
+If the signal line stays persistently *below* the baseline line, that's the
+`BACKTEST_FINDINGS.md` verdict replicating live. If it climbs *above* it,
+that's the first real evidence live/discretionary signals might differ from
+the historical mechanical replay — either way, this is a picture of the same
+numbers in the scorecard above, not a separate claim. Nothing is rendered
+(and `--chart` says so) until at least one alert has cleared the 10d horizon.
+
+Generated fresh every run from `alerts_scored.csv` (already-committed data) —
+the PNG itself is never committed, only uploaded as a 14-day GitHub Actions
+artifact (`score-alerts.yml`) and, when there's something newly scored, sent
+to Telegram alongside the digest text.
 
 ---
 
@@ -200,6 +241,7 @@ gitignored).
 ```bash
 python src/score_alerts.py              # score whatever's newly eligible, print the digest
 python src/score_alerts.py --telegram    # same, plus push the digest to Telegram
+python src/score_alerts.py --chart       # same, plus render charts/live_scorecard_10d.png
 ```
 
 Needs `TWELVEDATA_API_KEY` (env var or local `twelvedata_api_key.txt`, same
@@ -250,6 +292,12 @@ network calls):
 - An alert whose horizon hasn't elapsed yet produces no row (stays pending).
 - Running the scorer twice on the same data produces zero duplicate rows
   (idempotency).
+- `render_chart()` returns `None` with no scored data yet, and produces a
+  real file once there's something at the chart's horizon.
+
+`tests/test_scorecard_chart.py` covers the charting module directly:
+cumulative-sum correctness on out-of-order input, and that a PNG actually
+gets written to disk (with and without a baseline series).
 
 Run with `python -m pytest tests/ -v` from the repo root, alongside the
 existing detector regression tests.

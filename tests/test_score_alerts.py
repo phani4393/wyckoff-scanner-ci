@@ -157,3 +157,28 @@ def test_score_pending_is_idempotent(monkeypatch, tmp_path):
     with open(scored_log, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     assert len(rows) == 3  # no duplicates written
+
+
+def test_render_chart_returns_none_with_no_scored_data(monkeypatch, tmp_path):
+    _patch_paths(monkeypatch, tmp_path)
+    assert sa.render_chart(api_key="fake") is None
+
+
+def test_render_chart_creates_file_from_scored_data(monkeypatch, tmp_path):
+    alerts_log, scored_log = _patch_paths(monkeypatch, tmp_path)
+    monkeypatch.setattr(sa.scorecard_chart, "CHART_DIR", tmp_path / "charts")
+
+    prices = [100.0] * 10 + [110.0] * 25
+    bars = make_bars(35, start="2026-01-02", prices=prices)
+    monkeypatch.setattr(c, "fetch_bars", lambda sym, key: bars)
+
+    entry_date = bars[9]["date"]
+    write_csv(alerts_log, [{
+        "logged_at": f"{entry_date}T20:35:00Z", "source": "watchlist", "sym": "TEST",
+        "setup": "spring", "direction": "long_call", "thesis": "test", "underlying": 100.0,
+    }], ALERT_FIELDS)
+    sa.score_pending(api_key="fake")  # populates alerts_scored.csv at 5/10/20d
+
+    out_path = sa.render_chart(api_key="fake", horizon=10)
+    assert out_path is not None
+    assert out_path.exists()

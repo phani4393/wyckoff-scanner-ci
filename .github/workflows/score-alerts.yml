@@ -23,11 +23,21 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: python src/score_alerts.py --telegram
+      - run: python src/score_alerts.py --telegram --chart
         env:
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # charts/ is regenerated every run from committed data (alerts_scored.csv),
+      # so it's an artifact, not something to commit -- same treatment the scan
+      # workflows give their own charts/ output.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-scorecard-chart
+          path: charts/
+          retention-days: 14
+          if-no-files-found: ignore
       # data/alerts_scored.csv is written by score_alerts.py during the run
       # above -- this runner's filesystem is discarded when the job ends, so
       # the log has to be committed back to the repo to survive, same as

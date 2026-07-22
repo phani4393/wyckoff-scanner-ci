@@ -40,6 +40,8 @@ wyckoff-scanner-ci/
 │   ├── regime_analysis.py        <- tests whether SPY's own trend explains the edge (it doesn't)
 │   ├── alert_log.py              <- durable log of every alert sent, for later evaluation
 │   ├── score_alerts.py           <- scores alerts_log.csv against reality, live out-of-sample
+│   ├── scorecard_chart.py        <- cumulative-return chart for the live scorecard
+│   ├── earnings_calendar.py      <- best-effort earnings-date lookup for trade_journal.py
 │   ├── wyckoff_scanner.py        <- top-50 + AI scanner
 │   ├── wyckoff_watchlist_scanner.py  <- core-watchlist deep scanner
 │   ├── backtest.py               <- the honest backtest (signals vs fair baseline)
@@ -48,7 +50,10 @@ wyckoff-scanner-ci/
 │   └── correlation.py            <- portfolio concentration / heat monitor (local)
 ├── tests/
 │   ├── test_wyckoff_patterns.py  <- detector regression tests (synthetic OHLC fixtures)
-│   └── test_score_alerts.py      <- scoring-math + idempotency tests (synthetic bars/alerts)
+│   ├── test_score_alerts.py      <- scoring-math + idempotency tests (synthetic bars/alerts)
+│   ├── test_scorecard_chart.py   <- cumulative-sum math + chart file-creation tests
+│   ├── test_trade_journal.py     <- earnings auto-fetch wiring tests
+│   └── test_earnings_calendar.py <- response-parsing tests (captured real Yahoo payload)
 ├── data/
 │   ├── core_watchlist.csv        <- the 44-name deep-scan list
 │   ├── top50_plus_ai.csv         <- top 50 by market cap + AI names
@@ -133,6 +138,11 @@ python src/trade_journal.py close --id 1 --opt-price 7.10 --reason target
 ```
 Exit reasons: `target | stop | thesis_invalid | time_stop | earnings_exit | discretionary`
 
+**Earnings date is auto-fetched if you omit `--earnings`** (`earnings_calendar.py`,
+Yahoo's undocumented calendar endpoint) — an explicit `--earnings` always wins
+over the auto-fetch. This is unofficial and best-effort: any failure falls
+back silently to no earnings date, same as before this existed.
+
 **Closing the loop with the scanner:** when you run `wyckoff_watchlist_scanner.py`
 **locally** (not from the GitHub Actions cron — that runner's filesystem is
 discarded when the job ends), every signal it fires auto-appends a `draft` row
@@ -210,13 +220,19 @@ newly-eligible (alert, horizon) pairs each time.
 ```
 python src/score_alerts.py              # score pending alerts, print the scorecard
 python src/score_alerts.py --telegram   # also push it to Telegram
+python src/score_alerts.py --chart      # also render charts/live_scorecard_10d.png
 ```
+A cumulative-return chart (`scorecard_chart.py`) turns the scorecard into
+something to eyeball for drift over time instead of re-reading numbers on
+every run — see [`docs/LIVE_SCORECARD.md`](docs/LIVE_SCORECARD.md#reading-the-chart).
+
 Runs daily via `.github/workflows/score-alerts.yml`, after both scans, and
 commits `data/alerts_scored.csv` back to the repo the same way `alerts_log.csv`
-is persisted. **Read the numbers with real skepticism until the sample is
-large** — with only a handful of tickers involved so far, the cluster
-bootstrap will mostly report "not enough independent tickers yet," which is
-the honest answer, not a bug.
+is persisted (the chart PNG itself isn't committed — regenerated each run,
+uploaded as a 14-day CI artifact). **Read the numbers with real skepticism
+until the sample is large** — with only a handful of tickers involved so
+far, the cluster bootstrap will mostly report "not enough independent
+tickers yet," which is the honest answer, not a bug.
 
 ## Tests
 Regression tests for the pattern detectors (spring/upthrust/ABC) against

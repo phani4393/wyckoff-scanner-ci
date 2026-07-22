@@ -23,6 +23,7 @@ actually have a pending, unscored alert.
 Usage:
   python src/score_alerts.py              # score pending alerts, print digest
   python src/score_alerts.py --telegram   # also push the digest to Telegram
+  python src/score_alerts.py --chart      # also render charts/live_scorecard_<h>d.png
 """
 
 import argparse
@@ -31,6 +32,7 @@ import statistics
 from pathlib import Path
 
 import options_pricing as opt
+import scorecard_chart
 import stats_utils
 import wyckoff_common as c
 from backtest import forward_return, swing_baseline_events
@@ -207,6 +209,45 @@ def live_swing_baseline(tickers, api_key):
     return bull, bear, bull_opt, bear_opt, bull_bt, bear_bt, bull_obt, bear_obt
 
 
+CHART_HORIZON = 10  # the "headline" horizon backtest.py itself ranks signals by
+
+
+def live_swing_baseline_dated(tickers, api_key, horizon):
+    """Per-event (date, signed_return) pairs for the live swing baseline at
+    ONE horizon -- feeds the equity-curve chart only. Kept separate from
+    live_swing_baseline() (used by the digest/bootstrap) rather than
+    reshaping that function's existing return contract; the extra bar fetch
+    this costs is negligible at current ticker-list sizes (single digits)."""
+    out = []
+    for sym in tickers:
+        bars = c.fetch_bars(sym, api_key)
+        if not bars:
+            continue
+        for entry_idx, direction, _aligned in swing_baseline_events(bars):
+            date = bars[entry_idx]["date"]
+            if date < LIVE_START_DATE:
+                continue
+            r = forward_return(bars, entry_idx, horizon)
+            if r is None:
+                continue
+            out.append((date, r if direction == "bullish" else -r))
+    return out
+
+
+def render_chart(api_key, horizon=CHART_HORIZON):
+    """Builds the equity-curve chart from whatever's in alerts_scored.csv at
+    `horizon`. Returns the saved chart path, or None if there's nothing at
+    that horizon yet to plot."""
+    scored = _load_rows(SCORED_LOG)
+    recs = [r for r in scored if int(r["horizon_days"]) == horizon]
+    if not recs:
+        return None
+    signal_series = [(r["entry_date"], float(r["stock_return_pct"]) / 100) for r in recs]
+    tickers = sorted({r["sym"] for r in recs})
+    baseline_series = live_swing_baseline_dated(tickers, api_key, horizon)
+    return scorecard_chart.render_equity_curve(signal_series, baseline_series, horizon)
+
+
 def build_digest(api_key):
     scored = _load_rows(SCORED_LOG)
     alerts = _load_rows(ALERTS_LOG)
@@ -286,6 +327,8 @@ def build_digest(api_key):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--telegram", action="store_true", help="also push the digest to Telegram")
+    ap.add_argument("--chart", action="store_true",
+                     help=f"also render charts/live_scorecard_{CHART_HORIZON}d.png")
     a = ap.parse_args()
 
     api_key = c.load_api_key()
@@ -300,6 +343,14 @@ def main():
     digest = ("\n".join(new_lines) + "\n\n" + scorecard) if new_lines else scorecard
     print("\n" + digest)
 
+    chart_path = None
+    if a.chart:
+        chart_path = render_chart(api_key)
+        if chart_path:
+            print(f"\n[chart saved: {chart_path}]")
+        else:
+            print(f"\n[--chart: no scored alerts at the {CHART_HORIZON}d horizon yet, nothing to plot]")
+
     # Only push to Telegram when there's actually something new -- the
     # scorecard alone doesn't change between runs with nothing newly scored,
     # so sending it daily regardless would just be noise.
@@ -307,6 +358,8 @@ def main():
         try:
             import wyckoff_notify as notify
             notify.send_message(digest[:4000])
+            if chart_path:
+                notify.send_photo(chart_path, caption=f"Live scorecard, {CHART_HORIZON}d horizon")
             print("\n[pushed to Telegram]")
         except Exception as e:
             print(f"\n[Telegram push failed: {e}]")

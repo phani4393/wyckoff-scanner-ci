@@ -18,6 +18,14 @@ CLI usage:
       --thesis "spring at 180 support, RS rising" --underlying 182.40 \\
       --opt-price 4.20 --strike 190 --expiry 2026-08-15 --contracts 3 \\
       --iv-rank 55 [--earnings 2026-08-27]
+
+EARNINGS: if you omit --earnings, this best-effort auto-fetches the next
+earnings date from Yahoo Finance (earnings_calendar.py) and uses that
+instead -- an explicit --earnings always overrides the auto-fetch. That
+lookup is an unofficial endpoint that can fail or go away with no notice;
+on any failure this falls back silently to no earnings date, same as before
+the feature existed. Auto-fetched dates print whether Yahoo marked them
+"confirmed" or "estimated."
   python trade_journal.py list
   python trade_journal.py close --id 3 --opt-price 7.10 --reason target \\
       [--notes "hit first target, closed half early last time -- held full this time"]
@@ -85,24 +93,42 @@ def _next_id(rows):
     return str(max(ids) + 1) if ids else "1"
 
 
+def _resolve_earnings(ticker, explicit):
+    """Manual --earnings always wins. If omitted, best-effort auto-fetch
+    from Yahoo (earnings_calendar.py) -- silently falls back to no date on
+    any failure, exactly like the behavior before that feature existed."""
+    if explicit:
+        return explicit
+    try:
+        from earnings_calendar import get_next_earnings_date
+        date_str, is_estimate = get_next_earnings_date(ticker)
+    except Exception:
+        return None
+    if date_str:
+        tag = "estimated" if is_estimate else "confirmed"
+        print(f"  Auto-fetched next earnings date: {date_str} ({tag})")
+    return date_str
+
+
 def cmd_open(a):
     if a.dir not in VALID_DIRECTIONS:
         raise SystemExit(f"--dir must be one of {sorted(VALID_DIRECTIONS)}")
     rows = _read()
     tid = _next_id(rows)
+    earnings = _resolve_earnings(a.ticker, a.earnings)
     rows.append({
         "id": tid, "status": "open", "open_date": a.date or _today(),
         "ticker": a.ticker.upper(), "direction": a.dir, "setup": a.setup,
         "thesis": a.thesis, "entry_underlying": a.underlying, "entry_opt_price": a.opt_price,
         "strike": a.strike, "expiry": a.expiry, "contracts": a.contracts,
         "iv_rank_entry": a.iv_rank if a.iv_rank is not None else "",
-        "earnings_date": a.earnings or "", "close_date": "", "exit_opt_price": "",
+        "earnings_date": earnings or "", "close_date": "", "exit_opt_price": "",
         "exit_reason": "", "pnl": "", "pnl_pct": "", "notes": a.notes or "",
     })
     _write(rows)
     print(f"Opened trade #{tid}: {a.ticker.upper()} {a.dir} ({a.setup}) @ opt {a.opt_price}")
-    if a.earnings:
-        _earnings_warn(a.date or _today(), a.earnings, a.expiry)
+    if earnings:
+        _earnings_warn(a.date or _today(), earnings, a.expiry)
 
 
 def _earnings_warn(open_date, earnings, expiry):
@@ -168,16 +194,17 @@ def cmd_promote(a):
         if r["id"] == str(a.id):
             if r["status"] != "draft":
                 raise SystemExit(f"#{a.id} is not a pending draft (status={r['status']}).")
+            earnings = _resolve_earnings(r["ticker"], a.earnings)
             r.update({
                 "status": "open", "open_date": a.date or _today(),
                 "entry_opt_price": a.opt_price, "strike": a.strike, "expiry": a.expiry,
                 "contracts": a.contracts, "iv_rank_entry": a.iv_rank if a.iv_rank is not None else "",
-                "earnings_date": a.earnings or "",
+                "earnings_date": earnings or "",
             })
             _write(rows)
             print(f"Promoted #{a.id} to an open position: {r['ticker']} {r['direction']} @ opt {a.opt_price}")
-            if a.earnings:
-                _earnings_warn(r["open_date"], a.earnings, a.expiry)
+            if earnings:
+                _earnings_warn(r["open_date"], earnings, a.expiry)
             return
     raise SystemExit(f"No draft with id {a.id}")
 
