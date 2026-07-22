@@ -76,7 +76,7 @@
 <h1>Wyckoff system -- full flow</h1>
 <p class="lede">Click any stage to expand its detail. Three tracks: the daily automated
 pipeline, the offline research/validation track, and the local trader tools.</p>
-<p class="freshness">Content verified against commit <code id="verified-commit">af1afe7</code>
+<p class="freshness">Content verified against commit <code id="verified-commit">63a81a7</code>
 (2026-07-22). A CI check (tests.yml) warns when flow-relevant source files change without
 this file being updated in the same push -- see the footer note.</p>
 
@@ -168,7 +168,7 @@ const TRACKS = [
         <code>forward_return</code>, <code>swing_baseline_events</code>, and
         <code>options_pricing.option_pnl_pct</code> directly, so this can never quietly drift
         out of sync with what the backtest itself measures.`,
-      files: ["src/score_alerts.py", "data/alerts_scored.csv"],
+      files: ["src/score_alerts.py", "src/scorecard_chart.py", "data/alerts_scored.csv"],
       substeps: [
         { id:"sc-pending", kind:"proc", title:"score_pending()", sub:"finds alerts now 5/10/20 trading days old",
           detail:"Bar-index based (bars[idx+horizon]), so weekends/holidays are handled for free -- no calendar-date arithmetic needed. Idempotent: appends only newly-scoreable (alert, horizon) rows, never rescores." },
@@ -176,6 +176,8 @@ const TRACKS = [
           detail:"A naive 'just trade the swing' control on the same tickers, restricted to dates on/after LIVE_START_DATE (2026-07-21) so it never mixes with the 20-year historical baseline pool -- that would blend different market regimes into what should be an apples-to-apples check." },
         { id:"sc-digest", kind:"proc", title:"Digest + notify", sub:"simple lines first, full scorecard second",
           detail:"Leads with direct per-alert lines ('AAPL spring (long_call), 5d: +4.5% -- CORRECT'), then the fuller scorecard (hit rate, live-baseline edge, cluster-bootstrap 95% CI). Telegram only fires when something was newly scored -- an unchanged scorecard isn't resent as noise." },
+        { id:"sc-chart", kind:"proc", title:"Chart (--chart)", sub:"scorecard_chart.py -- charts/live_scorecard_&lt;h&gt;d.png",
+          detail:"Renders a cumulative-return equity curve comparing scored alerts against the live swing baseline since 2026-07-21 -- turns the text digest into something to eyeball for drift over time. Uploaded as a 14-day CI artifact and sent as a Telegram photo alongside the digest, same as the watchlist scanner's per-signal charts." },
         { id:"sc-persist", kind:"guard", title:"Persist", sub:"commits alerts_scored.csv back to the repo",
           detail:"Same persist-back-to-git pattern as stage 4, since this workflow also needs contents: write." },
       ] },
@@ -213,8 +215,12 @@ const TRACKS = [
       detail: `Log every options trade with its decision context (setup, thesis, IV rank,
         earnings date) and outcome. Also the promote/discard workflow for drafts auto-created by
         the watchlist scanner's local runs. Warns if opening a position within 10 days of
-        earnings, or if the option expires after the earnings date.`,
-      files: ["src/trade_journal.py", "trades.csv"] },
+        earnings, or if the option expires after the earnings date. If <code>--earnings</code>
+        is omitted on open/promote, auto-fetches the next earnings date via
+        <code>earnings_calendar.py</code> (Yahoo's undocumented quoteSummary endpoint) --
+        explicit <code>--earnings</code> always wins, and any lookup failure falls back silently
+        to the pre-existing no-earnings-date behavior, never blocking the log.`,
+      files: ["src/trade_journal.py", "src/earnings_calendar.py", "trades.csv"] },
     { id: "analytics", kind: "green", title: "Edge analytics", sub: "trade_analytics.py",
       detail: `Your own realized win rate, expectancy, and profit factor -- broken down by
         setup and direction -- plus behavioral leaks: holding losers longer than winners, exit

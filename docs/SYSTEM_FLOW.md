@@ -6,7 +6,7 @@ run its JS, so download the repo and open that file in a browser to
 interact with it). Three tracks: the daily automated pipeline, the offline
 research/validation track, and the local trader tools.
 
-> **Content verified against commit `af1afe7` (2026-07-22).** See "keeping
+> **Content verified against commit `63a81a7` (2026-07-22).** See "keeping
 > this current" below for how this is meant to stay in sync.
 
 ## Track 1 — Daily automated pipeline
@@ -51,7 +51,11 @@ research/validation track, and the local trader tools.
    mixes with the 20-year historical baseline. The digest leads with simple
    per-alert lines, then the fuller scorecard (hit rate, live-baseline edge,
    cluster-bootstrap 95% CI) — Telegram only fires when something's newly
-   scored. Persists `data/alerts_scored.csv` back to the repo the same way.
+   scored. With `--chart`, also renders a cumulative-return equity curve
+   (`src/scorecard_chart.py` → `charts/live_scorecard_<h>d.png`) comparing
+   scored alerts against the live baseline, uploaded as a CI artifact and
+   sent as a Telegram photo. Persists `data/alerts_scored.csv` back to the
+   repo the same way.
 
 ## Track 2 — Research / validation (offline, run manually)
 
@@ -71,7 +75,7 @@ exception — inconclusive, not "proven neutral." Full results in
 ## Track 3 — Local trader tools (manual, never run in CI)
 
 Read/write `trades.csv`, which stays on your machine.
-- **`trade_journal.py`** — log trades with decision context; promote/discard drafts; earnings-proximity warnings.
+- **`trade_journal.py`** — log trades with decision context; promote/discard drafts; earnings-proximity warnings. Auto-fetches the next earnings date (`src/earnings_calendar.py`, Yahoo's undocumented endpoint) when `--earnings` is omitted; explicit `--earnings` always wins, lookup failure falls back silently.
 - **`trade_analytics.py`** — your own realized win rate, expectancy, profit factor, and behavioral leaks.
 - **`pretrade.py`** — realized-vol expected move for strike/target sizing (no real IV — free tier).
 - **`correlation.py`** — effective independent bets, SPY correlation, premium at risk; includes a what-if mode.
