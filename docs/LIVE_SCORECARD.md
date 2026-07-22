@@ -11,8 +11,9 @@ how to read its output. If you only read one section, read
   10 of 11 Wyckoff signal types show a statistically significant **negative**
   edge vs. a naive "trade the swing" baseline. This doc's feature exists
   because of that finding, not despite it.
-- [`SCANNER_FLOW.md`](SCANNER_FLOW.md) — how a signal gets detected and
-  turned into a Telegram alert in the first place.
+- [`SYSTEM_FLOW.md`](SYSTEM_FLOW.md) — how a signal gets detected and
+  turned into a Telegram alert in the first place, and everything else in
+  the system end to end.
 - The main [`README.md`](../README.md) "Live scorecard" section — the short
   version of everything below.
 

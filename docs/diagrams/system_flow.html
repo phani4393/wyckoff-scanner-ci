@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wyckoff system -- full flow</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1f2933; --muted:#64748b; --border:#e2e8f0;
+    --blue-bg:#eff6ff; --blue-border:#93c5fd; --blue-fg:#1e3a8a;
+    --amber-bg:#fffbeb; --amber-border:#fbbf24; --amber-fg:#92400e;
+    --purple-bg:#f5f3ff; --purple-border:#a78bfa; --purple-fg:#5b21b6;
+    --green-bg:#f0fdf4; --green-border:#4ade80; --green-fg:#166534;
+    --line:#94a3b8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --border:#1e293b;
+      --blue-bg:#132447; --blue-border:#3b82f6; --blue-fg:#bfdbfe;
+      --amber-bg:#3a2a06; --amber-border:#d97706; --amber-fg:#fde68a;
+      --purple-bg:#241a3d; --purple-border:#8b5cf6; --purple-fg:#ddd6fe;
+      --green-bg:#0f2b1a; --green-border:#22c55e; --green-fg:#bbf7d0;
+      --line:#475569;
+    }
+  }
+  body{background:var(--bg);color:var(--fg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+       max-width:800px;margin:0 auto;padding:32px 20px 60px;line-height:1.5;}
+  h1{font-size:20px;font-weight:600;margin:0 0 4px;}
+  h2.track{font-size:15px;font-weight:600;margin:28px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+  p.lede{color:var(--muted);font-size:14px;margin:0 0 16px;}
+  .freshness{font-size:12px;color:var(--muted);margin-bottom:20px;}
+  .controls{margin-bottom:20px;}
+  .controls button{font-size:13px;padding:6px 12px;border:1px solid var(--border);background:var(--bg);
+       color:var(--fg);border-radius:6px;cursor:pointer;margin-right:8px;}
+  .controls button:hover{border-color:var(--line);}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:13px;color:var(--muted);}
+  .legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;}
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:2px;background:var(--line);}
+  .stage{position:relative;margin-bottom:14px;}
+  .stage::before{content:"";position:absolute;left:-28px;top:16px;width:10px;height:10px;border-radius:50%;
+       background:var(--blue-border);}
+  .head{display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid var(--border);
+       border-radius:8px;padding:12px 14px;width:100%;text-align:left;font-family:inherit;color:inherit;}
+  .head:hover{border-color:var(--line);}
+  .head:focus-visible, .sub-head:focus-visible{outline:2px solid var(--blue-border);outline-offset:1px;}
+  .head.proc{background:var(--blue-bg);} .head.proc .title{color:var(--blue-fg);}
+  .head.guard{background:var(--amber-bg);} .head.guard .title{color:var(--amber-fg);}
+  .head.purple{background:var(--purple-bg);} .head.purple .title{color:var(--purple-fg);}
+  .head.green{background:var(--green-bg);} .head.green .title{color:var(--green-fg);}
+  .chev{color:var(--muted);font-size:12px;width:14px;flex:none;}
+  .title{font-weight:600;font-size:14px;}
+  .sub{color:var(--muted);font-size:12px;margin-left:auto;text-align:right;padding-left:12px;}
+  .detail{display:none;padding:12px 14px 12px 24px;font-size:13px;color:var(--fg);}
+  .detail.open{display:block;}
+  .detail ul{margin:6px 0 0;padding-left:18px;}
+  .detail li{margin-bottom:6px;}
+  .files{font-size:12px;color:var(--muted);margin-top:8px;}
+  .files code{font-size:11px;}
+  .substeps{margin-top:10px;padding-left:14px;border-left:2px dashed var(--border);}
+  .sub-item{margin-bottom:8px;}
+  .sub-head{display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid var(--border);
+       border-radius:6px;padding:8px 10px;width:100%;text-align:left;font-family:inherit;color:inherit;}
+  .sub-head.proc{background:var(--blue-bg);} .sub-head.proc .stitle{color:var(--blue-fg);}
+  .sub-head.guard{background:var(--amber-bg);} .sub-head.guard .stitle{color:var(--amber-fg);}
+  .stitle{font-weight:600;font-size:13px;}
+  .ssub{color:var(--muted);font-size:12px;margin-left:auto;}
+  .sub-detail{display:none;padding:8px 10px 4px 30px;font-size:12px;color:var(--fg);}
+  .sub-detail.open{display:block;}
+  .footer-note{margin-top:28px;padding:14px;border:1px solid var(--border);border-radius:8px;
+       font-size:13px;color:var(--muted);}
+  .footer-note code{font-size:12px;}
+</style>
+</head>
+<body>
+
+<h1>Wyckoff system -- full flow</h1>
+<p class="lede">Click any stage to expand its detail. Three tracks: the daily automated
+pipeline, the offline research/validation track, and the local trader tools.</p>
+<p class="freshness">Content verified against commit <code id="verified-commit">af1afe7</code>
+(2026-07-22). A CI check (tests.yml) warns when flow-relevant source files change without
+this file being updated in the same push -- see the footer note.</p>
+
+<div class="controls">
+  <button onclick="setAll(true)">Expand all</button>
+  <button onclick="setAll(false)">Collapse all</button>
+</div>
+
+<div class="legend">
+  <span><span class="sw" style="background:var(--blue-border)"></span>automated: processing</span>
+  <span><span class="sw" style="background:var(--amber-border)"></span>automated: guardrail/check</span>
+  <span><span class="sw" style="background:var(--purple-border)"></span>research (run manually)</span>
+  <span><span class="sw" style="background:var(--green-border)"></span>local tool (manual, never in CI)</span>
+</div>
+
+<div id="root"></div>
+
+<div class="footer-note">
+  <strong>Keeping this current:</strong> this file is data-driven -- all stage/step text lives
+  in the <code>TRACKS</code> array at the top of the <code>&lt;script&gt;</code> below, rendered
+  by <code>render()</code>. To update: edit the relevant stage/substep object (title, subtitle,
+  detail, files), bump <code>#verified-commit</code> above, and update
+  <code>docs/SYSTEM_FLOW.md</code> to match (the text fallback for GitHub's viewer, which won't
+  run this file's JS). <code>tests.yml</code> runs a lightweight check on every push: if a
+  flow-relevant file changes without this HTML (or the .md) changing in the same push, it emits a
+  visible (non-blocking) warning annotation on the run -- a nudge, not a hard gate, since a bot or
+  a rushed fix shouldn't be blocked from merging just because this diagram wasn't touched.
+</div>
+
+<script>
+const TRACKS = [
+{
+  id: "daily", label: "Daily automated pipeline",
+  stages: [
+    { id: "trigger", kind: "proc", title: "1. Trigger", sub: "Cron, manual, or local run",
+      detail: `Three scheduled GitHub Actions workflows drive this: <code>sp500-scan.yml</code>
+        (~20:20 UTC), <code>watchlist-scan.yml</code> (~20:35 UTC), and
+        <code>score-alerts.yml</code> (~21:15 UTC) -- each with a DST-aware dual-cron schedule
+        (daylight-time Mar-Oct, standard-time Nov-Feb) instead of drifting an hour off market
+        close for half the year. All three also support a manual <code>workflow_dispatch</code>
+        and running locally (<code>python src/&lt;script&gt;.py</code>).`,
+      files: [".github/workflows/sp500-scan.yml", ".github/workflows/watchlist-scan.yml",
+              ".github/workflows/score-alerts.yml"] },
+
+    { id: "sp500", kind: "proc", title: "2. S&amp;P 500 + AI sweep", sub: "wyckoff_scanner.py -- lighter pipeline",
+      detail: `Scans <code>data/top50_plus_ai.csv</code>. Fetches SPY as the RS benchmark first
+        (guardrail: aborts the whole scan if that single fetch fails).`,
+      files: ["src/wyckoff_scanner.py", "data/top50_plus_ai.csv"],
+      substeps: [
+        { id:"sp-rate", kind:"guard", title:"Rate limiter", sub:"max 7 calls/min",
+          detail:"Twelve Data's free tier caps at 8 credits/minute; a rolling window throttle (wyckoff_common.py, shared by both scanners) stays at 7 for headroom." },
+        { id:"sp-fetch", kind:"proc", title:"Fetch bars", sub:"retry 2x, skip bad symbols, drop unsettled bar",
+          detail:"Retries twice on network/timeout errors, backs off 10s on HTTP 429, returns None immediately (no retry) on a bad symbol. Drops the newest bar if its volume is under 10% of the trailing 20-day average -- the session likely hasn't settled." },
+        { id:"sp-detect", kind:"proc", title:"Detect", sub:"spring/upthrust (inline) + Weis Wave flag",
+          detail:"Textbook spring/upthrust, checked inline (not via the unused wheel_signals() helper, which was dead code and removed). Also a Weis Wave volume-exhaustion flag -- context only, no directional bias. No climax/SOS/SOW/LPS/ABC here; that richer detector set is watchlist-only." },
+        { id:"sp-log", kind:"proc", title:"Log + notify", sub:"alert_log + Telegram",
+          detail:"Every signal is logged via alert_log.log_alert(source='sp500_sweep', ...). A degraded-scan Telegram alert fires separately if more than half the tickers failed to fetch; otherwise one Telegram message per run summarizes the hits, always carrying the discretionary-review disclaimer." },
+      ] },
+
+    { id: "watchlist", kind: "proc", title: "3. Watchlist deep scan", sub: "wyckoff_watchlist_scanner.py -- full pipeline",
+      detail: `Scans <code>data/core_watchlist.csv</code> (44 names). Shares stage 2's
+        fetch-level guardrails (same <code>wyckoff_common.py</code>) but runs the full detector
+        set and generates charts.`,
+      files: ["src/wyckoff_watchlist_scanner.py", "data/core_watchlist.csv"],
+      substeps: [
+        { id:"wl-guard", kind:"guard", title:"Data checks", sub:"drop unsettled bar, need 60+ bars",
+          detail:"Same unsettled-bar drop as the S&amp;P sweep, plus a hard floor: fewer than 60 bars of history and the ticker is skipped outright." },
+        { id:"wl-detect", kind:"proc", title:"Run detectors", sub:"spring, upthrust, climax, SOS/SOW, LPS/LPSY, ABC",
+          detail:"Textbook spring/upthrust, Buying/Selling Climax + Automatic Reaction (2x volume spike AND 1.8x ATR range spike), Sign of Strength/Weakness (1.5x volume, 1.3x range), Last Point of Support/Supply (pullback within 0.6x ATR of the broken level), and an Elliott-style ABC correction that fires only on its exact confirmation day (anti-repaint, pinned down by tests/test_wyckoff_patterns.py)." },
+        { id:"wl-chart", kind:"proc", title:"Chart + log + draft", sub:"PNG, alert_log, local-only journal draft",
+          detail:"An annotated chart PNG per signal, uploaded as a 14-day GitHub Actions artifact. Every signal is logged via alert_log.log_alert(source='watchlist', ...) unconditionally. A trade_journal draft row is ALSO auto-created, but only on local runs (checked via a GITHUB_ACTIONS env var) -- a CI runner's filesystem is discarded when the job ends, so a draft written there would vanish with no benefit." },
+        { id:"wl-notify", kind:"proc", title:"Notify", sub:"Telegram message + chart photos",
+          detail:"Sends the message plus each flagged ticker's chart image, always carrying the same disclaimer as the S&amp;P sweep: 'discretionary review triggers, NOT validated edges.'" },
+      ] },
+
+    { id: "alertlog", kind: "guard", title: "4. Alert persistence", sub: "alert_log.py -> data/alerts_log.csv",
+      detail: `Every alert from both scanners appends one row (timestamp, ticker, setup,
+        direction, thesis, underlying price) to <code>data/alerts_log.csv</code>. Since a GitHub
+        Actions runner's filesystem is discarded when the job ends, each scan workflow ends with
+        a "Persist alert log" step that commits the file back to the repo under the
+        <code>github-actions[bot]</code> identity. A union merge driver
+        (<code>.gitattributes</code>) lets two concurrent commits to this append-only file merge
+        without manual conflict resolution.`,
+      files: ["src/alert_log.py", "data/alerts_log.csv", ".gitattributes"] },
+
+    { id: "score", kind: "proc", title: "5. Alert scoring", sub: "score_alerts.py -- ~1hr after the watchlist scan",
+      detail: `The live, out-of-sample complement to the historical backtest: does a signal
+        that fired blind, in real time, actually hold up? Reuses <code>backtest.py</code>'s own
+        <code>forward_return</code>, <code>swing_baseline_events</code>, and
+        <code>options_pricing.option_pnl_pct</code> directly, so this can never quietly drift
+        out of sync with what the backtest itself measures.`,
+      files: ["src/score_alerts.py", "data/alerts_scored.csv"],
+      substeps: [
+        { id:"sc-pending", kind:"proc", title:"score_pending()", sub:"finds alerts now 5/10/20 trading days old",
+          detail:"Bar-index based (bars[idx+horizon]), so weekends/holidays are handled for free -- no calendar-date arithmetic needed. Idempotent: appends only newly-scoreable (alert, horizon) rows, never rescores." },
+        { id:"sc-baseline", kind:"proc", title:"live_swing_baseline()", sub:"time-matched fair control",
+          detail:"A naive 'just trade the swing' control on the same tickers, restricted to dates on/after LIVE_START_DATE (2026-07-21) so it never mixes with the 20-year historical baseline pool -- that would blend different market regimes into what should be an apples-to-apples check." },
+        { id:"sc-digest", kind:"proc", title:"Digest + notify", sub:"simple lines first, full scorecard second",
+          detail:"Leads with direct per-alert lines ('AAPL spring (long_call), 5d: +4.5% -- CORRECT'), then the fuller scorecard (hit rate, live-baseline edge, cluster-bootstrap 95% CI). Telegram only fires when something was newly scored -- an unchanged scorecard isn't resent as noise." },
+        { id:"sc-persist", kind:"guard", title:"Persist", sub:"commits alerts_scored.csv back to the repo",
+          detail:"Same persist-back-to-git pattern as stage 4, since this workflow also needs contents: write." },
+      ] },
+  ]
+},
+{
+  id: "research", label: "Research / validation track (offline -- run manually, never scheduled)",
+  stages: [
+    { id: "backtest", kind: "purple", title: "Historical backtest", sub: "backtest.py -- 20-year replay",
+      detail: `Reuses the exact same detector functions running live, so the backtest tests the
+        SAME logic actually in production, not a reimplementation that could drift. For every
+        historical signal instance across the 44-name watchlist: forward return + modeled
+        option P&amp;L vs. a matched "naive swing" baseline, with 95% CI/p-values from a cluster
+        bootstrap (resamples by ticker, not by instance). <strong>Verdict: 10 of 11 signal types
+        have a statistically significant NEGATIVE edge</strong> (p&lt;0.001); ABC is the sole
+        exception -- not significant either way, meaning inconclusive, not "proven neutral."
+        Full results in <code>docs/BACKTEST_FINDINGS.md</code>.`,
+      files: ["src/backtest.py", "docs/BACKTEST_FINDINGS.md"],
+      substeps: [
+        { id:"rs-opt", kind:"proc", title:"options_pricing.py", sub:"Black-Scholes, realized vol as IV proxy",
+          detail:"Models a long call/put's round-trip P&amp;L (ATM strike, DTE = horizon + 15 days, 6% assumed spread) -- prices in theta and vol, so it's a much closer proxy for actual option P&amp;L than the raw stock return." },
+        { id:"rs-stats", kind:"proc", title:"stats_utils.py", sub:"cluster bootstrap CI/p-value",
+          detail:"Resamples TICKERS (not individual instances) with replacement -- same-ticker instances share trend/vol/beta and overlapping forward-return windows, so treating them as independent draws understates the true CI width." },
+        { id:"rs-surv", kind:"proc", title:"survivorship_sensitivity.py", sub:"how fragile is the baseline?",
+          detail:"Stress-tests the matched baseline against a hypothetical company-failure rate (delisted names are invisible on the free data tier). The baseline's headline number flips negative at just a 5% hypothetical failure rate." },
+        { id:"rs-regime", kind:"proc", title:"regime_analysis.py", sub:"does SPY's own trend explain the edge?",
+          detail:"Tested one pre-committed hypothesis (SPY close vs. its own 200-day SMA) and found it does NOT rescue the edge -- both spring and upthrust stay significantly negative in both bull and bear regimes." },
+      ] },
+  ]
+},
+{
+  id: "local", label: "Local trader tools (manual, never run in CI -- read/write trades.csv, stays on your machine)",
+  stages: [
+    { id: "journal", kind: "green", title: "Trade journal", sub: "trade_journal.py",
+      detail: `Log every options trade with its decision context (setup, thesis, IV rank,
+        earnings date) and outcome. Also the promote/discard workflow for drafts auto-created by
+        the watchlist scanner's local runs. Warns if opening a position within 10 days of
+        earnings, or if the option expires after the earnings date.`,
+      files: ["src/trade_journal.py", "trades.csv"] },
+    { id: "analytics", kind: "green", title: "Edge analytics", sub: "trade_analytics.py",
+      detail: `Your own realized win rate, expectancy, and profit factor -- broken down by
+        setup and direction -- plus behavioral leaks: holding losers longer than winners, exit
+        reason mix, and earnings-proximity drag. The honest, survivorship-free complement to the
+        mechanical backtest: this is YOUR track record, not a historical replay.`,
+      files: ["src/trade_analytics.py"] },
+    { id: "pretrade", kind: "green", title: "Pre-trade sizing", sub: "pretrade.py",
+      detail: `Realized-volatility 1-sigma expected move over a given horizon, for strike/target
+        sanity. Explicitly does NOT include real IV or IV rank -- that needs a paid options
+        feed -- so check it in your broker before entering.`,
+      files: ["src/pretrade.py"] },
+    { id: "corr", kind: "green", title: "Correlation / portfolio heat", sub: "correlation.py",
+      detail: `Effective independent bets, SPY correlation, and premium at risk across your open
+        positions -- so a concentrated tech book doesn't masquerade as diversification. Includes
+        a what-if mode for testing a candidate new position before opening it.`,
+      files: ["src/correlation.py"] },
+  ]
+},
+];
+
+function renderStage(s, isSub){
+  const cls = isSub ? "sub-item" : "stage";
+  const headCls = isSub ? "sub-head" : "head";
+  const titleCls = isSub ? "stitle" : "title";
+  const subCls = isSub ? "ssub" : "sub";
+  const tag = isSub ? "button" : "button";
+  let html = `<div class="${cls}">`;
+  html += `<${tag} type="button" class="${headCls} ${s.kind}" onclick="toggle('${s.id}')" aria-expanded="false" aria-controls="${s.id}">`;
+  html += `<span class="chev" id="${s.id}-chev">&#9656;</span>`;
+  html += `<span class="${titleCls}">${s.title}</span>`;
+  html += `<span class="${subCls}">${s.sub}</span>`;
+  html += `</${tag}>`;
+  html += `<div class="detail" id="${s.id}">${s.detail}`;
+  if (s.files && s.files.length){
+    html += `<div class="files">Files: ${s.files.map(f => `<code>${f}</code>`).join(", ")}</div>`;
+  }
+  if (s.substeps && s.substeps.length){
+    html += `<div class="substeps">`;
+    for (const sub of s.substeps){ html += renderStage(sub, true); }
+    html += `</div>`;
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function render(){
+  const root = document.getElementById("root");
+  let html = "";
+  for (const track of TRACKS){
+    html += `<h2 class="track">${track.label}</h2><div class="timeline">`;
+    for (const stage of track.stages){ html += renderStage(stage, false); }
+    html += `</div>`;
+  }
+  root.innerHTML = html;
+}
+
+function setOpen(id, open){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle("open", open);
+  const chev = document.getElementById(id + "-chev");
+  if (chev) chev.innerHTML = open ? "&#9662;" : "&#9656;";
+  const btn = document.querySelector(`[aria-controls="${id}"]`);
+  if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+function toggle(id){
+  const el = document.getElementById(id);
+  setOpen(id, !el.classList.contains("open"));
+}
+function setAll(open){
+  document.querySelectorAll(".detail").forEach(el => setOpen(el.id, open));
+}
+
+render();
+</script>
+
+</body>
+</html>

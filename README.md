@@ -61,10 +61,10 @@ wyckoff-scanner-ci/
 │   └── alerts_scored.csv         <- alerts_log.csv rows scored once their horizon elapses
 └── docs/
     ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
-    ├── SCANNER_FLOW.md            <- end-to-end flow + every guardrail, explained
+    ├── SYSTEM_FLOW.md             <- the WHOLE system, every step, all 3 tracks -- kept in sync (see below)
     ├── LIVE_SCORECARD.md          <- score_alerts.py explained end to end, worked example
     └── diagrams/
-        └── scanner_flow.html      <- interactive version of SCANNER_FLOW.md (open in a browser)
+        └── system_flow.html       <- interactive version of SYSTEM_FLOW.md (open in a browser)
 ```
 
 **Not committed (private / local only):** `twelvedata_api_key.txt`,
@@ -74,10 +74,12 @@ wyckoff-scanner-ci/
 
 ## The automated scanner
 
-**How it runs:** GitHub Actions runs the two workflows on a weekday cron and
-pushes results to Telegram. Nothing needs to stay open on your machine. For
-the full end-to-end flow — every fetch/data/signal guardrail, with an
-interactive diagram — see [`docs/SCANNER_FLOW.md`](docs/SCANNER_FLOW.md).
+**How it runs:** GitHub Actions runs three scheduled workflows (scan, scan,
+then score) on weekdays and pushes results to Telegram. Nothing needs to
+stay open on your machine. For the full end-to-end flow across all three —
+every fetch/data/signal guardrail, plus the research and local-tool tracks —
+see [`docs/SYSTEM_FLOW.md`](docs/SYSTEM_FLOW.md) or the interactive
+[`diagrams/system_flow.html`](docs/diagrams/system_flow.html).
 
 - `watchlist-scan.yml` — deep-scans `data/core_watchlist.csv`, generates an
   annotated chart per flagged name, and pushes a Telegram message + chart

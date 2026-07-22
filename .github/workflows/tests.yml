@@ -11,8 +11,40 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need history beyond the last commit for the freshness diff below
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt pytest
       - run: python -m pytest tests/ -v
+      # Nudge, not a gate: if a flow-relevant file changed without the system
+      # flow diagram/doc changing in the same push, warn (visibly, on the
+      # run's checks page) rather than fail -- a bot commit or a rushed fix
+      # shouldn't be blocked from merging just because docs/SYSTEM_FLOW.md /
+      # docs/diagrams/system_flow.html weren't touched in the same push.
+      # Defensive by design (BEFORE unreachable after a force-push, etc. all
+      # fall through to "skip", never a hard failure) -- bash run steps use
+      # -e by default, so an unhandled git error here would otherwise fail
+      # the whole job, defeating the "nudge, not a gate" intent.
+      - name: Check system flow diagram freshness
+        if: github.event_name == 'push'
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "No previous commit to diff against (first push on this ref) -- skipping."
+            exit 0
+          fi
+          CHANGED=$(git diff --name-only "$BEFORE" "${{ github.sha }}" 2>/dev/null) || {
+            echo "Could not diff against $BEFORE (unreachable, e.g. after a force-push) -- skipping."
+            exit 0
+          }
+          FLOW_PATHS='^(src/(wyckoff_scanner|wyckoff_watchlist_scanner|alert_log|score_alerts|backtest|options_pricing|stats_utils|regime_analysis|survivorship_sensitivity|trade_journal|trade_analytics|correlation|pretrade)\.py|\.github/workflows/(sp500-scan|watchlist-scan|score-alerts)\.yml)$'
+          FLOW_CHANGED=$(echo "$CHANGED" | grep -E "$FLOW_PATHS" || true)
+          DIAGRAM_CHANGED=$(echo "$CHANGED" | grep -E '^docs/(SYSTEM_FLOW\.md|diagrams/system_flow\.html)$' || true)
+          if [ -n "$FLOW_CHANGED" ] && [ -z "$DIAGRAM_CHANGED" ]; then
+            FILES=$(echo "$FLOW_CHANGED" | tr '\n' ' ')
+            echo "::warning::Flow-relevant files changed without touching docs/SYSTEM_FLOW.md or docs/diagrams/system_flow.html. Changed: $FILES -- please review whether the system flow diagram needs updating."
+          else
+            echo "No flow-relevant changes needing a diagram update, or the diagram was already updated in this push."
+          fi
