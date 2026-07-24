@@ -32,3 +32,11 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-07-23T21:37:11Z,watchlist,AMZN,spring,long_call,"Spring at support 225.55 (close 233.56) -- bullish bias, review for a LONG CALL",233.56
 2026-07-23T21:38:11Z,watchlist,GRPN,abc,long_put,"ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 51% of A, C extended 98% of A)",25.405
 2026-07-23T21:41:11Z,watchlist,TSLA,sow,long_put,"Sign of Weakness (breakdown held) @ 368.60 -- bearish bias, review for a LONG PUT",319.45999
+2026-07-24T21:32:18Z,sp500_sweep,MSFT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,381.73999
+2026-07-24T21:32:19Z,sp500_sweep,GOOG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,319.089996
+2026-07-24T21:33:18Z,sp500_sweep,BRK.B,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,494.89001
+2026-07-24T21:35:19Z,sp500_sweep,COST,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,935.28998
+2026-07-24T21:35:19Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,888.72998
+2026-07-24T21:37:18Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,333.019989
+2026-07-24T21:37:19Z,sp500_sweep,PM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,192.98
+2026-07-24T21:39:19Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,98.77
