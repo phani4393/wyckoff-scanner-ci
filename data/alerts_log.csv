@@ -40,3 +40,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-07-24T21:37:18Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,333.019989
 2026-07-24T21:37:19Z,sp500_sweep,PM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,192.98
 2026-07-24T21:39:19Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,98.77
+2026-07-24T21:40:09Z,watchlist,AAPL,abc,long_put,"ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 61% of A, C extended 85% of A)",333.070007
+2026-07-24T21:41:09Z,watchlist,NFLX,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 68% of A, C extended 88% of A)",70.095001
