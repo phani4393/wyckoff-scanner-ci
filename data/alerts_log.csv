@@ -52,3 +52,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-07-27T21:39:33Z,sp500_sweep,CRM,upthrust,long_put,"Upthrust at resistance 175.43 (close 173.55) -- bearish bias, review for a LONG PUT",173.55
 2026-07-27T21:39:33Z,sp500_sweep,ADBE,upthrust,long_put,"Upthrust at resistance 240.15 (close 237.75) -- bearish bias, review for a LONG PUT",237.75
 2026-07-27T21:40:32Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,48.21
+2026-07-27T21:42:24Z,watchlist,ADBE,upthrust,long_put,"Upthrust at resistance 240.15 (close 237.75) -- bearish bias, review for a LONG PUT",237.75
+2026-07-27T21:45:25Z,watchlist,CRM,upthrust,long_put,"Upthrust at resistance 175.43 (close 173.55) -- bearish bias, review for a LONG PUT",173.55
