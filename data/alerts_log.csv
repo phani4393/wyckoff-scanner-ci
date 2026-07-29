@@ -60,3 +60,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-07-29T21:20:39Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,313.745
 2026-07-29T21:21:40Z,sp500_sweep,AXP,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,331.44
 2026-07-29T21:22:38Z,sp500_sweep,C,spring,long_call,"Spring at support 127.08 (close 127.11) -- bullish bias, review for a LONG CALL",127.11
+2026-07-29T21:28:34Z,watchlist,ADBE,sos,long_call,"Sign of Strength (breakout held) @ 240.15 -- bullish bias, review for a LONG CALL",263.35001
