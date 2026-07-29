@@ -5,3 +5,4 @@ logged_at,sym,setup,direction,horizon_days,entry_date,exit_date,stock_return_pct
 2026-07-21T21:38:20Z,MA,upthrust,long_put,5,2026-07-21,2026-07-28,-4.544,0,-70.747
 2026-07-21T21:41:20Z,PM,upthrust,long_put,5,2026-07-21,2026-07-28,-6.493,0,-70.992
 2026-07-21T21:43:20Z,QCOM,spring,long_call,5,2026-07-21,2026-07-28,-6.144,0,-75.719
+2026-07-22T21:47:35Z,WFC,upthrust,long_put,5,2026-07-22,2026-07-29,2.951,1,47.604
