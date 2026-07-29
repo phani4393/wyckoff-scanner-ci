@@ -38,7 +38,9 @@ DRAFT_JOURNAL = not os.environ.get("GITHUB_ACTIONS")
 
 
 def _draft(sym, setup, direction, thesis, close):
-    alert_log.log_alert("watchlist", sym, setup, direction, thesis, close)
+    logged = alert_log.log_alert("watchlist", sym, setup, direction, thesis, close)
+    if not logged:
+        return  # same-day duplicate of an already-logged alert -- don't draft it twice either
     if not DRAFT_JOURNAL:
         return
     try:
