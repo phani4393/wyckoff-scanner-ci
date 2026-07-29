@@ -27,6 +27,8 @@ from wyckoff_common import (
     fetch_bars,
     load_api_key,
     pivots,
+    is_pure_spring,
+    is_pure_upthrust,
 )
 
 TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "top50_plus_ai.csv"
@@ -113,16 +115,15 @@ def scan(tickers, api_key, progress=False):
             res, sup = pivots(bars)
             m = len(bars)
             signals = []
-            if m >= 2 and sup[-1] is not None:
-                sp_now = bars[-1]["low"] < sup[-1] and bars[-1]["close"] > sup[-1]
-                sp_prev = sup[-2] is not None and bars[-2]["low"] < sup[-2] and bars[-2]["close"] > sup[-2]
+            if m >= 2:
+                sp_now = is_pure_spring(bars, sup, -1)
+                sp_prev = is_pure_spring(bars, sup, -2)
                 if sp_now and not sp_prev:
                     thesis = f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL"
                     signals.append(thesis)
                     alert_log.log_alert("sp500_sweep", sym, "spring", "long_call", thesis, bars[-1]["close"])
-            if m >= 2 and res[-1] is not None:
-                ut_now = bars[-1]["high"] > res[-1] and bars[-1]["close"] < res[-1]
-                ut_prev = res[-2] is not None and bars[-2]["high"] > res[-2] and bars[-2]["close"] < res[-2]
+                ut_now = is_pure_upthrust(bars, res, -1)
+                ut_prev = is_pure_upthrust(bars, res, -2)
                 if ut_now and not ut_prev:
                     thesis = f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT"
                     signals.append(thesis)

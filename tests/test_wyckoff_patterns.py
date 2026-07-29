@@ -21,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import wyckoff_common as c
+from wyckoff_common import is_pure_spring, is_pure_upthrust
 from wyckoff_patterns import abc_pattern
 
 LEFT, RIGHT = c.LEFT_BARS, c.RIGHT_BARS
@@ -37,16 +38,6 @@ def make_flat_bars(n):
 
 def set_bar(bars, idx, **kwargs):
     bars[idx] = {**bars[idx], **kwargs}
-
-
-def is_pure_spring(bars, sup, idx):
-    b = bars[idx]
-    return sup[idx] is not None and b["low"] < sup[idx] and b["close"] > sup[idx]
-
-
-def is_pure_upthrust(bars, res, idx):
-    b = bars[idx]
-    return res[idx] is not None and b["high"] > res[idx] and b["close"] < res[idx]
 
 
 # ---------------------------------------------------------------------------

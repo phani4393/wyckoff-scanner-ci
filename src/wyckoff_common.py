@@ -190,3 +190,20 @@ def zigzag(bars, left=LEFT_BARS, right=RIGHT_BARS):
 
 def build_close_by_date(bars):
     return {b["date"]: b["close"] for b in bars}
+
+
+def is_pure_spring(bars, sup, idx):
+    """Textbook spring: today's LOW undercuts the last confirmed support, but
+    the CLOSE recovers back above it (a failed breakdown -> bullish). The
+    single source of truth for this condition -- previously reimplemented
+    independently in wyckoff_scanner.py, wyckoff_watchlist_scanner.py,
+    backtest.py, and even the test fixtures, which meant a tweak to one copy
+    (e.g. a tolerance change) would silently not apply to the other three."""
+    return sup[idx] is not None and bars[idx]["low"] < sup[idx] and bars[idx]["close"] > sup[idx]
+
+
+def is_pure_upthrust(bars, res, idx):
+    """Textbook upthrust: today's HIGH pokes above the last confirmed
+    resistance, but the CLOSE falls back below it (a failed breakout ->
+    bearish). See is_pure_spring() for why this is centralized here."""
+    return res[idx] is not None and bars[idx]["high"] > res[idx] and bars[idx]["close"] < res[idx]

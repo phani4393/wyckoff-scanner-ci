@@ -21,7 +21,8 @@ from pathlib import Path
 import alert_log
 import trade_journal
 import wyckoff_notify as notify
-from wyckoff_common import BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr, build_close_by_date
+from wyckoff_common import (BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr,
+                             build_close_by_date, is_pure_spring, is_pure_upthrust)
 from wyckoff_patterns import trading_range, climax_events, sos_sow_events, lps_lpsy_events, abc_pattern
 from wyckoff_charts import plot_signal_chart
 from pretrade import expected_move, format_line
@@ -70,10 +71,10 @@ def scan_ticker(sym, bars, spy_by_date):
     # these beats naive swing-trading -- they are DISCRETIONARY REVIEW TRIGGERS,
     # not a validated mechanical edge. Direction is stated for a LONG option.
     def _pure_spring(j):
-        return sup[j] is not None and bars[j]["low"] < sup[j] and bars[j]["close"] > sup[j]
+        return is_pure_spring(bars, sup, j)
 
     def _pure_upthrust(j):
-        return res[j] is not None and bars[j]["high"] > res[j] and bars[j]["close"] < res[j]
+        return is_pure_upthrust(bars, res, j)
 
     if _pure_spring(n - 1) and not _pure_spring(n - 2):
         thesis = f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL"

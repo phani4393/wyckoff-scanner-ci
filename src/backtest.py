@@ -118,8 +118,8 @@ def pure_spring_upthrust_events(bars):
     prev_sp = prev_ut = False
     for j in range(n):
         b = bars[j]
-        sp = sup[j] is not None and b["low"] < sup[j] and b["close"] > sup[j]
-        ut = res[j] is not None and b["high"] > res[j] and b["close"] < res[j]
+        sp = c.is_pure_spring(bars, sup, j)
+        ut = c.is_pure_upthrust(bars, res, j)
         if sp and not prev_sp:
             events.append({"idx": j, "date": b["date"], "type": "pure_spring", "direction": "bullish"})
         if ut and not prev_ut:
