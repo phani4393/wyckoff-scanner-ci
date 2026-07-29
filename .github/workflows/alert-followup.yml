@@ -1,0 +1,49 @@
+name: Alert Follow-up
+
+on:
+  schedule:
+    # 10 min after score-alerts.yml (itself ~1hr after the watchlist scan) --
+    # same month-keyed DST split as the other workflows, see those for the
+    # full explanation.
+    - cron: "45 21 * 3-10 1-5"
+    - cron: "45 22 * 11,12,1,2 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  followup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python src/alert_followup.py --telegram
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # data/alerts_followup.csv is written by alert_followup.py during the
+      # run above -- this runner's filesystem is discarded when the job
+      # ends, so it has to be committed back to the repo to survive, same as
+      # alerts_log.csv / alerts_scored.csv in the other workflows. Only this
+      # one workflow ever writes this file, so no concurrent-writer race is
+      # possible here -- the .gitattributes union-merge fix that alerts_log.csv
+      # needed doesn't apply.
+      - name: Persist follow-ups
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain -- data/alerts_followup.csv)" ]; then
+            git add data/alerts_followup.csv
+            git commit -m "Alert follow-up from $(date -u +%Y-%m-%dT%H:%M:%SZ) run"
+            git pull --rebase --autostash origin master
+            git push
+          else
+            echo "No new follow-ups this run."
+          fi

@@ -27,6 +27,7 @@ wyckoff-scanner-ci/
 │   ├── sp500-scan.yml            <- daily scan of top-50 + AI names
 │   ├── watchlist-scan.yml        <- daily deep-scan of the core watchlist (+charts)
 │   ├── score-alerts.yml          <- daily: score alerts that have aged past a horizon
+│   ├── alert-followup.yml        <- daily: day+1/2/3 stronger/weaker check-in
 │   └── tests.yml                 <- detector regression tests, runs on every push
 ├── src/                          <- all Python
 │   ├── wyckoff_common.py         <- data fetch (Twelve Data), ATR, pivots, zigzag
@@ -38,9 +39,10 @@ wyckoff-scanner-ci/
 │   ├── stats_utils.py            <- bootstrap CI/p-value for the backtest's edge deltas
 │   ├── survivorship_sensitivity.py  <- quantifies how fragile the baseline is to survivorship bias
 │   ├── regime_analysis.py        <- tests whether SPY's own trend explains the edge (it doesn't)
-│   ├── alert_log.py              <- durable log of every alert sent, for later evaluation
+│   ├── alert_log.py              <- durable log of every alert sent, for later evaluation (same-day dedup)
 │   ├── score_alerts.py           <- scores alerts_log.csv against reality, live out-of-sample
 │   ├── scorecard_chart.py        <- cumulative-return chart for the live scorecard
+│   ├── alert_followup.py         <- day+1/2/3 stronger/weaker check-in per alert
 │   ├── earnings_calendar.py      <- best-effort earnings-date lookup for trade_journal.py
 │   ├── wyckoff_scanner.py        <- top-50 + AI scanner
 │   ├── wyckoff_watchlist_scanner.py  <- core-watchlist deep scanner
@@ -50,15 +52,19 @@ wyckoff-scanner-ci/
 │   └── correlation.py            <- portfolio concentration / heat monitor (local)
 ├── tests/
 │   ├── test_wyckoff_patterns.py  <- detector regression tests (synthetic OHLC fixtures)
+│   ├── test_wyckoff_watchlist_scanner.py <- draft-skip-on-duplicate wiring test
+│   ├── test_alert_log.py         <- same-day dedup guard tests
 │   ├── test_score_alerts.py      <- scoring-math + idempotency tests (synthetic bars/alerts)
 │   ├── test_scorecard_chart.py   <- cumulative-sum math + chart file-creation tests
+│   ├── test_alert_followup.py    <- stronger/weaker math + idempotency tests
 │   ├── test_trade_journal.py     <- earnings auto-fetch wiring tests
 │   └── test_earnings_calendar.py <- response-parsing tests (captured real Yahoo payload)
 ├── data/
 │   ├── core_watchlist.csv        <- the 44-name deep-scan list
 │   ├── top50_plus_ai.csv         <- top 50 by market cap + AI names
 │   ├── alerts_log.csv            <- every alert either scanner has sent (auto-committed by CI)
-│   └── alerts_scored.csv         <- alerts_log.csv rows scored once their horizon elapses
+│   ├── alerts_scored.csv         <- alerts_log.csv rows scored once their horizon elapses
+│   └── alerts_followup.csv       <- day+1/2/3 stronger/weaker check-ins (auto-committed by CI)
 └── docs/
     ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
     ├── SYSTEM_FLOW.md             <- the WHOLE system, every step, all 3 tracks -- kept in sync (see below)
@@ -235,6 +241,24 @@ uploaded as a 14-day CI artifact). **Read the numbers with real skepticism
 until the sample is large** — with only a handful of tickers involved so
 far, the cluster bootstrap will mostly report "not enough independent
 tickers yet," which is the honest answer, not a bug.
+
+## Alert follow-up — `alert_followup.py`
+A short, fast companion to the scorecard above: for each alert, checks in on
+day+1, day+2, and day+3 (trading days) and reports whether the move is
+getting **STRONGER** (further in the predicted direction than the day
+before) or **WEAKER** (given some back / reversed) — a quick "is this one
+still building or already fading" read in the first few days, distinct from
+`score_alerts.py`'s longer 5/10/20-day statistical view. Stops after day 3;
+the longer horizons pick up from there.
+```
+python src/alert_followup.py             # check in, print today's follow-ups
+python src/alert_followup.py --telegram   # also push the consolidated message to Telegram
+```
+Runs daily via `.github/workflows/alert-followup.yml`, ~10 min after
+`score-alerts.yml`, and commits `data/alerts_followup.csv` back to the repo.
+Idempotent — each (alert, day) pair is only ever reported once. Only this
+one workflow writes that file, so it doesn't need the `.gitattributes`
+union-merge protection `alerts_log.csv` needed.
 
 ## Tests
 Regression tests for the pattern detectors (spring/upthrust/ABC) against
