@@ -39,7 +39,7 @@ jobs:
             echo "Could not diff against $BEFORE (unreachable, e.g. after a force-push) -- skipping."
             exit 0
           }
-          FLOW_PATHS='^(src/(wyckoff_scanner|wyckoff_watchlist_scanner|alert_log|score_alerts|backtest|options_pricing|stats_utils|regime_analysis|survivorship_sensitivity|trade_journal|trade_analytics|correlation|pretrade)\.py|\.github/workflows/(sp500-scan|watchlist-scan|score-alerts)\.yml)$'
+          FLOW_PATHS='^(src/(wyckoff_scanner|wyckoff_watchlist_scanner|alert_log|score_alerts|scorecard_chart|alert_followup|earnings_calendar|backtest|options_pricing|stats_utils|regime_analysis|survivorship_sensitivity|trade_journal|trade_analytics|correlation|pretrade)\.py|\.github/workflows/(sp500-scan|watchlist-scan|score-alerts|alert-followup)\.yml)$'
           FLOW_CHANGED=$(echo "$CHANGED" | grep -E "$FLOW_PATHS" || true)
           DIAGRAM_CHANGED=$(echo "$CHANGED" | grep -E '^docs/(SYSTEM_FLOW\.md|diagrams/system_flow\.html)$' || true)
           if [ -n "$FLOW_CHANGED" ] && [ -z "$DIAGRAM_CHANGED" ]; then

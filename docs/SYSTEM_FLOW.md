@@ -6,15 +6,16 @@ run its JS, so download the repo and open that file in a browser to
 interact with it). Three tracks: the daily automated pipeline, the offline
 research/validation track, and the local trader tools.
 
-> **Content verified against commit `63a81a7` (2026-07-22).** See "keeping
+> **Content verified against commit `b262786` (2026-07-29).** See "keeping
 > this current" below for how this is meant to stay in sync.
 
 ## Track 1 — Daily automated pipeline
 
-1. **Trigger** — three scheduled GitHub Actions workflows: `sp500-scan.yml`
+1. **Trigger** — four scheduled GitHub Actions workflows: `sp500-scan.yml`
    (~20:20 UTC), `watchlist-scan.yml` (~20:35 UTC), `score-alerts.yml`
-   (~21:15 UTC), each DST-aware (dual cron: daylight-time Mar-Oct,
-   standard-time Nov-Feb). All three also support manual `workflow_dispatch`
+   (~21:15 UTC), `alert-followup.yml` (~21:25 UTC, ~10 min after
+   `score-alerts.yml`), each DST-aware (dual cron: daylight-time Mar-Oct,
+   standard-time Nov-Feb). All four also support manual `workflow_dispatch`
    and running locally.
 
 2. **S&P 500 + AI sweep** (`src/wyckoff_scanner.py`) — the lighter pipeline,
@@ -38,9 +39,29 @@ research/validation track, and the local trader tools.
    discarded when the job ends, both scan workflows end with a step that
    commits the file back to the repo. A union merge driver
    (`.gitattributes`) lets concurrent commits to this append-only file merge
-   without manual conflicts.
+   without manual conflicts. **Same-day dedup:** `log_alert()` skips (and
+   returns `False`) if an identical (ticker, setup, direction) combo is
+   already logged for today — found necessary because tickers that sit in
+   both `core_watchlist.csv` and `top50_plus_ai.csv` get independently
+   flagged by both scanners on the same real event, which edge-triggering
+   alone doesn't prevent (it only stops one scanner from repeating itself
+   across *different* days). `wyckoff_watchlist_scanner.py`'s local draft
+   step checks this return value too, so a duplicate doesn't get
+   double-drafted into `trades.csv` either.
 
-5. **Alert scoring** (`src/score_alerts.py`, ~1hr after the watchlist scan)
+5. **Alert follow-up** (`src/alert_followup.py`, ~10 min after
+   `score-alerts.yml`) — a fast, price-only companion to stage 6's
+   statistical scoring: checks each alert in on day+1/2/3 (trading days) and
+   reports whether the direction-adjusted move is **STRONGER** (further than
+   the day before) or **WEAKER** (given some back / reversed). Reuses
+   `backtest.py`'s `forward_return` and `score_alerts.py`'s entry-date lookup
+   and direction mapping directly. Idempotent (each alert/day-offset pair
+   reported once) and stops after day+3 — the longer 5/10/20-day view in
+   stage 6 picks up from there. One consolidated Telegram message per run,
+   sent only when something actually checked in; persists
+   `data/alerts_followup.csv` back to the repo the same way stage 4 does.
+
+6. **Alert scoring** (`src/score_alerts.py`, ~1hr after the watchlist scan)
    — the live, out-of-sample complement to the historical backtest. Reuses
    `backtest.py`'s own `forward_return`, `swing_baseline_events`, and
    `options_pricing.option_pnl_pct` directly (never a reimplementation that

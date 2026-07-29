@@ -76,8 +76,8 @@
 <h1>Wyckoff system -- full flow</h1>
 <p class="lede">Click any stage to expand its detail. Three tracks: the daily automated
 pipeline, the offline research/validation track, and the local trader tools.</p>
-<p class="freshness">Content verified against commit <code id="verified-commit">63a81a7</code>
-(2026-07-22). A CI check (tests.yml) warns when flow-relevant source files change without
+<p class="freshness">Content verified against commit <code id="verified-commit">b262786</code>
+(2026-07-29). A CI check (tests.yml) warns when flow-relevant source files change without
 this file being updated in the same push -- see the footer note.</p>
 
 <div class="controls">
@@ -112,14 +112,15 @@ const TRACKS = [
   id: "daily", label: "Daily automated pipeline",
   stages: [
     { id: "trigger", kind: "proc", title: "1. Trigger", sub: "Cron, manual, or local run",
-      detail: `Three scheduled GitHub Actions workflows drive this: <code>sp500-scan.yml</code>
-        (~20:20 UTC), <code>watchlist-scan.yml</code> (~20:35 UTC), and
-        <code>score-alerts.yml</code> (~21:15 UTC) -- each with a DST-aware dual-cron schedule
+      detail: `Four scheduled GitHub Actions workflows drive this: <code>sp500-scan.yml</code>
+        (~20:20 UTC), <code>watchlist-scan.yml</code> (~20:35 UTC),
+        <code>score-alerts.yml</code> (~21:15 UTC), and <code>alert-followup.yml</code>
+        (~21:25 UTC, ~10 min after score-alerts) -- each with a DST-aware dual-cron schedule
         (daylight-time Mar-Oct, standard-time Nov-Feb) instead of drifting an hour off market
-        close for half the year. All three also support a manual <code>workflow_dispatch</code>
+        close for half the year. All four also support a manual <code>workflow_dispatch</code>
         and running locally (<code>python src/&lt;script&gt;.py</code>).`,
       files: [".github/workflows/sp500-scan.yml", ".github/workflows/watchlist-scan.yml",
-              ".github/workflows/score-alerts.yml"] },
+              ".github/workflows/score-alerts.yml", ".github/workflows/alert-followup.yml"] },
 
     { id: "sp500", kind: "proc", title: "2. S&amp;P 500 + AI sweep", sub: "wyckoff_scanner.py -- lighter pipeline",
       detail: `Scans <code>data/top50_plus_ai.csv</code>. Fetches SPY as the RS benchmark first
@@ -159,10 +160,30 @@ const TRACKS = [
         a "Persist alert log" step that commits the file back to the repo under the
         <code>github-actions[bot]</code> identity. A union merge driver
         (<code>.gitattributes</code>) lets two concurrent commits to this append-only file merge
-        without manual conflict resolution.`,
+        without manual conflict resolution. <strong>Same-day dedup:</strong>
+        <code>log_alert()</code> skips (and returns <code>False</code>) if an identical (ticker,
+        setup, direction) combo is already logged today -- tickers in both watchlist CSVs get
+        independently flagged by both scanners on the same real event, which edge-triggering
+        alone doesn't prevent. The watchlist scanner's local draft step checks that return value
+        too, so a duplicate can't get double-drafted into <code>trades.csv</code> either.`,
       files: ["src/alert_log.py", "data/alerts_log.csv", ".gitattributes"] },
 
-    { id: "score", kind: "proc", title: "5. Alert scoring", sub: "score_alerts.py -- ~1hr after the watchlist scan",
+    { id: "followup", kind: "proc", title: "5. Alert follow-up", sub: "alert_followup.py -- ~10 min after score-alerts.yml",
+      detail: `A fast, price-only companion to stage 6's statistical scoring: checks each alert
+        in on day+1/2/3 (trading days) and reports whether the direction-adjusted move is
+        <strong>STRONGER</strong> (further than the day before) or <strong>WEAKER</strong> (given
+        some back / reversed). Reuses <code>backtest.py</code>'s <code>forward_return</code> and
+        <code>score_alerts.py</code>'s entry-date lookup and direction mapping directly. Stops
+        after day+3 -- the longer 5/10/20-day view in stage 6 picks up from there.`,
+      files: ["src/alert_followup.py", "data/alerts_followup.csv"],
+      substeps: [
+        { id:"fu-check", kind:"proc", title:"check_pending()", sub:"finds alerts newly at day+1/2/3",
+          detail:"Idempotent: each (alert, day_offset) pair is only ever reported once. day+1 is always compared against the alert day itself (0%), so its trend label is really just the sign of the move so far." },
+        { id:"fu-digest", kind:"proc", title:"One consolidated message", sub:"not one message per ticker",
+          detail:"Every alert currently inside its 3-day window gets one line in a single daily Telegram message, sent only when something actually checked in that run -- avoids resending an unchanged report as noise." },
+      ] },
+
+    { id: "score", kind: "proc", title: "6. Alert scoring", sub: "score_alerts.py -- ~1hr after the watchlist scan",
       detail: `The live, out-of-sample complement to the historical backtest: does a signal
         that fired blind, in real time, actually hold up? Reuses <code>backtest.py</code>'s own
         <code>forward_return</code>, <code>swing_baseline_events</code>, and
