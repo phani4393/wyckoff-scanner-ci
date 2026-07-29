@@ -167,3 +167,33 @@ def test_context_only_alerts_are_skipped(monkeypatch, tmp_path):
     }], ALERT_FIELDS)
 
     assert af.check_pending(api_key="fake") == []
+
+
+def test_main_dry_run_previews_without_sending(monkeypatch, tmp_path, capsys):
+    alerts_log, _ = _patch_paths(monkeypatch, tmp_path)
+    bars = make_bars([100.0] * 10 + [105.0])
+    monkeypatch.setattr(c, "fetch_bars", lambda sym, key: bars)
+    monkeypatch.setattr(c, "load_api_key", lambda: "fake")
+    write_csv(alerts_log, [{
+        "logged_at": f"{bars[9]['date']}T20:35:00Z", "source": "watchlist", "sym": "TEST",
+        "setup": "spring", "direction": "long_call", "thesis": "test", "underlying": 100.0,
+    }], ALERT_FIELDS)
+
+    def boom(*a, **k):
+        raise AssertionError("wyckoff_notify.send_message must not be called in --dry-run")
+    import wyckoff_notify
+    monkeypatch.setattr(wyckoff_notify, "send_message", boom)
+
+    monkeypatch.setattr(sys, "argv", ["alert_followup.py", "--dry-run"])
+    af.main()
+    out = capsys.readouterr().out
+    assert "DRY RUN: would push this message to Telegram" in out
+
+
+def test_main_dry_run_with_nothing_new_skips_cleanly(monkeypatch, tmp_path, capsys):
+    _patch_paths(monkeypatch, tmp_path)
+    monkeypatch.setattr(c, "load_api_key", lambda: "fake")
+    monkeypatch.setattr(sys, "argv", ["alert_followup.py", "--dry-run"])
+    af.main()
+    out = capsys.readouterr().out
+    assert "skipping Telegram push" in out

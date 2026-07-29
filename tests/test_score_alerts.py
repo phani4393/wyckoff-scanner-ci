@@ -182,3 +182,34 @@ def test_render_chart_creates_file_from_scored_data(monkeypatch, tmp_path):
     out_path = sa.render_chart(api_key="fake", horizon=10)
     assert out_path is not None
     assert out_path.exists()
+
+
+def test_main_dry_run_previews_without_sending(monkeypatch, tmp_path, capsys):
+    alerts_log, _ = _patch_paths(monkeypatch, tmp_path)
+    prices = [100.0] * 10 + [110.0] * 25
+    bars = make_bars(35, start="2026-01-02", prices=prices)
+    monkeypatch.setattr(c, "fetch_bars", lambda sym, key: bars)
+    monkeypatch.setattr(c, "load_api_key", lambda: "fake")
+    write_csv(alerts_log, [{
+        "logged_at": f"{bars[9]['date']}T20:35:00Z", "source": "watchlist", "sym": "TEST",
+        "setup": "spring", "direction": "long_call", "thesis": "test", "underlying": 100.0,
+    }], ALERT_FIELDS)
+
+    def boom(*a, **k):
+        raise AssertionError("wyckoff_notify.send_message must not be called in --dry-run")
+    import wyckoff_notify
+    monkeypatch.setattr(wyckoff_notify, "send_message", boom)
+
+    monkeypatch.setattr(sys, "argv", ["score_alerts.py", "--dry-run"])
+    sa.main()
+    out = capsys.readouterr().out
+    assert "DRY RUN: would push this digest to Telegram" in out
+
+
+def test_main_dry_run_with_nothing_new_skips_cleanly(monkeypatch, tmp_path, capsys):
+    _patch_paths(monkeypatch, tmp_path)
+    monkeypatch.setattr(c, "load_api_key", lambda: "fake")
+    monkeypatch.setattr(sys, "argv", ["score_alerts.py", "--dry-run"])
+    sa.main()
+    out = capsys.readouterr().out
+    assert "skipping Telegram push" in out

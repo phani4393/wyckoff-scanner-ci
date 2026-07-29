@@ -24,6 +24,7 @@ Usage:
   python src/score_alerts.py              # score pending alerts, print digest
   python src/score_alerts.py --telegram   # also push the digest to Telegram
   python src/score_alerts.py --chart      # also render charts/live_scorecard_<h>d.png
+  python src/score_alerts.py --dry-run    # preview the Telegram message, don't send it
 """
 
 import argparse
@@ -329,6 +330,9 @@ def main():
     ap.add_argument("--telegram", action="store_true", help="also push the digest to Telegram")
     ap.add_argument("--chart", action="store_true",
                      help=f"also render charts/live_scorecard_{CHART_HORIZON}d.png")
+    ap.add_argument("--dry-run", action="store_true", dest="dry_run",
+                     help="show what would be pushed to Telegram without actually sending it "
+                          "(implies --telegram's preview; useful for local testing)")
     a = ap.parse_args()
 
     api_key = c.load_api_key()
@@ -353,17 +357,25 @@ def main():
 
     # Only push to Telegram when there's actually something new -- the
     # scorecard alone doesn't change between runs with nothing newly scored,
-    # so sending it daily regardless would just be noise.
-    if a.telegram and new_rows:
-        try:
-            import wyckoff_notify as notify
-            notify.send_message(digest[:4000])
-            if chart_path:
-                notify.send_photo(chart_path, caption=f"Live scorecard, {CHART_HORIZON}d horizon")
-            print("\n[pushed to Telegram]")
-        except Exception as e:
-            print(f"\n[Telegram push failed: {e}]")
-    elif a.telegram:
+    # so sending it daily regardless would just be noise. --dry-run takes
+    # this same path (so you see exactly what would be sent) but stubs the
+    # actual network call -- lets anyone testing changes locally verify the
+    # message without needing real Telegram credentials or risking a real
+    # push to someone's phone.
+    if (a.telegram or a.dry_run) and new_rows:
+        if a.dry_run:
+            print("\n[DRY RUN: would push this digest to Telegram" +
+                  (" + the chart photo" if chart_path else "") + "]")
+        else:
+            try:
+                import wyckoff_notify as notify
+                notify.send_message(digest[:4000])
+                if chart_path:
+                    notify.send_photo(chart_path, caption=f"Live scorecard, {CHART_HORIZON}d horizon")
+                print("\n[pushed to Telegram]")
+            except Exception as e:
+                print(f"\n[Telegram push failed: {e}]")
+    elif a.telegram or a.dry_run:
         print("\n[nothing newly scored -- skipping Telegram push]")
 
 

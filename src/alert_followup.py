@@ -23,6 +23,7 @@ once, appended to data/alerts_followup.csv.
 Usage:
   python src/alert_followup.py              # check in, print today's follow-ups
   python src/alert_followup.py --telegram   # also push the consolidated message to Telegram
+  python src/alert_followup.py --dry-run    # preview the Telegram message, don't send it
 """
 
 import argparse
@@ -131,6 +132,8 @@ def format_followups(new_rows):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--telegram", action="store_true", help="also push today's follow-ups to Telegram")
+    ap.add_argument("--dry-run", action="store_true", dest="dry_run",
+                     help="show what would be pushed to Telegram without actually sending it")
     a = ap.parse_args()
 
     api_key = c.load_api_key()
@@ -138,14 +141,17 @@ def main():
     message = format_followups(new_rows)
     print(message or "No alerts checked in today (none currently inside their 1-3 trading day window).")
 
-    if a.telegram and new_rows:
-        try:
-            import wyckoff_notify as notify
-            notify.send_message(message[:4000])
-            print("\n[pushed to Telegram]")
-        except Exception as e:
-            print(f"\n[Telegram push failed: {e}]")
-    elif a.telegram:
+    if (a.telegram or a.dry_run) and new_rows:
+        if a.dry_run:
+            print("\n[DRY RUN: would push this message to Telegram]")
+        else:
+            try:
+                import wyckoff_notify as notify
+                notify.send_message(message[:4000])
+                print("\n[pushed to Telegram]")
+            except Exception as e:
+                print(f"\n[Telegram push failed: {e}]")
+    elif a.telegram or a.dry_run:
         print("\n[nothing to report -- skipping Telegram push]")
 
 
