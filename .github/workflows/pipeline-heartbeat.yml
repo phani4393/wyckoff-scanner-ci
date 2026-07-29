@@ -1,0 +1,28 @@
+name: Pipeline Heartbeat
+
+on:
+  schedule:
+    # Weekly, Monday 14:00 UTC -- well after market open, once is enough for
+    # a "did the other 4 workflows keep succeeding this week" check.
+    - cron: "0 14 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python src/pipeline_heartbeat.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
