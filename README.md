@@ -15,6 +15,12 @@ expected move for strike sanity.
 > The tools below exist to make your discretion measurable and disciplined —
 > not to automate it.
 
+**Working on this repo?** See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the
+conventions that have actually mattered so far (reuse detector logic, keep
+CI scripts idempotent, keep the system flow diagram in sync, etc.) — written
+because this repo gets edited by more than one Claude Code session, so the
+conventions live here instead of only in one session's memory.
+
 ---
 
 ## What's in here
