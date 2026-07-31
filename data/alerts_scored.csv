@@ -10,3 +10,5 @@ logged_at,sym,setup,direction,horizon_days,entry_date,exit_date,stock_return_pct
 2026-07-23T21:32:15Z,WMT,spring,long_call,5,2026-07-23,2026-07-30,2.482,1,22.232
 2026-07-23T21:38:11Z,GRPN,abc,long_put,5,2026-07-23,2026-07-30,-9.599,0,-64.514
 2026-07-23T21:41:11Z,TSLA,sow,long_put,5,2026-07-23,2026-07-30,3.378,1,-7.656
+2026-07-24T21:40:09Z,AAPL,abc,long_put,5,2026-07-24,2026-07-31,7.24,1,139.812
+2026-07-24T21:41:09Z,NFLX,abc,long_call,5,2026-07-24,2026-07-31,2.311,1,-9.033
