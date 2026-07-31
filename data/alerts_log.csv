@@ -80,3 +80,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-07-31T21:38:25Z,sp500_sweep,TXN,spring,long_call,"Spring at support 273.88 (close 275.74) -- bullish bias, review for a LONG CALL",275.73999
 2026-07-31T21:40:25Z,sp500_sweep,DDOG,upthrust,long_put,"Upthrust at resistance 276.70 (close 267.97) -- bearish bias, review for a LONG PUT",267.97
 2026-07-31T21:40:25Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,267.97
+2026-07-31T21:42:11Z,watchlist,NET,upthrust,long_put,"Upthrust at resistance 291.00 (close 278.98) -- bearish bias, review for a LONG PUT",278.98001
