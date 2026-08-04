@@ -96,3 +96,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-03T21:44:16Z,watchlist,MELI,upthrust,long_put,"Upthrust at resistance 1905.49 (close 1899.03) -- bearish bias, review for a LONG PUT",1899.030029
 2026-08-03T21:45:15Z,watchlist,SNOW,sos,long_call,"Sign of Strength (breakout held) @ 279.49 -- bullish bias, review for a LONG CALL",307.42001
 2026-08-03T21:48:18Z,watchlist,LUNR,spring,long_call,"Spring at support 12.70 (close 13.09) -- bullish bias, review for a LONG CALL",13.09
+2026-08-04T21:41:59Z,sp500_sweep,WMT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,111.55
+2026-08-04T21:43:58Z,sp500_sweep,BAC,upthrust,long_put,"Upthrust at resistance 62.99 (close 62.91) -- bearish bias, review for a LONG PUT",62.91
+2026-08-04T21:45:58Z,sp500_sweep,PLTR,upthrust,long_put,"Upthrust at resistance 163.70 (close 162.63) -- bearish bias, review for a LONG PUT",162.63
