@@ -102,3 +102,15 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-04T21:51:42Z,watchlist,GRPN,upthrust,long_put,"Upthrust at resistance 28.59 (close 27.49) -- bearish bias, review for a LONG PUT",27.49
 2026-08-04T21:51:43Z,watchlist,NET,sos,long_call,"Sign of Strength (breakout held) @ 291.00 -- bullish bias, review for a LONG CALL",301.23001
 2026-08-04T21:54:43Z,watchlist,PLTR,bc,long_put,"Buying Climax @ 162.63 -- bearish bias, review for a LONG PUT",162.63
+2026-08-05T21:37:06Z,sp500_sweep,GOOG,upthrust,long_put,"Upthrust at resistance 374.35 (close 360.11) -- bearish bias, review for a LONG PUT",360.10999
+2026-08-05T21:38:06Z,sp500_sweep,TSLA,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,321.45999
+2026-08-05T21:39:06Z,sp500_sweep,JPM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,359.23999
+2026-08-05T21:40:07Z,sp500_sweep,AMAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,533.85999
+2026-08-05T21:40:08Z,sp500_sweep,LRCX,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,307.785
+2026-08-05T21:41:06Z,sp500_sweep,UNH,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,412.75
+2026-08-05T21:41:07Z,sp500_sweep,GE,upthrust,long_put,"Upthrust at resistance 382.97 (close 381.12) -- bearish bias, review for a LONG PUT",381.12
+2026-08-05T21:41:08Z,sp500_sweep,KO,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,86.82
+2026-08-05T21:42:08Z,sp500_sweep,PANW,upthrust,long_put,"Upthrust at resistance 368.80 (close 362.66) -- bearish bias, review for a LONG PUT",362.66
+2026-08-05T21:43:08Z,sp500_sweep,DELL,upthrust,long_put,"Upthrust at resistance 463.48 (close 462.83) -- bearish bias, review for a LONG PUT",462.82999
+2026-08-05T21:44:08Z,sp500_sweep,MRVL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,210.88
+2026-08-05T21:45:07Z,sp500_sweep,CRWD,upthrust,long_put,"Upthrust at resistance 217.50 (close 209.86) -- bearish bias, review for a LONG PUT",209.86
