@@ -114,3 +114,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-05T21:43:08Z,sp500_sweep,DELL,upthrust,long_put,"Upthrust at resistance 463.48 (close 462.83) -- bearish bias, review for a LONG PUT",462.82999
 2026-08-05T21:44:08Z,sp500_sweep,MRVL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,210.88
 2026-08-05T21:45:07Z,sp500_sweep,CRWD,upthrust,long_put,"Upthrust at resistance 217.50 (close 209.86) -- bearish bias, review for a LONG PUT",209.86
+2026-08-05T21:49:50Z,watchlist,AAPL,abc,long_put,"ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 61% of A, C extended 99% of A)",310.92001
+2026-08-05T21:50:52Z,watchlist,NET,lps,long_call,"Last Point of Support @ 291.00 -- bullish bias, review for a LONG CALL",292.95999
+2026-08-05T21:53:51Z,watchlist,TSLA,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 72% of A, C extended 97% of A)",321.45999
+2026-08-05T21:53:53Z,watchlist,MDB,lps,long_call,"Last Point of Support @ 373.33 -- bullish bias, review for a LONG CALL",376.019989
