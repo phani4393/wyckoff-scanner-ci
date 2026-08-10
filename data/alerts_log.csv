@@ -150,3 +150,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-10T21:11:38Z,sp500_sweep,TXN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,280.23999
 2026-08-10T21:11:38Z,sp500_sweep,DELL,upthrust,long_put,"Upthrust at resistance 463.48 (close 457.97) -- bearish bias, review for a LONG PUT",457.97
 2026-08-10T21:13:37Z,sp500_sweep,DDOG,spring,long_call,"Spring at support 237.67 (close 260.73) -- bullish bias, review for a LONG CALL",260.73001
+2026-08-10T21:22:16Z,watchlist,NET,sos,long_call,"Sign of Strength (breakout held) @ 291.00 -- bullish bias, review for a LONG CALL",310.42999
