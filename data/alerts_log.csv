@@ -158,3 +158,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-11T21:15:13Z,sp500_sweep,ADBE,upthrust,long_put,"Upthrust at resistance 266.28 (close 263.62) -- bearish bias, review for a LONG PUT",263.62
 2026-08-11T21:15:13Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,263.62
 2026-08-11T21:16:05Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,246.81
+2026-08-11T21:25:14Z,watchlist,MELI,sos,long_call,"Sign of Strength (breakout held) @ 1905.49 -- bullish bias, review for a LONG CALL",1940.33997
+2026-08-11T21:25:15Z,watchlist,NET,lps,long_call,"Last Point of Support @ 291.00 -- bullish bias, review for a LONG CALL",306.8775
