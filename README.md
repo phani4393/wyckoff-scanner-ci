@@ -80,6 +80,12 @@ wyckoff-scanner-ci/
         └── system_flow.html       <- interactive version of SYSTEM_FLOW.md (open in a browser)
 ```
 
+`docs/AI_SESSION_SUMMARY.md` holds dated notes from research/dev sessions —
+written so another AI session (or person) can pick up full context without
+the original conversation. Add a new dated entry (or a new dated file,
+following the same pattern) after a substantial session instead of letting
+that context live only in chat history.
+
 **Not committed (private / local only):** `twelvedata_api_key.txt`,
 `trades.csv` (your P&L), and the generated `charts/` folder — all gitignored.
 
