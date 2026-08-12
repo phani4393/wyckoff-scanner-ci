@@ -160,3 +160,11 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-11T21:16:05Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,246.81
 2026-08-11T21:25:14Z,watchlist,MELI,sos,long_call,"Sign of Strength (breakout held) @ 1905.49 -- bullish bias, review for a LONG CALL",1940.33997
 2026-08-11T21:25:15Z,watchlist,NET,lps,long_call,"Last Point of Support @ 291.00 -- bullish bias, review for a LONG CALL",306.8775
+2026-08-12T21:08:15Z,sp500_sweep,BRK.B,upthrust,long_put,"Upthrust at resistance 512.58 (close 510.00) -- bearish bias, review for a LONG PUT",510.0
+2026-08-12T21:09:15Z,sp500_sweep,JNJ,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,260.85999
+2026-08-12T21:10:16Z,sp500_sweep,AMAT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,548.40002
+2026-08-12T21:10:16Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,855.59998
+2026-08-12T21:11:16Z,sp500_sweep,PG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,144.080002
+2026-08-12T21:14:16Z,sp500_sweep,QCOM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,163.070007
+2026-08-12T21:14:17Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,124.94
+2026-08-12T21:15:20Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,37.61
