@@ -4,4 +4,6 @@ charts/
 twelvedata_api_key.txt
 trades.csv
 backtest_results.json
+backtest_results_expanded.json
 regime_analysis_results.json
+backtest_expanded_run.log

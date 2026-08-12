@@ -173,6 +173,45 @@ already caps its own downside near −100% — the stress test's assumed "total
 loss" isn't as extreme relative to the option distribution as it is relative
 to the stock-return distribution.)
 
+## Does a different ticker universe change the answer? (tested, not just asked)
+
+The original 44-name Core Watchlist skews large-cap growth/momentum by
+construction (see "What was tested" above) — a reasonable question is whether
+the negative edge is a property of *that specific cohort* rather than of the
+signals themselves. Tested 2026-08-12 by unioning in the 59-name
+`data/top50_plus_ai.csv` list (`python src/backtest.py --extra-tickers
+../data/top50_plus_ai.csv`), which skews meaningfully differently — broad S&P
+leadership across financials, industrials, healthcare, and staples (JPM, XOM,
+JNJ, V, UNH, CVX, WMT, PG, HD, GS, WFC, RTX, C, ...), not just growth/SaaS
+names. Deduplicated union: 82-83 tickers depending on signal type (a few names
+simply never produced a given rarer pattern), 43,199 signal instances (vs. the
+original 18,148) — same detectors, same fair baseline, same cluster bootstrap,
+unmodified. Full output: `backtest_results_expanded.json` (gitignored, same as
+the original).
+
+**Verdict: no change.** Every signal that was significant on the 44-name
+universe remains significant on the expanded one, same direction, similar
+magnitude — e.g. pure_spring's 10-day hit edge was −19.1pp CI[-22.5,-15.4]pp
+originally vs. −18.5pp CI[-20.5,-16.3]pp expanded; pure_upthrust −25.6pp
+CI[-28.3,-23.1]pp originally vs. −23.1pp CI[-25.0,-21.4]pp expanded — overlapping
+intervals, not a different result. This rules out "maybe it only fails on
+high-beta momentum names": the effect is broad-based across a meaningfully
+different stock cohort, not a quirk of the original watchlist's composition.
+
+**ABC is still inconclusive — but more informatively so.** More than doubling
+the sample narrowed its confidence interval considerably without moving the
+point estimate away from zero: the 10-day stock-return edge went from +0.6pp
+CI[-3.3,+4.6]pp (p=0.76) to +0.20pp CI[-0.3,+0.7]pp (p=0.473). That is not "we
+need more data and it'll resolve" — it's the CI tightening *around* zero. If
+ABC has a real edge at all, this says it's almost certainly small (well under
+1pp), not a large effect the original sample was simply too small to see. The
+closest thing to a positive signal anywhere in this run is the 20-day
+options-P&L edge (+7.7pp, CI[-0.3,+16.3]pp, p=0.060) — just outside the 5%
+line, and the least trustworthy number here given how many assumptions the
+options-P&L model already carries (synthetic ATM strike, realized vol as an IV
+proxy, an assumed spread cost). Worth revisiting if the live scorecard
+accumulates enough ABC instances over time; not worth trading on now.
+
 ## What this does NOT prove
 
 - It does not prove Wyckoff "doesn't work" — Wyckoff is discretionary and

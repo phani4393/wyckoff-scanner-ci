@@ -1,19 +1,28 @@
 """
 Backtest: for every historical instance of each Wyckoff signal, what was the
 stock's forward return over the next 5/10/20 trading days -- and how often
-did it move in the direction a long call/put would need it to?
-
-This does NOT model actual option P&L (no historical options chain data
-available for free) -- it answers the prerequisite question: does the
-signal have real directional edge at all? If the underlying doesn't move
-enough in the right direction often enough, no amount of clever strike/DTE
-selection saves a long option trade built on that signal.
+did it move in the direction a long call/put would need it to? Also prices
+each instance as a modeled long-option round-trip (options_pricing.py:
+Black-Scholes with realized vol as an IV proxy, theta decay, an assumed
+spread cost), since a signal that looks only mildly behind on stock returns
+can be shown for how much worse it is once actually priced as a call/put.
 
 Reuses the exact same detectors as the live scanners (wyckoff_common,
 wyckoff_patterns) so the backtest tests the SAME logic that's actually
 running in production, not a reimplementation that could drift out of sync.
+
+--extra-tickers CSV unions in another Symbol-column ticker file (e.g.
+data/top50_plus_ai.csv) on top of the core watchlist before running -- more
+independent tickers tightens the cluster-bootstrap CI, which is specifically
+what the ABC signal needs: BACKTEST_FINDINGS.md calls its edge inconclusive
+(not distinguishable from zero) rather than negative, and says resolving
+that needs a larger sample rather than a different test. Results from an
+expanded run are written to backtest_results_expanded.json, never
+overwriting the original backtest_results.json that BACKTEST_FINDINGS.md's
+published numbers came from.
 """
 
+import argparse
 import csv
 import json
 import statistics
@@ -29,8 +38,8 @@ HORIZONS = (5, 10, 20)
 OUTPUT_SIZE = 5000  # ~20yr of daily bars, same 1 credit as any other size
 
 
-def load_tickers():
-    with open(TICKER_FILE, newline="", encoding="utf-8") as f:
+def load_tickers(path=None):
+    with open(path or TICKER_FILE, newline="", encoding="utf-8") as f:
         return [row["Symbol"] for row in csv.DictReader(f)]
 
 
@@ -491,8 +500,22 @@ def summarize(records, matched, raw_matched=None):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--extra-tickers", metavar="CSV",
+                     help="union in another Symbol-column ticker CSV (e.g. "
+                          "data/top50_plus_ai.csv) on top of the core watchlist before "
+                          "running -- more independent tickers tightens the cluster-"
+                          "bootstrap CI, which is specifically what ABC needs (see "
+                          "docs/BACKTEST_FINDINGS.md). Writes to "
+                          "backtest_results_expanded.json instead of overwriting the "
+                          "original backtest_results.json.")
+    args = ap.parse_args()
+
     api_key = c.load_api_key()
     tickers = load_tickers()
+    if args.extra_tickers:
+        seen = set(tickers)
+        tickers += [t for t in load_tickers(args.extra_tickers) if t not in seen and t != "SPY"]
     records, skipped, ticker_meta, baseline_returns, matched, raw_matched = run_backtest(tickers, api_key)
 
     print("\n" + "=" * 78)
@@ -538,7 +561,8 @@ def main():
           f"({stats_utils.N_BOOT} CLUSTER resamples per signal/horizon, resampling by ticker "
           "-- same-ticker instances aren't independent draws)...", flush=True)
     summary = summarize(records, matched, raw_matched)
-    with open("backtest_results.json", "w") as f:
+    out_path = "backtest_results_expanded.json" if args.extra_tickers else "backtest_results.json"
+    with open(out_path, "w") as f:
         json.dump({"records": records, "summary": summary, "ticker_meta": ticker_meta,
                     "baseline": baseline, "matched_baseline": matched, "skipped": skipped}, f, indent=2)
 
@@ -587,7 +611,7 @@ def main():
                     osig = "significant" if ohp < 0.05 else "NOT significant"
                     print(f"      95% CI (options): hit edge [{ohci[0]:+5.1f}, {ohci[1]:+5.1f}]pp (p={ohp:.3f}), "
                           f"pnl edge [{opci[0]:+5.1f}, {opci[1]:+5.1f}]pp (p={opp:.3f}) -- {osig} at 5% level")
-    print("\nFull records saved to backtest_results.json")
+    print(f"\nFull records saved to {out_path}")
 
 
 if __name__ == "__main__":

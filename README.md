@@ -73,6 +73,7 @@ wyckoff-scanner-ci/
 │   └── alerts_followup.csv       <- day+1/2/3 stronger/weaker check-ins (auto-committed by CI)
 └── docs/
     ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
+    ├── AI_SESSION_SUMMARY.md      <- dated research-session notes, written for handoff to another AI/person
     ├── SYSTEM_FLOW.md             <- the WHOLE system, every step, all 3 tracks -- kept in sync (see below)
     ├── LIVE_SCORECARD.md          <- score_alerts.py explained end to end, worked example
     └── diagrams/
