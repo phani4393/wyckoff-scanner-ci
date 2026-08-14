@@ -24,6 +24,8 @@ research/validation track, and the local trader tools.
    2x, drop the unsettled last bar), detect (textbook spring/upthrust
    inline, plus a Weis Wave volume-exhaustion context flag — no
    climax/SOS/SOW/LPS/ABC here, that's watchlist-only), then log + notify.
+   Same regime filter as the watchlist scanner applies to spring/upthrust
+   signals; Weis Wave is context-only (no direction) so passes unfiltered.
 
 3. **Watchlist deep scan** (`src/wyckoff_watchlist_scanner.py`) — the full
    pipeline, scanning `data/core_watchlist.csv` (44 names). Same fetch-level
@@ -32,6 +34,13 @@ research/validation track, and the local trader tools.
    an ABC correction that only fires on its confirmation day), generates an
    annotated chart per signal, logs every alert, and — local runs only —
    auto-drafts a `trade_journal.py` entry.
+
+   **Regime filter** (`src/regime_filter.py`): before alerting, each signal
+   is checked against SPY's market regime (close vs 200d SMA). In the default
+   **strict** mode, only regime-aligned signals fire alerts (bullish signals
+   in bull regime, bearish in bear). Filtered signals are still logged with
+   a `[REGIME-FILTERED]` prefix but don't alert or draft. Control via
+   `REGIME_MODE` env var (`strict`/`permissive`/`adaptive`).
 
 4. **Alert persistence** (`src/alert_log.py` → `data/alerts_log.csv`) —
    every alert from both scanners gets one row (timestamp, ticker, setup,
@@ -87,7 +96,10 @@ vs. a matched "naive swing" baseline, with a cluster-bootstrap 95% CI/p-value
 (resamples by ticker, not by instance). **Verdict: 10 of 11 signal types
 have a statistically significant negative edge** (p<0.001); ABC is the sole
 exception — inconclusive, not "proven neutral." Full results in
-[`BACKTEST_FINDINGS.md`](BACKTEST_FINDINGS.md). Supporting modules:
+[`BACKTEST_FINDINGS.md`](BACKTEST_FINDINGS.md). The `--regime-filter` flag
+applies the same regime gating used in the live scanners, letting you compare
+filtered vs unfiltered results to see if regime alignment improves edge.
+Supporting modules:
 - `options_pricing.py` — Black-Scholes long-option P&L, realized vol as an IV proxy.
 - `stats_utils.py` — the cluster bootstrap.
 - `survivorship_sensitivity.py` — the baseline flips negative at a 5% hypothetical company-failure rate.

@@ -45,6 +45,7 @@ wyckoff-scanner-ci/
 │   ├── stats_utils.py            <- bootstrap CI/p-value for the backtest's edge deltas
 │   ├── survivorship_sensitivity.py  <- quantifies how fragile the baseline is to survivorship bias
 │   ├── regime_analysis.py        <- tests whether SPY's own trend explains the edge (it doesn't)
+│   ├── regime_filter.py          <- live regime gating for the scanners (SPY > 200d SMA = bull)
 │   ├── alert_log.py              <- durable log of every alert sent, for later evaluation (same-day dedup)
 │   ├── score_alerts.py           <- scores alerts_log.csv against reality, live out-of-sample
 │   ├── scorecard_chart.py        <- cumulative-return chart for the live scorecard
@@ -74,6 +75,7 @@ wyckoff-scanner-ci/
 └── docs/
     ├── BACKTEST_FINDINGS.md       <- why there's no mechanical edge; read it
     ├── AI_SESSION_SUMMARY.md      <- dated research-session notes, written for handoff to another AI/person
+    ├── PREMIUM_DATA_DECISION_BRIEF.md  <- vendor-agnostic brief for cross-checking a decision with a different AI
     ├── SYSTEM_FLOW.md             <- the WHOLE system, every step, all 3 tracks -- kept in sync (see below)
     ├── LIVE_SCORECARD.md          <- score_alerts.py explained end to end, worked example
     └── diagrams/
@@ -85,6 +87,13 @@ written so another AI session (or person) can pick up full context without
 the original conversation. Add a new dated entry (or a new dated file,
 following the same pattern) after a substantial session instead of letting
 that context live only in chat history.
+
+`docs/PREMIUM_DATA_DECISION_BRIEF.md` is a one-off pattern worth reusing:
+when you want a second opinion from a different AI model on a specific
+decision, write a standalone brief with the relevant facts and the question,
+deliberately omitting any recommendation already made — so the other
+model reasons from the facts instead of rubber-stamping (or reflexively
+contradicting) a prior answer.
 
 **Not committed (private / local only):** `twelvedata_api_key.txt`,
 `trades.csv` (your P&L), and the generated `charts/` folder — all gitignored.
@@ -118,6 +127,37 @@ upthrust, trading-range entry, Buying/Selling Climax + Automatic Reaction,
 Sign of Strength / Weakness, Last Point of Support / Supply, Elliott-style
 ABC correction. Each alert states a **LONG CALL / LONG PUT** bias and a ~30-day
 expected move for strike/target sanity.
+
+### Regime filter (NEW)
+Both scanners now gate signals by **market regime** — SPY's position relative
+to its 200-day SMA:
+- **Bull regime** (SPY > 200d SMA): only bullish signals (springs, SC, SOS, LPS, bullish ABC) are alerted
+- **Bear regime** (SPY < 200d SMA): only bearish signals (upthrusts, BC, SOW, LPSY, bearish ABC) are alerted
+
+Filtered signals are still **logged** to `alerts_log.csv` with a `[REGIME-FILTERED]`
+prefix (so you can see what got caught), but they don't trigger Telegram alerts
+and don't get drafted to the trade journal.
+
+**Why?** Trading against the broad market trend is fighting headwinds. The
+backtest (`regime_analysis.py`) showed signals have negative edge in both
+regimes, but aligning with the trend is *less bad* than fighting it.
+
+**Control the filter via `REGIME_MODE` env var:**
+```bash
+# Default: strict (only regime-aligned signals alerted)
+python src/wyckoff_watchlist_scanner.py
+
+# Permissive: all signals alerted, with regime context in the message
+REGIME_MODE=permissive python src/wyckoff_watchlist_scanner.py
+
+# Adaptive: strict in strong trends (>3% from SMA), permissive near the SMA
+REGIME_MODE=adaptive python src/wyckoff_watchlist_scanner.py
+```
+
+**Check current regime manually:**
+```bash
+python src/regime_filter.py
+```
 
 **Every alert is logged** to `data/alerts_log.csv` (`src/alert_log.py`) —
 timestamp, ticker, setup, direction, and the exact thesis line sent to
@@ -219,9 +259,16 @@ like "−19pp" can be read as "real" or "noise given this sample size" rather
 than taken as a bare point estimate. Read
 [`docs/BACKTEST_FINDINGS.md`](docs/BACKTEST_FINDINGS.md) for the conclusions.
 
+```bash
+python src/backtest.py                      # standard backtest (all signals)
+python src/backtest.py --regime-filter      # only count regime-aligned signals
+python src/backtest.py --extra-tickers data/top50_plus_ai.csv  # expand the universe
 ```
-python src/backtest.py
-```
+
+The `--regime-filter` flag applies the same regime gating used in the live
+scanners: only bullish signals in bull regimes, only bearish in bear regimes.
+Compare the results to the unfiltered run to see if regime alignment improves
+edge. Results are written to `backtest_results_regime_filtered.json`.
 
 ## Live scorecard — `score_alerts.py`
 **Full walkthrough, with a real worked example:**

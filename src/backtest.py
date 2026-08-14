@@ -20,6 +20,12 @@ that needs a larger sample rather than a different test. Results from an
 expanded run are written to backtest_results_expanded.json, never
 overwriting the original backtest_results.json that BACKTEST_FINDINGS.md's
 published numbers came from.
+
+--regime-filter applies the same regime gating used in the live scanners:
+only bullish signals in bull regimes (SPY > 200d SMA), only bearish signals
+in bear regimes (SPY < 200d SMA). This lets you compare filtered vs unfiltered
+results to see if regime alignment improves edge. Results are written to
+backtest_results_regime_filtered.json.
 """
 
 import argparse
@@ -36,11 +42,56 @@ from wyckoff_patterns import climax_events, sos_sow_events, lps_lpsy_events
 TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "core_watchlist.csv"
 HORIZONS = (5, 10, 20)
 OUTPUT_SIZE = 5000  # ~20yr of daily bars, same 1 credit as any other size
+SMA_LEN = 200  # regime filter: bull if SPY close > 200d SMA, else bear
 
 
 def load_tickers(path=None):
     with open(path or TICKER_FILE, newline="", encoding="utf-8") as f:
         return [row["Symbol"] for row in csv.DictReader(f)]
+
+
+def _sma(bars, length):
+    out = [None] * len(bars)
+    run = 0.0
+    for i, b in enumerate(bars):
+        run += b["close"]
+        if i >= length:
+            run -= bars[i - length]["close"]
+        if i >= length - 1:
+            out[i] = run / length
+    return out
+
+
+def build_regime_lookup(spy_bars):
+    """Returns a dict mapping date -> 'bull' or 'bear' based on SPY's 200d SMA.
+    
+    This is the same definition used in regime_filter.py and regime_analysis.py:
+    bull = SPY close > 200d SMA, bear = SPY close <= 200d SMA.
+    """
+    sma = _sma(spy_bars, SMA_LEN)
+    out = {}
+    for i, b in enumerate(spy_bars):
+        if sma[i] is None:
+            continue
+        out[b["date"]] = "bull" if b["close"] > sma[i] else "bear"
+    return out
+
+
+def signal_passes_regime_filter(event, regime_by_date):
+    """Returns True if the signal direction aligns with the regime on that date.
+    
+    - Bullish signals only pass in bull regime (SPY > 200d SMA)
+    - Bearish signals only pass in bear regime (SPY < 200d SMA)
+    - Signals on dates without regime data pass (fail open)
+    """
+    regime = regime_by_date.get(event["date"])
+    if regime is None:
+        return True  # fail open if we don't know the regime
+    if event["direction"] == "bullish":
+        return regime == "bull"
+    elif event["direction"] == "bearish":
+        return regime == "bear"
+    return True  # unknown direction passes
 
 
 def fetch_full_history(sym, api_key):
@@ -235,25 +286,23 @@ def swing_baseline_events(bars):
     return out
 
 
-def _sma(bars, length):
-    out = [None] * len(bars)
-    run = 0.0
-    for i, b in enumerate(bars):
-        run += b["close"]
-        if i >= length:
-            run -= bars[i - length]["close"]
-        if i >= length - 1:
-            out[i] = run / length
-    return out
-
-
-def run_backtest(tickers, api_key, progress=True):
+def run_backtest(tickers, api_key, progress=True, regime_filter=False):
     import time
     start = time.monotonic()
 
     print("Fetching SPY benchmark history...", flush=True)
     spy_bars = fetch_full_history("SPY", api_key)
     spy_by_date = c.build_close_by_date(spy_bars)
+    
+    # Build regime lookup for filtering (if enabled)
+    regime_by_date = {}
+    if regime_filter:
+        regime_by_date = build_regime_lookup(spy_bars)
+        n_bull = sum(1 for v in regime_by_date.values() if v == "bull")
+        n_bear = sum(1 for v in regime_by_date.values() if v == "bear")
+        print(f"Regime filter ENABLED: {n_bull} bull days, {n_bear} bear days in history")
+        print("  -> Bullish signals only counted in bull regime, bearish in bear regime\n")
+    
     print(f"SPY: {len(spy_bars)} bars, {spy_bars[0]['date']} to {spy_bars[-1]['date']}\n", flush=True)
 
     records = []  # {sym, date, type, direction, returns: {5: r, 10: r, 20: r}}
@@ -304,6 +353,11 @@ def run_backtest(tickers, api_key, progress=True):
             continue
 
         events = all_signal_events(bars, spy_by_date)
+        
+        # Apply regime filter if enabled: only count signals aligned with regime
+        if regime_filter:
+            events = [e for e in events if signal_passes_regime_filter(e, regime_by_date)]
+        
         per_type = {}
         for e in events:
             returns = {h: forward_return(bars, e["idx"], h) for h in HORIZONS}
@@ -509,6 +563,12 @@ def main():
                           "docs/BACKTEST_FINDINGS.md). Writes to "
                           "backtest_results_expanded.json instead of overwriting the "
                           "original backtest_results.json.")
+    ap.add_argument("--regime-filter", action="store_true",
+                     help="only count signals aligned with SPY regime: bullish signals "
+                          "in bull regime (SPY > 200d SMA), bearish in bear regime. "
+                          "This tests whether regime-aligned signals have better edge "
+                          "than unfiltered signals. Writes to "
+                          "backtest_results_regime_filtered.json.")
     args = ap.parse_args()
 
     api_key = c.load_api_key()
@@ -516,7 +576,9 @@ def main():
     if args.extra_tickers:
         seen = set(tickers)
         tickers += [t for t in load_tickers(args.extra_tickers) if t not in seen and t != "SPY"]
-    records, skipped, ticker_meta, baseline_returns, matched, raw_matched = run_backtest(tickers, api_key)
+    records, skipped, ticker_meta, baseline_returns, matched, raw_matched = run_backtest(
+        tickers, api_key, regime_filter=args.regime_filter
+    )
 
     print("\n" + "=" * 78)
     print("WHAT THIS RAN AGAINST")
@@ -561,10 +623,19 @@ def main():
           f"({stats_utils.N_BOOT} CLUSTER resamples per signal/horizon, resampling by ticker "
           "-- same-ticker instances aren't independent draws)...", flush=True)
     summary = summarize(records, matched, raw_matched)
-    out_path = "backtest_results_expanded.json" if args.extra_tickers else "backtest_results.json"
+    
+    # Determine output file based on flags
+    if args.regime_filter:
+        out_path = "backtest_results_regime_filtered.json"
+    elif args.extra_tickers:
+        out_path = "backtest_results_expanded.json"
+    else:
+        out_path = "backtest_results.json"
+    
     with open(out_path, "w") as f:
         json.dump({"records": records, "summary": summary, "ticker_meta": ticker_meta,
-                    "baseline": baseline, "matched_baseline": matched, "skipped": skipped}, f, indent=2)
+                    "baseline": baseline, "matched_baseline": matched, "skipped": skipped,
+                    "regime_filter": args.regime_filter}, f, indent=2)
 
     print("\n" + "=" * 78)
     print("SIGNAL RESULTS vs MATCHED baseline  (edge = does the signal beat naive swing-trading?)")
