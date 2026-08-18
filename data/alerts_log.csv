@@ -202,3 +202,10 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-17T20:52:46Z,sp500_sweep,GS,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,1051.060059
 2026-08-17T20:53:47Z,sp500_sweep,DELL,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 485.70 (close 479.67) -- bearish bias, review for a LONG PUT",479.67001
 2026-08-17T20:54:46Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,138.5199
+2026-08-18T20:43:09Z,sp500_sweep,GOOGL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,344.0
+2026-08-18T20:43:09Z,sp500_sweep,GOOG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,341.45001
+2026-08-18T20:45:15Z,sp500_sweep,V,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,358.84
+2026-08-18T20:46:16Z,sp500_sweep,COST,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,953.5
+2026-08-18T20:48:15Z,sp500_sweep,GS,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,1051.31006
+2026-08-18T20:49:16Z,sp500_sweep,DELL,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 485.70 (close 479.81) -- bearish bias, review for a LONG PUT",479.81
+2026-08-18T20:50:13Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,138.50999
