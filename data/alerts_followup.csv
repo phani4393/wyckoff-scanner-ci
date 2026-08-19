@@ -296,3 +296,9 @@ logged_at,sym,setup,direction,day_offset,check_date,cumulative_return_pct,trend
 2026-08-13T21:13:29Z,RTX,upthrust,long_put,3,2026-08-18,-2.272,WEAKER
 2026-08-14T20:55:46Z,RTX,upthrust,long_put,2,2026-08-18,-1.13,WEAKER
 2026-08-14T21:02:59Z,GTLB,sos,long_call,2,2026-08-18,-2.628,STRONGER
+2026-08-17T20:53:47Z,DELL,upthrust,long_put,2,2026-08-19,8.808,STRONGER
+2026-08-18T20:49:16Z,DELL,upthrust,long_put,1,2026-08-19,6.636,STRONGER
+2026-08-14T21:03:58Z,LUNR,bc,long_put,3,2026-08-19,2.578,STRONGER
+2026-08-14T20:51:45Z,XOM,upthrust,long_put,3,2026-08-19,-2.917,STRONGER
+2026-08-14T20:55:46Z,RTX,upthrust,long_put,3,2026-08-19,1.175,STRONGER
+2026-08-14T21:02:59Z,GTLB,sos,long_call,3,2026-08-19,-0.047,STRONGER
