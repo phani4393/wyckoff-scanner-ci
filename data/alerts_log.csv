@@ -220,3 +220,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-20T20:54:42Z,sp500_sweep,PG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,144.38
 2026-08-20T20:55:41Z,sp500_sweep,PLTR,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,175.19
 2026-08-20T20:55:42Z,sp500_sweep,PANW,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 368.80 (close 359.76) -- bearish bias, review for a LONG PUT",359.76001
+2026-08-20T20:58:27Z,watchlist,BKNG,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 215.69 (close 213.00) -- bearish bias, review for a LONG PUT",213.0
+2026-08-20T21:01:30Z,watchlist,CME,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 270.00 (close 266.94) -- bearish bias, review for a LONG PUT",266.94
