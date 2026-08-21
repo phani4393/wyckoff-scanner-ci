@@ -229,3 +229,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-21T20:47:16Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,815.39001
 2026-08-21T20:48:16Z,sp500_sweep,KO,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 90.92 (close 90.50) -- bearish bias, review for a LONG PUT",90.5
 2026-08-21T20:51:17Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,272.22
+2026-08-21T20:57:32Z,watchlist,GTLB,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 58% of A, C extended 121% of A)",41.68
+2026-08-21T20:58:33Z,watchlist,MARA,spring,long_call,"Spring at support 10.03 (close 11.15) -- bullish bias, review for a LONG CALL",11.15
