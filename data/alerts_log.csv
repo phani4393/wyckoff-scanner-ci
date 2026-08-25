@@ -238,3 +238,11 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-24T20:57:35Z,sp500_sweep,NFLX,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,80.010002
 2026-08-24T20:58:36Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,433.089996
 2026-08-24T21:05:36Z,watchlist,MDB,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 62% of A, C extended 93% of A)",430.82999
+2026-08-25T20:50:19Z,sp500_sweep,MSFT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,487.31
+2026-08-25T20:50:19Z,sp500_sweep,AMZN,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,262.070007
+2026-08-25T20:51:20Z,sp500_sweep,LLY,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 1249.45 (close 1246.93) -- bearish bias, review for a LONG PUT",1246.93005
+2026-08-25T20:52:19Z,sp500_sweep,AMD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,456.745
+2026-08-25T20:54:19Z,sp500_sweep,UNH,spring,long_call,"Spring at support 397.80 (close 398.76) -- bullish bias, review for a LONG CALL",398.76001
+2026-08-25T20:54:20Z,sp500_sweep,GE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,341.84
+2026-08-25T20:55:24Z,sp500_sweep,NFLX,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,80.010002
+2026-08-25T20:56:23Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,433.19
