@@ -255,3 +255,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-26T23:49:35Z,sp500_sweep,PLTR,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,177.5
 2026-08-26T23:49:36Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,339.31
 2026-08-26T23:52:35Z,sp500_sweep,DDOG,spring,long_call,"Spring at support 225.26 (close 227.67) -- bullish bias, review for a LONG CALL",227.67
+2026-08-27T00:05:43Z,watchlist,DDOG,spring,long_call,"Spring at support 225.26 (close 227.67) -- bullish bias, review for a LONG CALL",227.67
