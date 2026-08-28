@@ -58,6 +58,26 @@ SCORED_FIELDS = ["logged_at", "sym", "setup", "direction", "horizon_days",
 DIRECTION_TO_BULLISH = {"long_call": True, "long_put": False}
 
 
+# Per-run bars cache. A single score_alerts.py run fetches the same ticker's
+# bars from several places -- score_pending(), live_swing_baseline() (digest),
+# and live_swing_baseline_dated() (chart) -- and the scored-ticker set is a
+# subset of the logged-ticker set. Under the 7-calls/min free-tier limit those
+# repeat fetches are the dominant runtime cost and were pushing score-alerts.yml
+# past its timeout as the ticker set grew. Fetching each symbol at most once per
+# run collapses that: the baseline/chart passes become cache hits on bars the
+# scoring pass already pulled. Cleared at the start of each main() run so a
+# long-lived process (tests) never serves stale bars across runs.
+_BARS_CACHE = {}
+
+
+def _fetch_bars_cached(sym, api_key):
+    """fetch_bars(sym) memoized for the lifetime of one run. Caches None too
+    (a failed/unknown symbol shouldn't be retried repeatedly within a run)."""
+    if sym not in _BARS_CACHE:
+        _BARS_CACHE[sym] = c.fetch_bars(sym, api_key)
+    return _BARS_CACHE[sym]
+
+
 def _load_rows(path):
     if not path.exists():
         return []
@@ -84,6 +104,12 @@ def score_pending(api_key):
     """Fetch bars for tickers with unscored, elapsed-horizon alerts and
     append newly-scoreable rows to alerts_scored.csv. Returns the newly-scored
     rows (empty if nothing was ready yet)."""
+    # score_pending() is always the first step of a run (in main(), and every
+    # direct caller/test invokes it before build_digest()/render_chart()), so
+    # this is the right place to reset the per-run bars cache: it guarantees a
+    # run starts with fresh bars, while the later baseline/chart passes in the
+    # same run still reuse whatever this pass fetched.
+    _BARS_CACHE.clear()
     alerts = _load_rows(ALERTS_LOG)
     if not alerts:
         return []
@@ -100,7 +126,7 @@ def score_pending(api_key):
                    if any((a["logged_at"], a["sym"], a["setup"], str(h)) not in done for h in HORIZONS)]
         if not pending:
             continue
-        bars = c.fetch_bars(sym, api_key)
+        bars = _fetch_bars_cached(sym, api_key)
         if not bars:
             print(f"  {sym}: could not fetch bars this run, will retry next time")
             continue
@@ -187,7 +213,7 @@ def live_swing_baseline(tickers, api_key):
     bear_obt = {h: {} for h in HORIZONS}
 
     for sym in tickers:
-        bars = c.fetch_bars(sym, api_key)
+        bars = _fetch_bars_cached(sym, api_key)
         if not bars:
             continue
         for entry_idx, direction, _aligned in swing_baseline_events(bars):
@@ -217,11 +243,13 @@ def live_swing_baseline_dated(tickers, api_key, horizon):
     """Per-event (date, signed_return) pairs for the live swing baseline at
     ONE horizon -- feeds the equity-curve chart only. Kept separate from
     live_swing_baseline() (used by the digest/bootstrap) rather than
-    reshaping that function's existing return contract; the extra bar fetch
-    this costs is negligible at current ticker-list sizes (single digits)."""
+    reshaping that function's existing return contract. It re-walks the same
+    tickers live_swing_baseline() just did, but goes through the per-run bars
+    cache (_fetch_bars_cached), so it costs no extra network fetches -- only
+    the recompute, which is cheap."""
     out = []
     for sym in tickers:
-        bars = c.fetch_bars(sym, api_key)
+        bars = _fetch_bars_cached(sym, api_key)
         if not bars:
             continue
         for entry_idx, direction, _aligned in swing_baseline_events(bars):

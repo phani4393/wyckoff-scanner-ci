@@ -16,7 +16,12 @@ permissions:
 jobs:
   score:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Scoring + baseline fetch each unique ticker once (per-run bars cache in
+    # score_alerts.py), but that's still up to ~70 tickers at the 7-calls/min
+    # free-tier limit (~10+ min), and grows as more names get alerted. 15 min
+    # was too tight and every run was being cancelled at the timeout; 30 gives
+    # honest headroom (same budget as watchlist-scan.yml).
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

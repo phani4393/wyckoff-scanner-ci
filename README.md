@@ -297,7 +297,18 @@ every run — see [`docs/LIVE_SCORECARD.md`](docs/LIVE_SCORECARD.md#reading-the-
 Runs daily via `.github/workflows/score-alerts.yml`, after both scans, and
 commits `data/alerts_scored.csv` back to the repo the same way `alerts_log.csv`
 is persisted (the chart PNG itself isn't committed — regenerated each run,
-uploaded as a 14-day CI artifact). **Read the numbers with real skepticism
+uploaded as a 14-day CI artifact).
+
+> **Known issue (as of 2026-08-28):** this workflow's scheduled runs are
+> currently being **cancelled at their 15-minute timeout** — the scoring +
+> baseline bar-fetches have grown past 15 min under the 7-calls/min rate
+> limit. Scored data is still committed each run because the persist step
+> uses `if: always()` (verified Aug 17–28), and the run shows as `cancelled`
+> in GitHub Actions, which `pipeline_heartbeat.py` flags. See
+> [`docs/SYSTEM_FLOW.md`](docs/SYSTEM_FLOW.md) stage 6 for detail. Left as-is
+> here; documented, not yet fixed.
+
+**Read the numbers with real skepticism
 until the sample is large** — with only a handful of tickers involved so
 far, the cluster bootstrap will mostly report "not enough independent
 tickers yet," which is the honest answer, not a bug.

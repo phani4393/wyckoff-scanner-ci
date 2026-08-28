@@ -6,17 +6,18 @@ run its JS, so download the repo and open that file in a browser to
 interact with it). Three tracks: the daily automated pipeline, the offline
 research/validation track, and the local trader tools.
 
-> **Content verified against commit `b262786` (2026-07-29).** See "keeping
+> **Content verified against commit `ab3159b` (2026-08-28).** See "keeping
 > this current" below for how this is meant to stay in sync.
 
 ## Track 1 — Daily automated pipeline
 
 1. **Trigger** — four scheduled GitHub Actions workflows: `sp500-scan.yml`
    (~20:20 UTC), `watchlist-scan.yml` (~20:35 UTC), `score-alerts.yml`
-   (~21:15 UTC), `alert-followup.yml` (~21:25 UTC, ~10 min after
+   (~21:35 UTC), `alert-followup.yml` (~21:45 UTC, ~10 min after
    `score-alerts.yml`), each DST-aware (dual cron: daylight-time Mar-Oct,
-   standard-time Nov-Feb). All four also support manual `workflow_dispatch`
-   and running locally.
+   standard-time Nov-Feb; the times above are the Mar-Oct daylight-time
+   offsets — add an hour Nov-Feb). All four also support manual
+   `workflow_dispatch` and running locally.
 
 2. **S&P 500 + AI sweep** (`src/wyckoff_scanner.py`) — the lighter pipeline,
    scanning `data/top50_plus_ai.csv`. Fetches SPY first (aborts entirely if
@@ -86,6 +87,22 @@ research/validation track, and the local trader tools.
    scored alerts against the live baseline, uploaded as a CI artifact and
    sent as a Telegram photo. Persists `data/alerts_scored.csv` back to the
    repo the same way.
+
+   > **Known issue (as of 2026-08-28): this workflow's scheduled runs are
+   > being cancelled at their `timeout-minutes: 15` limit** every run. The
+   > `python src/score_alerts.py --telegram --chart` step now exceeds 15
+   > minutes because it fetches bars sequentially under the 7-calls/min rate
+   > limit for scoring, the live baseline, and the dated baseline as the set
+   > of scored tickers grows. Results are still landing so far: the
+   > `Persist scored alerts` step runs under `if: always()`, so it commits
+   > `data/alerts_scored.csv` even after the timeout signal — verified on
+   > every run Aug 17–28. But this is a race, not a guarantee: a slightly
+   > slower run could be torn down before the commit, and the Telegram
+   > digest/chart may be truncated or skipped. Because the run's
+   > `conclusion` is `cancelled` (not `success`), `pipeline_heartbeat.py`
+   > correctly flags it. Not yet fixed here (documented as current
+   > behavior); a fix would raise `timeout-minutes` and/or make the baseline
+   > fetching cheaper.
 
 ## Track 2 — Research / validation (offline, run manually)
 
