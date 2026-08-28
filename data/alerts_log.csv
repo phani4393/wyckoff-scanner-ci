@@ -264,3 +264,14 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-28T04:29:08Z,watchlist,CRM,sos,long_call,"Sign of Strength (breakout held) @ 175.43 -- bullish bias, review for a LONG CALL",252.050003
 2026-08-28T04:30:07Z,watchlist,CRWD,sos,long_call,"Sign of Strength (breakout held) @ 227.50 -- bullish bias, review for a LONG CALL",227.96001
 2026-08-28T04:31:09Z,watchlist,XYZ,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 86.75 (close 84.85) -- bearish bias, review for a LONG PUT",84.85
+2026-08-28T04:23:22Z,sp500_sweep,NVDA,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,227.98
+2026-08-28T04:24:22Z,sp500_sweep,TSLA,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,354.81
+2026-08-28T04:24:23Z,sp500_sweep,MU,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,935.39001
+2026-08-28T04:25:22Z,sp500_sweep,AMD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,476.67001
+2026-08-28T04:27:22Z,sp500_sweep,AMAT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,482.35999
+2026-08-28T04:33:24Z,sp500_sweep,TXN,spring,long_call,"Spring at support 264.74 (close 266.54) -- bullish bias, review for a LONG CALL",266.54001
+2026-08-28T04:33:28Z,sp500_sweep,LIN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,485.35001
+2026-08-28T04:34:23Z,sp500_sweep,MRVL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,241.45
+2026-08-28T04:34:25Z,sp500_sweep,NOW,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 139.20 (close 138.43) -- bearish bias, review for a LONG PUT",138.42999
+2026-08-28T04:35:23Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,38.46
+2026-08-28T04:35:23Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,54.41
