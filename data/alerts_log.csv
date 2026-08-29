@@ -275,3 +275,8 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-28T04:34:25Z,sp500_sweep,NOW,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 139.20 (close 138.43) -- bearish bias, review for a LONG PUT",138.42999
 2026-08-28T04:35:23Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,38.46
 2026-08-28T04:35:23Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,54.41
+2026-08-29T02:55:00Z,watchlist,MSFT,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 513.73 (close 513.53) -- bearish bias, review for a LONG PUT",513.53003
+2026-08-29T02:56:00Z,watchlist,NVDA,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.92 (close 217.55) -- bearish bias, review for a LONG PUT",217.55
+2026-08-29T02:57:00Z,watchlist,AFRM,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 86.80 (close 77.76) -- bearish bias, review for a LONG PUT",77.76
+2026-08-29T02:57:01Z,watchlist,CRM,sos,long_call,"Sign of Strength (breakout held) @ 175.43 -- bullish bias, review for a LONG CALL",256.0
+2026-08-29T02:58:00Z,watchlist,CRWD,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.50 (close 218.40) -- bearish bias, review for a LONG PUT",218.39999
