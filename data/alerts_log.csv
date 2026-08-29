@@ -280,3 +280,9 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-08-29T02:57:00Z,watchlist,AFRM,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 86.80 (close 77.76) -- bearish bias, review for a LONG PUT",77.76
 2026-08-29T02:57:01Z,watchlist,CRM,sos,long_call,"Sign of Strength (breakout held) @ 175.43 -- bullish bias, review for a LONG CALL",256.0
 2026-08-29T02:58:00Z,watchlist,CRWD,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.50 (close 218.40) -- bearish bias, review for a LONG PUT",218.39999
+2026-08-29T02:50:30Z,sp500_sweep,NVDA,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.92 (close 217.55) -- bearish bias, review for a LONG PUT",217.55
+2026-08-29T02:50:31Z,sp500_sweep,MSFT,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 513.73 (close 513.53) -- bearish bias, review for a LONG PUT",513.53003
+2026-08-29T02:53:31Z,sp500_sweep,CSCO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,109.93
+2026-08-29T03:00:32Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,456.23999
+2026-08-29T03:01:33Z,sp500_sweep,QCOM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,164.19
+2026-08-29T03:01:36Z,sp500_sweep,CRWD,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.50 (close 218.40) -- bearish bias, review for a LONG PUT",218.39999
