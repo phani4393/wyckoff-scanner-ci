@@ -294,3 +294,17 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-01T00:03:10Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,131.62
 2026-09-01T00:04:19Z,watchlist,MELI,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 1946.00 (close 1936.20) -- bearish bias, review for a LONG PUT",1936.19995
 2026-09-01T00:07:27Z,watchlist,TSLA,sos,long_call,"Sign of Strength (breakout held) @ 366.50 -- bullish bias, review for a LONG CALL",367.95001
+2026-09-01T22:38:55Z,sp500_sweep,NVDA,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,217.44
+2026-09-01T22:39:55Z,sp500_sweep,META,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,578.53998
+2026-09-01T22:39:55Z,sp500_sweep,LLY,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,1160.0
+2026-09-01T22:39:55Z,sp500_sweep,MU,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,933.44
+2026-09-01T22:40:55Z,sp500_sweep,JPM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,354.95001
+2026-09-01T22:40:55Z,sp500_sweep,V,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 373.97 (close 372.67) -- bearish bias, review for a LONG PUT",372.67001
+2026-09-01T22:41:55Z,sp500_sweep,CSCO,spring,long_call,"Spring at support 109.23 (close 109.74) -- bullish bias, review for a LONG CALL",109.74
+2026-09-01T22:41:55Z,sp500_sweep,CAT,spring,long_call,"Spring at support 776.00 (close 779.16) -- bullish bias, review for a LONG CALL",779.15997
+2026-09-01T22:43:55Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,362.089996
+2026-09-01T22:44:55Z,sp500_sweep,KLAC,spring,long_call,"Spring at support 169.81 (close 170.89) -- bullish bias, review for a LONG CALL",170.89
+2026-09-01T22:44:56Z,sp500_sweep,TXN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,253.34
+2026-09-01T22:45:56Z,sp500_sweep,LIN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,486.76001
+2026-09-01T22:46:56Z,sp500_sweep,CRWD,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.50 (close 215.07) -- bearish bias, review for a LONG PUT",215.070007
+2026-09-01T22:46:56Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,215.070007
