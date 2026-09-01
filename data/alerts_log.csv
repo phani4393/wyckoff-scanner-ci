@@ -292,3 +292,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-01T00:02:06Z,sp500_sweep,GEV,spring,long_call,"Spring at support 897.68 (close 898.53) -- bullish bias, review for a LONG CALL",898.53003
 2026-09-01T00:02:15Z,sp500_sweep,RTX,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,207.73
 2026-09-01T00:03:10Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,131.62
+2026-09-01T00:04:19Z,watchlist,MELI,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 1946.00 (close 1936.20) -- bearish bias, review for a LONG PUT",1936.19995
+2026-09-01T00:07:27Z,watchlist,TSLA,sos,long_call,"Sign of Strength (breakout held) @ 366.50 -- bullish bias, review for a LONG CALL",367.95001
