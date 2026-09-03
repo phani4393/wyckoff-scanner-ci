@@ -325,3 +325,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-02T22:50:40Z,watchlist,NVDA,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 227.92 (close 224.40) -- bearish bias, review for a LONG PUT",224.39999
 2026-09-02T22:52:40Z,watchlist,OKTA,lps,long_call,"Last Point of Support @ 156.39 -- bullish bias, review for a LONG CALL",163.16
 2026-09-02T22:53:43Z,watchlist,MDB,lps,long_call,"Last Point of Support @ 373.33 -- bullish bias, review for a LONG CALL",375.39999
+2026-09-03T22:38:52Z,sp500_sweep,MSFT,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 513.73 (close 510.12) -- bearish bias, review for a LONG PUT",510.12
+2026-09-03T22:39:51Z,sp500_sweep,AVGO,spring,long_call,"Spring at support 350.06 (close 357.16) -- bullish bias, review for a LONG CALL",357.16
+2026-09-03T22:39:51Z,sp500_sweep,AVGO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,357.16
+2026-09-03T22:44:52Z,sp500_sweep,WFC,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 90.17 (close 89.19) -- bearish bias, review for a LONG PUT",89.19
