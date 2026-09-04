@@ -333,3 +333,11 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-03T22:46:46Z,watchlist,MSFT,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 513.73 (close 510.12) -- bearish bias, review for a LONG PUT",510.12
 2026-09-03T22:48:47Z,watchlist,AVGO,spring,long_call,"Spring at support 350.06 (close 357.16) -- bullish bias, review for a LONG CALL",357.16
 2026-09-03T22:49:47Z,watchlist,HOOD,sos,long_call,"Sign of Strength (breakout held) @ 112.45 -- bullish bias, review for a LONG CALL",124.71
+2026-09-04T22:24:30Z,sp500_sweep,NVDA,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 230.47 (close 230.34) -- bearish bias, review for a LONG PUT",230.345
+2026-09-04T22:24:31Z,sp500_sweep,AAPL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,319.98999
+2026-09-04T22:26:32Z,sp500_sweep,JNJ,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 276.47 (close 275.15) -- bearish bias, review for a LONG PUT",275.14999
+2026-09-04T22:28:31Z,sp500_sweep,CVX,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 208.98 (close 208.56) -- bearish bias, review for a LONG PUT",208.56
+2026-09-04T22:28:31Z,sp500_sweep,ORCL,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 159.26 (close 158.76) -- bearish bias, review for a LONG PUT",158.765
+2026-09-04T22:28:32Z,sp500_sweep,GE,spring,long_call,"Spring at support 336.53 (close 337.08) -- bullish bias, review for a LONG CALL",337.079987
+2026-09-04T22:29:31Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,321.049988
+2026-09-04T22:33:31Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,259.29999
