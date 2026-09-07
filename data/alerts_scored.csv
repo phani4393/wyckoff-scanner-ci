@@ -322,3 +322,5 @@ logged_at,sym,setup,direction,horizon_days,entry_date,exit_date,stock_return_pct
 2026-08-21T20:57:32Z,GTLB,abc,long_put,10,2026-08-21,2026-09-04,-19.582,0,-87.849
 2026-08-21T20:45:16Z,LLY,upthrust,long_put,10,2026-08-21,2026-09-04,8.447,1,71.424
 2026-08-28T04:28:06Z,NVDA,sos,long_call,5,2026-08-28,2026-09-04,5.888,1,44.128
+2026-08-07T21:20:05Z,MARA,spring,long_call,20,2026-08-07,2026-09-04,12.091,1,9.134
+2026-08-21T20:58:33Z,MARA,spring,long_call,10,2026-08-21,2026-09-04,0.444,1,-33.46
