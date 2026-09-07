@@ -312,6 +312,30 @@ def build_digest(api_key):
 
         opt_str = f"  avg_option_pnl={statistics.mean(opt_vals) * 100:+.1f}%" if opt_vals else ""
         lines.append(f"\n{h}d horizon: n={n}  hit_rate={hit_rate * 100:.1f}%  avg_stock_ret={avg_ret:+.2f}%{opt_str}")
+        
+        # Win/Loss asymmetry analysis
+        wins = [r["_ret"] for r in recs if r["_ret"] > 0]
+        losses = [r["_ret"] for r in recs if r["_ret"] <= 0]
+        if wins and losses:
+            avg_win = statistics.mean(wins) * 100
+            avg_loss = abs(statistics.mean(losses)) * 100
+            win_loss_ratio = avg_win / avg_loss if avg_loss > 0 else float('inf')
+            # Expected value = (hit_rate * avg_win) - ((1 - hit_rate) * avg_loss)
+            ev = (hit_rate * avg_win) - ((1 - hit_rate) * avg_loss)
+            lines.append(f"  Win/Loss: avg_win={avg_win:+.2f}%  avg_loss={-avg_loss:.2f}%  "
+                         f"ratio={win_loss_ratio:.2f}x  EV={ev:+.2f}%")
+        
+        # Options win/loss asymmetry (this is where the asymmetry really hurts)
+        if opt_vals:
+            opt_wins = [v for v in opt_vals if v > 0]
+            opt_losses = [v for v in opt_vals if v <= 0]
+            if opt_wins and opt_losses:
+                avg_opt_win = statistics.mean(opt_wins) * 100
+                avg_opt_loss = abs(statistics.mean(opt_losses)) * 100
+                opt_ratio = avg_opt_win / avg_opt_loss if avg_opt_loss > 0 else float('inf')
+                opt_ev = (len(opt_wins)/len(opt_vals) * avg_opt_win) - (len(opt_losses)/len(opt_vals) * avg_opt_loss)
+                lines.append(f"  Options W/L: avg_win={avg_opt_win:+.1f}%  avg_loss={-avg_opt_loss:.1f}%  "
+                             f"ratio={opt_ratio:.2f}x  EV={opt_ev:+.1f}%")
 
         mb, mbear = bull.get(h), bear.get(h)
         if mb and mbear:
@@ -346,7 +370,25 @@ def build_digest(api_key):
         for name, recs in sorted(printable.items(), key=lambda kv: -len(kv[1])):
             hr = sum(r["_hit"] for r in recs) / len(recs)
             ar = statistics.mean(r["_ret"] for r in recs) * 100
-            lines.append(f"  {name:14} n={len(recs):3d}  hit={hr * 100:5.1f}%  avg={ar:+6.2f}%")
+            
+            # Win/Loss asymmetry per setup
+            wins = [r["_ret"] for r in recs if r["_ret"] > 0]
+            losses = [r["_ret"] for r in recs if r["_ret"] <= 0]
+            wl_str = ""
+            if wins and losses:
+                avg_win = statistics.mean(wins) * 100
+                avg_loss = abs(statistics.mean(losses)) * 100
+                ratio = avg_win / avg_loss if avg_loss > 0 else float('inf')
+                wl_str = f"  W/L={ratio:.1f}x"
+            
+            # Options P&L per setup
+            opt_vals = [r["_opt"] for r in recs if r["_opt"] is not None]
+            opt_str = ""
+            if opt_vals:
+                avg_opt = statistics.mean(opt_vals) * 100
+                opt_str = f"  opt={avg_opt:+.1f}%"
+            
+            lines.append(f"  {name:14} n={len(recs):3d}  hit={hr * 100:5.1f}%  avg={ar:+6.2f}%{wl_str}{opt_str}")
     else:
         lines.append("\nBy setup: no setup has 5+ scored instances yet.")
 

@@ -23,7 +23,8 @@ import regime_filter
 import trade_journal
 import wyckoff_notify as notify
 from wyckoff_common import (BENCHMARK, fetch_bars, load_api_key, pivots, wilder_atr,
-                             build_close_by_date, is_pure_spring, is_pure_upthrust)
+                             build_close_by_date, is_pure_spring, is_pure_upthrust,
+                             get_confidence_tier)
 from wyckoff_patterns import trading_range, climax_events, sos_sow_events, lps_lpsy_events, abc_pattern
 from wyckoff_charts import plot_signal_chart
 from pretrade import expected_move, format_line
@@ -77,9 +78,9 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
     atr = wilder_atr(bars)
     res, sup = pivots(bars)
 
-    new_events = []   # human-readable strings for the notification
-    filtered_events = []  # events that were regime-filtered (logged but not alerted)
-    markers = []       # chart annotations, {"idx", "kind", "text"}
+    actionable_events = []   # (setup_type, thesis) tuples for regime-aligned signals
+    filtered_events = []     # thesis strings for regime-filtered signals (watchlist only)
+    markers = []             # chart annotations, {"idx", "kind", "text"}
 
     # Helper to check regime and decide whether to alert or filter
     def _check_regime(direction):
@@ -104,7 +105,7 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
         thesis = f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL"
         should_alert, is_filtered = _check_regime("bullish")
         if should_alert:
-            new_events.append(thesis)
+            actionable_events.append(("spring", thesis))
             _draft(sym, "spring", "long_call", thesis, bars[-1]["close"])
         else:
             filtered_events.append(thesis)
@@ -113,7 +114,7 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
         thesis = f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT"
         should_alert, is_filtered = _check_regime("bearish")
         if should_alert:
-            new_events.append(thesis)
+            actionable_events.append(("upthrust", thesis))
             _draft(sym, "upthrust", "long_put", thesis, bars[-1]["close"])
         else:
             filtered_events.append(thesis)
@@ -129,7 +130,7 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
     tr_today = trading_range(bars)
     tr_yday = trading_range(bars[:-1])
     if tr_today and tr_yday and tr_today["inRange"] and not tr_yday["inRange"]:
-        new_events.append(f"Entered a trading range ({tr_today['rangeLow']:.2f}-{tr_today['rangeHigh']:.2f})")
+        actionable_events.append(("trading_range", f"Entered a trading range ({tr_today['rangeLow']:.2f}-{tr_today['rangeHigh']:.2f})"))
 
     # ---- Climax + Automatic Reaction/Rally ----
     climaxes = climax_events(bars, atr)
@@ -144,15 +145,16 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
             thesis = f"{label} @ {e['price']:.2f} -- {bias}"
             direction = "bullish" if e["type"] == "SC" else "bearish"
             should_alert, is_filtered = _check_regime(direction)
+            setup_type = e["type"].lower()
             if should_alert:
-                new_events.append(thesis)
-                _draft(sym, e["type"].lower(), "long_call" if e["type"] == "SC" else "long_put", thesis, e["price"])
+                actionable_events.append((setup_type, thesis))
+                _draft(sym, setup_type, "long_call" if e["type"] == "SC" else "long_put", thesis, e["price"])
             else:
                 filtered_events.append(thesis)
-                _draft(sym, e["type"].lower(), "long_call" if e["type"] == "SC" else "long_put", thesis, e["price"], regime_filtered=True)
+                _draft(sym, setup_type, "long_call" if e["type"] == "SC" else "long_put", thesis, e["price"], regime_filtered=True)
         if e["arIdx"] == n - 1:
             label = "Automatic Rally" if e["type"] == "SC" else "Automatic Reaction"
-            new_events.append(f"{label} @ {e['arPrice']:.2f} (range boundary from the {e['date']} {e['type']}) -- context, not an entry")
+            actionable_events.append(("ar", f"{label} @ {e['arPrice']:.2f} (range boundary from the {e['date']} {e['type']}) -- context, not an entry"))
 
     # ---- Sign of Strength/Weakness ----
     sos_sow = sos_sow_events(bars, res, sup, atr)
@@ -165,12 +167,13 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
             thesis = f"{label} @ {e['level']:.2f} -- {bias}"
             direction = "bullish" if e["type"] == "SOS" else "bearish"
             should_alert, is_filtered = _check_regime(direction)
+            setup_type = e["type"].lower()
             if should_alert:
-                new_events.append(thesis)
-                _draft(sym, e["type"].lower(), "long_call" if e["type"] == "SOS" else "long_put", thesis, bars[-1]["close"])
+                actionable_events.append((setup_type, thesis))
+                _draft(sym, setup_type, "long_call" if e["type"] == "SOS" else "long_put", thesis, bars[-1]["close"])
             else:
                 filtered_events.append(thesis)
-                _draft(sym, e["type"].lower(), "long_call" if e["type"] == "SOS" else "long_put", thesis, bars[-1]["close"], regime_filtered=True)
+                _draft(sym, setup_type, "long_call" if e["type"] == "SOS" else "long_put", thesis, bars[-1]["close"], regime_filtered=True)
 
     # ---- Last Point of Support/Supply ----
     lps = lps_lpsy_events(bars, sos_sow, atr)
@@ -183,12 +186,13 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
             thesis = f"{label} @ {e['level']:.2f} -- {bias}"
             direction = "bullish" if e["type"] == "LPS" else "bearish"
             should_alert, is_filtered = _check_regime(direction)
+            setup_type = e["type"].lower()
             if should_alert:
-                new_events.append(thesis)
-                _draft(sym, e["type"].lower(), "long_call" if e["type"] == "LPS" else "long_put", thesis, bars[-1]["close"])
+                actionable_events.append((setup_type, thesis))
+                _draft(sym, setup_type, "long_call" if e["type"] == "LPS" else "long_put", thesis, bars[-1]["close"])
             else:
                 filtered_events.append(thesis)
-                _draft(sym, e["type"].lower(), "long_call" if e["type"] == "LPS" else "long_put", thesis, bars[-1]["close"], regime_filtered=True)
+                _draft(sym, setup_type, "long_call" if e["type"] == "LPS" else "long_put", thesis, bars[-1]["close"], regime_filtered=True)
 
     # ---- ABC correction ----
     abc = abc_pattern(bars)
@@ -206,26 +210,22 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
             direction = "bullish" if abc["direction"].startswith("bullish") else "bearish"
             should_alert, is_filtered = _check_regime(direction)
             if should_alert:
-                new_events.append(thesis)
+                actionable_events.append(("abc", thesis))
                 _draft(sym, "abc", "long_call" if opt == "LONG CALL" else "long_put", thesis, bars[-1]["close"])
             else:
                 filtered_events.append(thesis)
                 _draft(sym, "abc", "long_call" if opt == "LONG CALL" else "long_put", thesis, bars[-1]["close"], regime_filtered=True)
 
-    if not new_events and not filtered_events:
+    if not actionable_events and not filtered_events:
         return None
 
     # Pre-trade context (free): realized-vol expected move over ~30 trading
     # days, to sanity-check strikes/targets. IV rank NOT included (paid).
     em = expected_move(bars, 30)
-    new_events.append("Context: " + format_line(em) + " | check IV rank + earnings in broker before entry")
+    context_line = "Context: " + format_line(em) + " | check IV rank + earnings in broker before entry"
 
-    # Add regime context to the alert
-    new_events.append(regime_filter.regime_context_line(regime_info))
-
-    # Report filtered signals count if any
-    if filtered_events:
-        new_events.append(f"({len(filtered_events)} signal(s) regime-filtered, logged but not alerted)")
+    # Add regime context
+    regime_line = regime_filter.regime_context_line(regime_info)
 
     chart_path = plot_signal_chart(
         sym, bars, res=res[-1], sup=sup[-1],
@@ -233,7 +233,14 @@ def scan_ticker(sym, bars, spy_by_date, regime_info):
         range_low=tr_today["rangeLow"] if tr_today else None,
         markers=markers, title_suffix="Wyckoff signals", window=CHART_WINDOW,
     )
-    return {"events": new_events, "chart": chart_path}
+    
+    return {
+        "actionable_events": actionable_events,  # list of (setup_type, thesis)
+        "filtered_events": filtered_events,      # list of thesis strings
+        "context_line": context_line,
+        "regime_line": regime_line,
+        "chart": chart_path,
+    }
 
 
 def scan(tickers, api_key, progress=False):
@@ -282,25 +289,60 @@ def main():
         print("No new Wyckoff signals today.")
         return
 
+    # Separate actionable vs filtered signals and compute tiers
+    actionable_signals = []  # (sym, tier_label, [lines])
+    watchlist_signals = []   # (sym, [lines])
+    chart_paths = {}
+    
+    for sym, result in hits:
+        chart_paths[sym] = result["chart"]
+        
+        # Process actionable events with tiers
+        if result["actionable_events"]:
+            # Get the highest tier among all signals for this ticker
+            best_tier = "REVIEW"
+            tier_order = {"HIGH": 0, "MEDIUM": 1, "REVIEW": 2}
+            lines = []
+            for setup_type, thesis in result["actionable_events"]:
+                tier_info = get_confidence_tier(setup_type, regime_aligned=True)
+                if tier_order.get(tier_info["tier"], 99) < tier_order.get(best_tier, 99):
+                    best_tier = tier_info["tier"]
+                lines.append(thesis)
+            
+            # Add context lines
+            lines.append(result["context_line"])
+            lines.append(result["regime_line"])
+            
+            tier_label = {"HIGH": "⭐⭐⭐", "MEDIUM": "⭐⭐", "REVIEW": "⭐"}[best_tier]
+            actionable_signals.append((sym, tier_label, lines))
+        
+        # Process filtered events (watchlist only)
+        if result["filtered_events"]:
+            lines = result["filtered_events"] + [result["regime_line"]]
+            watchlist_signals.append((sym, lines))
+    
+    # Print summary
     for sym, result in hits:
         print(f"{sym}: chart -> {result['chart']}")
-        for e in result["events"]:
-            print(f"  - {e}")
+        for setup_type, thesis in result["actionable_events"]:
+            tier_info = get_confidence_tier(setup_type, regime_aligned=True)
+            print(f"  {tier_info['label']} {thesis}")
+        for thesis in result["filtered_events"]:
+            print(f"  [WATCHLIST] {thesis}")
 
-    tickers_str = ", ".join(sym for sym, _ in hits[:8])
-    more = f" +{len(hits) - 8} more" if len(hits) > 8 else ""
+    tickers_with_actionable = [s[0] for s in actionable_signals]
+    tickers_str = ", ".join(tickers_with_actionable[:8])
+    more = f" +{len(tickers_with_actionable) - 8} more" if len(tickers_with_actionable) > 8 else ""
     print()
-    print(f"SUMMARY: {len(hits)} watchlist ticker(s) with new signals -- {tickers_str}{more}")
+    print(f"SUMMARY: {len(actionable_signals)} actionable + {len(watchlist_signals)} watchlist-only signals -- {tickers_str}{more}")
     print(f"Charts saved in: {Path(__file__).resolve().parent.parent / 'charts'}")
 
-    events_only = [(sym, result["events"]) for sym, result in hits]
-    chart_paths = {sym: result["chart"] for sym, result in hits}
     regime_line = regime_filter.regime_context_line(regime_info)
-    header = (f"Wyckoff watchlist: {len(hits)} ticker(s) flagged for REVIEW. "
+    header = (f"Wyckoff watchlist: {len(actionable_signals)} actionable + {len(watchlist_signals)} watchlist signals. "
               f"{regime_line}. "
-              "Discretionary review triggers, NOT validated edges -- backtesting shows none "
-              "beat naive swing-trading. Apply your own judgment (context, IV, news) before any entry.")
-    notify.notify_signals(header, events_only, chart_paths)
+              "Tiers based on historical performance (⭐⭐⭐=HIGH, ⭐⭐=MEDIUM, ⭐=REVIEW ONLY).")
+    
+    notify.notify_signals_tiered(header, actionable_signals, watchlist_signals, chart_paths)
 
 
 if __name__ == "__main__":

@@ -74,7 +74,14 @@ def test_pure_spring_does_not_fire_on_genuine_breakdown():
 # Upthrust: poke-and-fail
 # ---------------------------------------------------------------------------
 def test_pure_upthrust_fires_on_poke_and_fail():
-    n = LEFT + RIGHT + 20
+    """
+    Upthrust criteria (as of Sept 2026 stricter rules based on live performance):
+    1. High pokes above resistance, close falls back below it (basic condition)
+    2. Penetration depth > 1.5% above resistance
+    3. Volume spike: today's volume > 1.2x 20-day average
+    4. Reversal confirmation: close in lower half of day's range
+    """
+    n = LEFT + RIGHT + 30  # need enough bars for 20-day volume average
     bars = make_flat_bars(n)
     pivot_idx = LEFT
     set_bar(bars, pivot_idx, high=110.0, close=109.0)
@@ -82,10 +89,40 @@ def test_pure_upthrust_fires_on_poke_and_fail():
     assert res[pivot_idx + RIGHT] == 110.0, "resistance should confirm RIGHT_BARS after the pivot bar"
 
     ut_idx = pivot_idx + RIGHT + 5
-    set_bar(bars, ut_idx, high=112.0, low=108.0, close=109.0, open=110.0)  # pokes above 110, closes back below it
+    # Criteria for the stricter upthrust:
+    # - resistance = 110.0, need high > 110 * 1.015 = 111.65
+    # - close must be below resistance (110.0)
+    # - close must be in lower half of day's range
+    # - volume must be > 1.2x average (1000 * 1.2 = 1200)
+    set_bar(bars, ut_idx, 
+            high=112.0,      # 1.82% above 110 resistance (> 1.5% required)
+            low=107.0,       # day range = 112 - 107 = 5
+            close=108.0,     # below 110 resistance, and (108-107)/(112-107) = 0.2 = lower 20% of range
+            open=110.0,
+            volume=1500)     # 1.5x the baseline 1000 volume (> 1.2x required)
     res, _ = c.pivots(bars)
     assert is_pure_upthrust(bars, res, ut_idx), \
-        "textbook upthrust (high pokes above resistance, close fails back below it) must fire"
+        "textbook upthrust (high pokes >1.5% above resistance, close fails back below it, volume spike, close in lower half) must fire"
+
+
+def test_pure_upthrust_does_not_fire_on_weak_penetration():
+    """Upthrust should NOT fire if penetration < 1.5% above resistance."""
+    n = LEFT + RIGHT + 30
+    bars = make_flat_bars(n)
+    pivot_idx = LEFT
+    set_bar(bars, pivot_idx, high=110.0, close=109.0)
+    
+    ut_idx = pivot_idx + RIGHT + 5
+    # Only 0.9% penetration (below 1.5% threshold)
+    set_bar(bars, ut_idx, 
+            high=111.0,      # only 0.9% above 110 resistance
+            low=107.0,
+            close=108.0,
+            open=110.0,
+            volume=1500)
+    res, _ = c.pivots(bars)
+    assert not is_pure_upthrust(bars, res, ut_idx), \
+        "upthrust should not fire with penetration < 1.5%"
 
 
 def test_pure_upthrust_does_not_fire_on_genuine_breakout():

@@ -65,3 +65,61 @@ def notify_signals(header, tickers_and_lines, chart_paths=None):
         path = (chart_paths or {}).get(sym)
         if path:
             send_photo(path, caption=f"{sym}: " + "; ".join(lines)[:900])
+
+
+def notify_signals_tiered(header, actionable_signals, watchlist_signals=None, chart_paths=None):
+    """
+    Send notifications with separate sections for actionable vs watchlist-only signals.
+    
+    Args:
+        header: one-line summary
+        actionable_signals: list of (sym, tier_label, [line, ...]) for regime-aligned signals
+        watchlist_signals: list of (sym, [line, ...]) for regime-filtered signals (optional)
+        chart_paths: optional {sym: path} to send as photos
+    
+    The message format:
+    
+    ✅ ACTIONABLE ALERTS:
+    ⭐⭐⭐ AAPL:
+      - Spring at support... -- bullish
+    ⭐⭐ MSFT:
+      - ABC correction... -- bullish
+    
+    📋 WATCHLIST (regime-filtered, monitor only):
+    NVDA:
+      - Upthrust at resistance... -- bearish setup forming, but SPY too strong
+    """
+    if not actionable_signals and not watchlist_signals:
+        return
+    
+    body_lines = [header, ""]
+    
+    # Sort actionable signals by tier (HIGH first, then MEDIUM, then REVIEW)
+    tier_order = {"⭐⭐⭐": 0, "⭐⭐": 1, "⭐": 2}
+    if actionable_signals:
+        actionable_sorted = sorted(actionable_signals, key=lambda x: tier_order.get(x[1], 99))
+        
+        body_lines.append("✅ ACTIONABLE ALERTS:")
+        for sym, tier_label, lines in actionable_sorted:
+            body_lines.append(f"{tier_label} {sym}:")
+            for line in lines:
+                body_lines.append("  - " + line)
+        body_lines.append("")
+    
+    # Watchlist section (regime-filtered signals)
+    if watchlist_signals:
+        body_lines.append("📋 WATCHLIST (regime-filtered, monitor only):")
+        for sym, lines in watchlist_signals:
+            body_lines.append(f"{sym}:")
+            for line in lines:
+                # Remove [REGIME-FILTERED] prefix if present, clean up the line
+                clean_line = line.replace("[REGIME-FILTERED] ", "")
+                body_lines.append("  - " + clean_line)
+    
+    send_message("\n".join(body_lines)[:4000])
+    
+    # Send charts only for actionable signals
+    for sym, tier_label, lines in (actionable_signals or []):
+        path = (chart_paths or {}).get(sym)
+        if path:
+            send_photo(path, caption=f"{tier_label} {sym}: " + "; ".join(lines)[:850])

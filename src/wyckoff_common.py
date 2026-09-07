@@ -205,5 +205,117 @@ def is_pure_spring(bars, sup, idx):
 def is_pure_upthrust(bars, res, idx):
     """Textbook upthrust: today's HIGH pokes above the last confirmed
     resistance, but the CLOSE falls back below it (a failed breakout ->
-    bearish). See is_pure_spring() for why this is centralized here."""
-    return res[idx] is not None and bars[idx]["high"] > res[idx] and bars[idx]["close"] < res[idx]
+    bearish). See is_pure_spring() for why this is centralized here.
+    
+    2026-09 UPDATE: Stricter criteria based on live performance analysis
+    (323 alerts, upthrust averaged -7% option P&L across all horizons).
+    Now requires:
+    1. Penetration depth > 1.5% above resistance (not just a wick poke)
+    2. Volume spike (today's volume > 1.2x 20-day average)
+    3. Reversal confirmation (close in lower half of day's range)
+    """
+    if res[idx] is None:
+        return False
+    
+    bar = bars[idx]
+    resistance = res[idx]
+    
+    # Basic condition: high above resistance, close below
+    if not (bar["high"] > resistance and bar["close"] < resistance):
+        return False
+    
+    # 1. Penetration depth > 1.5% above resistance
+    penetration_pct = (bar["high"] - resistance) / resistance * 100
+    if penetration_pct < 1.5:
+        return False
+    
+    # 2. Volume spike: today's volume > 1.2x 20-day average
+    if idx >= 20:
+        avg_vol = statistics.mean(bars[i]["volume"] for i in range(idx - 20, idx))
+        if avg_vol > 0 and bar["volume"] < avg_vol * 1.2:
+            return False
+    
+    # 3. Reversal confirmation: close in lower half of day's range
+    day_range = bar["high"] - bar["low"]
+    if day_range > 0:
+        close_position = (bar["close"] - bar["low"]) / day_range
+        if close_position > 0.5:  # close is in upper half = weak reversal
+            return False
+    
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Confidence Tier System
+# ---------------------------------------------------------------------------
+# Based on live performance analysis (323 scored alerts, July-Aug 2026):
+# - Spring 10d: 84.4% hit rate, +40.1% avg option P&L -> HIGH confidence
+# - LPS/SOS with regime alignment: 60-80% hit rates -> HIGH confidence
+# - Spring 5d, ABC with regime: ~60% hit rates -> MEDIUM confidence
+# - Upthrust (even with stricter criteria), BC: historically negative -> REVIEW ONLY
+# - Any signal against regime: automatically downgraded
+
+SETUP_BASE_TIERS = {
+    # HIGH confidence setups (historically profitable)
+    "spring": "HIGH",
+    "lps": "HIGH",
+    "sos": "HIGH",
+    
+    # MEDIUM confidence setups (decent hit rates but mixed P&L)
+    "abc": "MEDIUM",
+    "sc": "MEDIUM",  # Selling climax
+    
+    # REVIEW ONLY setups (historically unprofitable or insufficient data)
+    "upthrust": "REVIEW",
+    "bc": "REVIEW",  # Buying climax
+    "sow": "REVIEW",
+    "lpsy": "REVIEW",
+}
+
+TIER_LABELS = {
+    "HIGH": "⭐⭐⭐",
+    "MEDIUM": "⭐⭐",
+    "REVIEW": "⭐",
+}
+
+
+def get_confidence_tier(setup_type, regime_aligned=True):
+    """
+    Returns confidence tier for a setup based on historical performance.
+    
+    Args:
+        setup_type: lowercase setup name (spring, upthrust, lps, etc.)
+        regime_aligned: True if signal direction matches market regime
+    
+    Returns:
+        dict with 'tier' (HIGH/MEDIUM/REVIEW), 'label' (star emoji), 
+        and 'reason' explaining the tier assignment
+    """
+    setup_lower = setup_type.lower()
+    base_tier = SETUP_BASE_TIERS.get(setup_lower, "REVIEW")
+    
+    # Regime filter: downgrade by one tier if against regime
+    if not regime_aligned:
+        if base_tier == "HIGH":
+            tier = "MEDIUM"
+            reason = f"{setup_type} is normally HIGH confidence, but downgraded (against market regime)"
+        elif base_tier == "MEDIUM":
+            tier = "REVIEW"
+            reason = f"{setup_type} downgraded to REVIEW ONLY (against market regime)"
+        else:
+            tier = "REVIEW"
+            reason = f"{setup_type} is REVIEW ONLY (low historical edge + against regime)"
+    else:
+        tier = base_tier
+        if tier == "HIGH":
+            reason = f"{setup_type} has strong historical performance with regime alignment"
+        elif tier == "MEDIUM":
+            reason = f"{setup_type} has decent hit rate but mixed P&L historically"
+        else:
+            reason = f"{setup_type} has weak/negative historical edge -- extra discretion needed"
+    
+    return {
+        "tier": tier,
+        "label": TIER_LABELS[tier],
+        "reason": reason,
+    }

@@ -31,6 +31,7 @@ from wyckoff_common import (
     pivots,
     is_pure_spring,
     is_pure_upthrust,
+    get_confidence_tier,
 )
 
 TICKER_FILE = Path(__file__).resolve().parent.parent / "data" / "top50_plus_ai.csv"
@@ -113,9 +114,9 @@ def scan(tickers, api_key, progress=False):
         print(f"Market regime: {regime_info['message']}")
         print()
 
-    hits = []
+    actionable_hits = []  # (sym, setup_type, thesis)
+    filtered_hits = []    # (sym, thesis)
     skipped = []
-    filtered_count = 0
 
     for idx, sym in enumerate(tickers, 1):
         bars = fetch_bars(sym, api_key)
@@ -128,54 +129,50 @@ def scan(tickers, api_key, progress=False):
             # swing-trading, so direction is a bias to review, not an edge.
             res, sup = pivots(bars)
             m = len(bars)
-            signals = []
             if m >= 2:
                 sp_now = is_pure_spring(bars, sup, -1)
                 sp_prev = is_pure_spring(bars, sup, -2)
                 if sp_now and not sp_prev:
                     thesis = f"Spring at support {sup[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bullish bias, review for a LONG CALL"
                     if regime_filter.should_take_signal(regime_info, "bullish"):
-                        signals.append(thesis)
+                        actionable_hits.append((sym, "spring", thesis))
                         alert_log.log_alert("sp500_sweep", sym, "spring", "long_call", thesis, bars[-1]["close"])
                     else:
                         # Log as filtered but don't alert
+                        filtered_hits.append((sym, thesis))
                         alert_log.log_alert("sp500_sweep", sym, "spring", "long_call", f"[REGIME-FILTERED] {thesis}", bars[-1]["close"])
-                        filtered_count += 1
                 ut_now = is_pure_upthrust(bars, res, -1)
                 ut_prev = is_pure_upthrust(bars, res, -2)
                 if ut_now and not ut_prev:
                     thesis = f"Upthrust at resistance {res[-1]:.2f} (close {bars[-1]['close']:.2f}) -- bearish bias, review for a LONG PUT"
                     if regime_filter.should_take_signal(regime_info, "bearish"):
-                        signals.append(thesis)
+                        actionable_hits.append((sym, "upthrust", thesis))
                         alert_log.log_alert("sp500_sweep", sym, "upthrust", "long_put", thesis, bars[-1]["close"])
                     else:
                         # Log as filtered but don't alert
+                        filtered_hits.append((sym, thesis))
                         alert_log.log_alert("sp500_sweep", sym, "upthrust", "long_put", f"[REGIME-FILTERED] {thesis}", bars[-1]["close"])
-                        filtered_count += 1
             weis = weis_wave_signal(bars)
             if weis and weis["newWaveToday"] and weis["flagged"]:
                 direction = "up" if weis["direction"] == 1 else "down"
                 thesis = f"Weis Wave volume-exhaustion flag on new {direction} wave -- context only"
-                # Weis Wave is context-only, not directional -- always include
-                signals.append(thesis)
+                # Weis Wave is context-only, not directional -- always include as actionable
+                actionable_hits.append((sym, "weis_wave", thesis))
                 alert_log.log_alert("sp500_sweep", sym, "weis_wave", None, thesis, bars[-1]["close"])
-            if signals:
-                hits.append((sym, signals))
         if progress and idx % 25 == 0:
             print(f"...{idx}/{len(tickers)} scanned", flush=True)
 
-    return hits, skipped, regime_info, filtered_count
+    return actionable_hits, filtered_hits, skipped, regime_info
 
 
 def main():
     api_key = load_api_key()
     tickers = load_tickers()
-    hits, skipped, regime_info, filtered_count = scan(tickers, api_key, progress=True)
-    hits.sort(key=lambda x: x[0])
+    actionable_hits, filtered_hits, skipped, regime_info = scan(tickers, api_key, progress=True)
 
     print(f"Scanned {len(tickers)} tickers, {len(skipped)} skipped (fetch failed or insufficient history).")
-    if filtered_count > 0:
-        print(f"Regime-filtered: {filtered_count} signal(s) logged but not alerted (against current regime)")
+    if filtered_hits:
+        print(f"Regime-filtered: {len(filtered_hits)} signal(s) logged but moved to watchlist section")
     if skipped:
         print("Skipped:", ", ".join(skipped[:30]) + (" ..." if len(skipped) > 30 else ""))
     print()
@@ -183,25 +180,61 @@ def main():
     if len(skipped) > len(tickers) / 2:
         notify.send_message(f"Wyckoff S&P scan degraded: {len(skipped)}/{len(tickers)} tickers failed to fetch.")
 
-    if not hits:
+    if not actionable_hits and not filtered_hits:
         print("No new Wyckoff signals today.")
         return
 
-    for sym, signals in hits:
-        for s in signals:
-            print(f"{sym}: {s}")
+    # Build tiered actionable signals
+    actionable_signals = []  # (sym, tier_label, [lines])
+    
+    # Group actionable hits by symbol
+    from collections import defaultdict
+    by_sym = defaultdict(list)
+    for sym, setup_type, thesis in actionable_hits:
+        by_sym[sym].append((setup_type, thesis))
+    
+    for sym, signals in sorted(by_sym.items()):
+        # Get the highest tier among all signals for this ticker
+        best_tier = "REVIEW"
+        tier_order = {"HIGH": 0, "MEDIUM": 1, "REVIEW": 2}
+        lines = []
+        for setup_type, thesis in signals:
+            tier_info = get_confidence_tier(setup_type, regime_aligned=True)
+            if tier_order.get(tier_info["tier"], 99) < tier_order.get(best_tier, 99):
+                best_tier = tier_info["tier"]
+            lines.append(thesis)
+        
+        tier_label = {"HIGH": "⭐⭐⭐", "MEDIUM": "⭐⭐", "REVIEW": "⭐"}[best_tier]
+        actionable_signals.append((sym, tier_label, lines))
+    
+    # Build watchlist signals (regime-filtered)
+    watchlist_signals = []  # (sym, [lines])
+    filtered_by_sym = defaultdict(list)
+    for sym, thesis in filtered_hits:
+        filtered_by_sym[sym].append(thesis)
+    
+    for sym, theses in sorted(filtered_by_sym.items()):
+        watchlist_signals.append((sym, theses))
+    
+    # Print results
+    for sym, tier_label, lines in actionable_signals:
+        for line in lines:
+            print(f"{tier_label} {sym}: {line}")
+    
+    for sym, lines in watchlist_signals:
+        for line in lines:
+            print(f"[WATCHLIST] {sym}: {line}")
 
-    tickers_str = ", ".join(sym for sym, _ in hits[:8])
-    more = f" +{len(hits) - 8} more" if len(hits) > 8 else ""
+    tickers_str = ", ".join(sym for sym, _, _ in actionable_signals[:8])
+    more = f" +{len(actionable_signals) - 8} more" if len(actionable_signals) > 8 else ""
     print()
-    print(f"SUMMARY: {len(hits)} ticker(s) flagged for review -- {tickers_str}{more}")
+    print(f"SUMMARY: {len(actionable_signals)} actionable + {len(watchlist_signals)} watchlist -- {tickers_str}{more}")
 
     regime_line = regime_filter.regime_context_line(regime_info)
-    header = (f"Wyckoff top-50 scan: {len(hits)} ticker(s) flagged for REVIEW. "
+    header = (f"Wyckoff top-50 scan: {len(actionable_signals)} actionable + {len(watchlist_signals)} watchlist. "
               f"{regime_line}. "
-              "Discretionary review triggers, NOT validated edges -- backtesting shows none "
-              "beat naive swing-trading. Apply your own judgment before any entry.")
-    notify.notify_signals(header, hits)
+              "Tiers based on historical performance (⭐⭐⭐=HIGH, ⭐⭐=MEDIUM, ⭐=REVIEW ONLY).")
+    notify.notify_signals_tiered(header, actionable_signals, watchlist_signals)
 
 
 if __name__ == "__main__":
