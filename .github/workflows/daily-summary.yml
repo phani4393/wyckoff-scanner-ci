@@ -1,0 +1,28 @@
+name: Daily Summary
+
+on:
+  schedule:
+    # Runs ~15 min after alert-followup.yml, which is the last data-producing
+    # job. This gives all the day's alerts, scores, and follow-ups time to
+    # commit before we summarize them.
+    # Same month-keyed DST split as the other workflows:
+    #   - Mar-Oct (US daylight time): 22:00 UTC = 6:00pm ET
+    #   - Nov-Feb (US standard time): 23:00 UTC = 6:00pm ET
+    - cron: "0 22 * 3-10 1-5"
+    - cron: "0 23 * 11,12,1,2 1-5"
+  workflow_dispatch: {}
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python src/daily_summary.py --telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
