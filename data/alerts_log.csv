@@ -358,3 +358,9 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-08T22:51:44Z,sp500_sweep,LIN,spring,long_call,"Spring at support 466.88 (close 468.23) -- bullish bias, review for a LONG CALL",468.23001
 2026-09-08T22:52:45Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,209.97
 2026-09-08T22:55:31Z,watchlist,BKNG,sc,long_call,"Selling Climax @ 180.30 -- bullish bias, review for a LONG CALL",180.3
+2026-09-09T22:40:09Z,sp500_sweep,CSCO,spring,long_call,"Spring at support 109.23 (close 109.43) -- bullish bias, review for a LONG CALL",109.43
+2026-09-09T22:41:09Z,sp500_sweep,UNH,spring,long_call,"Spring at support 383.83 (close 393.06) -- bullish bias, review for a LONG CALL",393.059998
+2026-09-09T22:41:11Z,sp500_sweep,MS,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,215.35001
+2026-09-09T22:42:11Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,335.10001
+2026-09-09T22:44:11Z,sp500_sweep,QCOM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,176.39999
+2026-09-09T22:45:13Z,sp500_sweep,DDOG,spring,long_call,"Spring at support 225.26 (close 225.27) -- bullish bias, review for a LONG CALL",225.27
