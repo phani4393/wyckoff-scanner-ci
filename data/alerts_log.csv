@@ -368,3 +368,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-09T22:48:18Z,watchlist,HOOD,lps,long_call,"Last Point of Support @ 112.45 -- bullish bias, review for a LONG CALL",115.28
 2026-09-09T22:49:14Z,watchlist,DDOG,spring,long_call,"Spring at support 225.26 (close 225.27) -- bullish bias, review for a LONG CALL",225.27
 2026-09-10T22:48:51Z,sp500_sweep,DELL,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 514.00 (close 506.62) -- bearish bias, review for a LONG PUT",506.62
+2026-09-11T22:45:23Z,watchlist,MELI,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 41% of A, C extended 68% of A)",1897.37
+2026-09-11T22:47:23Z,watchlist,AFRM,spring,long_call,"Spring at support 69.62 (close 71.46) -- bullish bias, review for a LONG CALL",71.46
+2026-09-11T22:47:23Z,watchlist,AVGO,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 55% of A, C extended 65% of A)",361.98999
+2026-09-11T22:48:23Z,watchlist,ORCL,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 159.26 (close 150.28) -- bearish bias, review for a LONG PUT",150.28
