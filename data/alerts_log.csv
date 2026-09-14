@@ -378,3 +378,10 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-11T22:43:34Z,sp500_sweep,KO,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,88.29
 2026-09-11T22:44:33Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,308.73999
 2026-09-11T22:50:35Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,252.23
+2026-09-14T23:13:28Z,sp500_sweep,TSLA,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,358.97
+2026-09-14T23:13:28Z,sp500_sweep,LLY,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,1138.28003
+2026-09-14T23:15:28Z,sp500_sweep,COST,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,918.90997
+2026-09-14T23:18:28Z,sp500_sweep,GEV,spring,long_call,"Spring at support 874.00 (close 874.76) -- bullish bias, review for a LONG CALL",874.76001
+2026-09-14T23:18:28Z,sp500_sweep,WFC,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,88.71
+2026-09-14T23:20:28Z,sp500_sweep,DDOG,spring,long_call,"Spring at support 225.26 (close 230.05) -- bullish bias, review for a LONG CALL",230.050003
+2026-09-14T23:20:28Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,230.050003
