@@ -391,3 +391,12 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-14T23:25:34Z,watchlist,CRWD,bc,long_put,"[REGIME-FILTERED] Buying Climax @ 235.38 -- bearish bias, review for a LONG PUT",235.38
 2026-09-14T23:25:34Z,watchlist,CRWD,sos,long_call,"Sign of Strength (breakout held) @ 233.88 -- bullish bias, review for a LONG CALL",235.38
 2026-09-14T23:25:34Z,watchlist,RKLB,spring,long_call,"Spring at support 61.45 (close 62.55) -- bullish bias, review for a LONG CALL",62.55
+2026-09-15T22:58:06Z,sp500_sweep,MU,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,927.59998
+2026-09-15T23:01:08Z,sp500_sweep,MS,spring,long_call,"Spring at support 202.94 (close 206.28) -- bullish bias, review for a LONG CALL",206.28
+2026-09-15T23:02:06Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,305.48001
+2026-09-15T23:03:06Z,sp500_sweep,GEV,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,882.81
+2026-09-15T23:03:06Z,sp500_sweep,KLAC,spring,long_call,"Spring at support 167.05 (close 168.02) -- bullish bias, review for a LONG CALL",168.020004
+2026-09-15T23:03:06Z,sp500_sweep,WFC,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 90.17 (close 89.72) -- bearish bias, review for a LONG PUT",89.72
+2026-09-15T23:03:07Z,sp500_sweep,TXN,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,263.42999
+2026-09-15T23:03:07Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,543.51001
+2026-09-15T23:05:07Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,55.88
