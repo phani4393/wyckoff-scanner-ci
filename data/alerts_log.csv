@@ -400,3 +400,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-15T23:03:07Z,sp500_sweep,TXN,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,263.42999
 2026-09-15T23:03:07Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,543.51001
 2026-09-15T23:05:07Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,55.88
+2026-09-15T23:08:18Z,watchlist,ZS,lps,long_call,"Last Point of Support @ 190.97 -- bullish bias, review for a LONG CALL",193.89
+2026-09-15T23:10:18Z,watchlist,CRWD,lps,long_call,"Last Point of Support @ 233.88 -- bullish bias, review for a LONG CALL",242.49001
+2026-09-15T23:10:18Z,watchlist,HOOD,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 64% of A, C extended 74% of A)",110.45
