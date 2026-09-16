@@ -410,3 +410,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-16T23:09:37Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,241.36
 2026-09-16T23:09:37Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,230.78999
 2026-09-16T23:09:37Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,36.85
+2026-09-16T23:14:06Z,watchlist,SPY,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 759.48 -- bearish bias, review for a LONG PUT",754.049988
