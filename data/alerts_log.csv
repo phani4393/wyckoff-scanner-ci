@@ -440,3 +440,9 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-21T23:29:09Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,137.67999
 2026-09-21T23:30:09Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,249.27
 2026-09-21T23:30:09Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,61.75
+2026-09-21T23:30:59Z,watchlist,AMD,sos,long_call,"Sign of Strength (breakout held) @ 584.73 -- bullish bias, review for a LONG CALL",615.52002
+2026-09-21T23:32:00Z,watchlist,GRPN,bc,long_put,"[REGIME-FILTERED] Buying Climax @ 22.05 -- bearish bias, review for a LONG PUT",22.049999
+2026-09-21T23:33:59Z,watchlist,OKTA,lps,long_call,"Last Point of Support @ 174.85 -- bullish bias, review for a LONG CALL",191.33
+2026-09-21T23:36:01Z,watchlist,XYZ,spring,long_call,"Spring at support 76.96 (close 77.91) -- bullish bias, review for a LONG CALL",77.91
+2026-09-21T23:36:01Z,watchlist,META,bc,long_put,"[REGIME-FILTERED] Buying Climax @ 741.25 -- bearish bias, review for a LONG PUT",741.245
+2026-09-21T23:36:01Z,watchlist,META,sos,long_call,"Sign of Strength (breakout held) @ 686.08 -- bullish bias, review for a LONG CALL",741.245
