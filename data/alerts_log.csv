@@ -423,3 +423,20 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-18T22:47:32Z,sp500_sweep,QCOM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,177.72
 2026-09-18T22:47:05Z,watchlist,NET,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 332.22 (close 323.60) -- bearish bias, review for a LONG PUT",323.60001
 2026-09-18T22:48:05Z,watchlist,SPY,spring,long_call,"Spring at support 759.48 (close 761.69) -- bullish bias, review for a LONG CALL",761.69
+2026-09-21T23:22:08Z,sp500_sweep,MSFT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,501.60999
+2026-09-21T23:23:09Z,sp500_sweep,WMT,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,107.44
+2026-09-21T23:24:08Z,sp500_sweep,JPM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,352.040009
+2026-09-21T23:24:09Z,sp500_sweep,XOM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,158.3
+2026-09-21T23:24:09Z,sp500_sweep,MA,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,567.65002
+2026-09-21T23:24:09Z,sp500_sweep,INTC,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,121.78
+2026-09-21T23:25:09Z,sp500_sweep,CSCO,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,111.46
+2026-09-21T23:25:09Z,sp500_sweep,COST,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,898.47998
+2026-09-21T23:26:09Z,sp500_sweep,UNH,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,377.56
+2026-09-21T23:26:09Z,sp500_sweep,GE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,319.01001
+2026-09-21T23:27:09Z,sp500_sweep,GS,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,959.39001
+2026-09-21T23:27:09Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,371.76001
+2026-09-21T23:27:09Z,sp500_sweep,NFLX,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,73.36
+2026-09-21T23:29:09Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,135.050003
+2026-09-21T23:29:09Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,137.67999
+2026-09-21T23:30:09Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,249.27
+2026-09-21T23:30:09Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,61.75
