@@ -446,3 +446,10 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-21T23:36:01Z,watchlist,XYZ,spring,long_call,"Spring at support 76.96 (close 77.91) -- bullish bias, review for a LONG CALL",77.91
 2026-09-21T23:36:01Z,watchlist,META,bc,long_put,"[REGIME-FILTERED] Buying Climax @ 741.25 -- bearish bias, review for a LONG PUT",741.245
 2026-09-21T23:36:01Z,watchlist,META,sos,long_call,"Sign of Strength (breakout held) @ 686.08 -- bullish bias, review for a LONG CALL",741.245
+2026-09-22T23:03:23Z,sp500_sweep,JNJ,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,269.19
+2026-09-22T23:04:23Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,808.01001
+2026-09-22T23:05:23Z,sp500_sweep,KO,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,88.61
+2026-09-22T23:05:23Z,sp500_sweep,PG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,148.22
+2026-09-22T23:05:23Z,sp500_sweep,MS,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,200.17999
+2026-09-22T23:07:23Z,sp500_sweep,GEV,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,950.28003
+2026-09-22T23:07:23Z,sp500_sweep,RTX,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,190.99001
