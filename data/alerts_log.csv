@@ -461,3 +461,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-23T23:06:31Z,sp500_sweep,LIN,spring,long_call,"Spring at support 466.88 (close 469.72) -- bullish bias, review for a LONG CALL",469.72
 2026-09-23T23:06:31Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,237.58
 2026-09-23T23:06:31Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,240.69
+2026-09-23T23:09:50Z,watchlist,AVGO,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 55% of A, C extended 70% of A)",354.98999
