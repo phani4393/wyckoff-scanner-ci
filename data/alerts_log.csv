@@ -462,3 +462,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-23T23:06:31Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,237.58
 2026-09-23T23:06:31Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,240.69
 2026-09-23T23:09:50Z,watchlist,AVGO,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 55% of A, C extended 70% of A)",354.98999
+2026-09-24T23:17:06Z,sp500_sweep,V,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,367.98001
+2026-09-24T23:18:06Z,sp500_sweep,ABBV,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,265.12
+2026-09-24T23:21:07Z,sp500_sweep,RTX,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,188.61
+2026-09-24T23:23:07Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,41.51
