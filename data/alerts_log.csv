@@ -475,3 +475,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-25T23:26:30Z,sp500_sweep,WFC,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,82.97
 2026-09-25T23:26:30Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,562.89001
 2026-09-25T23:28:30Z,sp500_sweep,HPE,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 63.44 (close 62.94) -- bearish bias, review for a LONG PUT",62.94
+2026-09-25T23:31:44Z,watchlist,COST,spring,long_call,"Spring at support 907.21 (close 922.77) -- bullish bias, review for a LONG CALL",922.76501
