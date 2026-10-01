@@ -485,3 +485,12 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-09-29T23:50:35Z,sp500_sweep,UNH,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,374.94
 2026-09-29T23:51:36Z,sp500_sweep,NFLX,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,70.3
 2026-09-29T23:55:26Z,watchlist,AAPL,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 61% of A, C extended 100% of A)",329.39999
+2026-09-30T23:57:03Z,sp500_sweep,AMZN,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,249.14999
+2026-09-30T23:57:03Z,sp500_sweep,GOOGL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,344.079987
+2026-09-30T23:57:03Z,sp500_sweep,GOOG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,340.73999
+2026-09-30T23:58:03Z,sp500_sweep,LLY,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,1157.079956
+2026-09-30T23:58:03Z,sp500_sweep,MU,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,1065.10999
+2026-10-01T00:00:05Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,810.78998
+2026-10-01T00:02:05Z,sp500_sweep,PM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,190.82001
+2026-10-01T00:02:05Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,397.31
+2026-10-01T00:03:05Z,sp500_sweep,TXN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,280.089996
