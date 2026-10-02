@@ -645,3 +645,7 @@ logged_at,sym,setup,direction,day_offset,check_date,cumulative_return_pct,trend
 2026-09-25T23:31:44Z,COST,spring,long_call,2,2026-09-29,0.197,STRONGER
 2026-09-25T23:31:44Z,COST,spring,long_call,3,2026-09-30,-1.347,WEAKER
 2026-09-29T23:55:26Z,AAPL,abc,long_put,1,2026-09-30,-1.099,WEAKER
+2026-09-29T00:33:00Z,SMCI,upthrust,long_put,2,2026-10-01,-2.194,WEAKER
+2026-09-29T23:55:26Z,AAPL,abc,long_put,2,2026-10-01,-0.279,STRONGER
+2026-09-25T23:28:30Z,HPE,upthrust,long_put,2,2026-09-29,2.304,STRONGER
+2026-09-25T23:28:30Z,HPE,upthrust,long_put,3,2026-09-30,-1.509,WEAKER
