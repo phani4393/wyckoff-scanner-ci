@@ -581,3 +581,7 @@ logged_at,sym,setup,direction,horizon_days,entry_date,exit_date,stock_return_pct
 2026-09-04T22:28:31Z,CVX,upthrust,long_put,20,2026-09-04,2026-10-05,1.021,1,-19.245
 2026-09-04T22:28:31Z,ORCL,upthrust,long_put,20,2026-09-04,2026-10-05,10.266,1,44.142
 2026-09-04T22:34:32Z,ORCL,upthrust,long_put,20,2026-09-04,2026-10-05,10.266,1,44.142
+2026-09-29T00:33:00Z,SMCI,upthrust,long_put,5,2026-09-29,2026-10-06,-5.948,0,-48.164
+2026-09-08T22:51:44Z,LIN,spring,long_call,20,2026-09-08,2026-10-06,4.605,1,72.596
+2026-09-04T22:26:32Z,JNJ,upthrust,long_put,20,2026-09-04,2026-10-05,8.102,1,160.264
+2026-09-08T22:55:31Z,BKNG,sc,long_call,20,2026-09-08,2026-10-06,-12.573,0,-98.179
