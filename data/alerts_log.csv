@@ -559,3 +559,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-13T02:17:19Z,sp500_sweep,DDOG,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 292.72 (close 287.29) -- bearish bias, review for a LONG PUT",287.29001
 2026-10-13T02:17:19Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,287.29001
 2026-10-13T02:18:05Z,watchlist,MRVL,lps,long_call,"Last Point of Support @ 254.60 -- bullish bias, review for a LONG CALL",265.85999
+2026-10-13T23:53:16Z,watchlist,CRWD,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 33% of A, C extended 86% of A)",261.20999
+2026-10-13T23:54:16Z,watchlist,GTLB,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 55.55 (close 51.95) -- bearish bias, review for a LONG PUT",51.95
+2026-10-13T23:55:16Z,watchlist,MRVL,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 59% of A, C extended 110% of A)",268.72501
