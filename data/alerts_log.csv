@@ -562,3 +562,8 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-13T23:53:16Z,watchlist,CRWD,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 33% of A, C extended 86% of A)",261.20999
 2026-10-13T23:54:16Z,watchlist,GTLB,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 55.55 (close 51.95) -- bearish bias, review for a LONG PUT",51.95
 2026-10-13T23:55:16Z,watchlist,MRVL,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 59% of A, C extended 110% of A)",268.72501
+2026-10-13T23:48:23Z,sp500_sweep,CAT,spring,long_call,"Spring at support 771.39 (close 772.78) -- bullish bias, review for a LONG CALL",772.78003
+2026-10-13T23:48:23Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,772.78003
+2026-10-13T23:50:23Z,sp500_sweep,GE,spring,long_call,"Spring at support 306.80 (close 307.63) -- bullish bias, review for a LONG CALL",307.63
+2026-10-13T23:51:23Z,sp500_sweep,MS,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,186.64
+2026-10-13T23:52:23Z,sp500_sweep,MRK,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,141.98
