@@ -555,3 +555,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-10T00:13:20Z,sp500_sweep,SMCI,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 42.31 (close 41.85) -- bearish bias, review for a LONG PUT",41.855
 2026-10-10T00:18:03Z,watchlist,TDC,lps,long_call,"Last Point of Support @ 30.14 -- bullish bias, review for a LONG CALL",30.59
 2026-10-10T00:20:03Z,watchlist,PLTR,sos,long_call,"Sign of Strength (breakout held) @ 194.68 -- bullish bias, review for a LONG CALL",209.050003
+2026-10-13T02:07:19Z,sp500_sweep,META,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,742.96002
+2026-10-13T02:17:19Z,sp500_sweep,DDOG,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 292.72 (close 287.29) -- bearish bias, review for a LONG PUT",287.29001
+2026-10-13T02:17:19Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,287.29001
