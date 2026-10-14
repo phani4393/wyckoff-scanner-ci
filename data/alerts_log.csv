@@ -570,3 +570,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-14T23:23:47Z,watchlist,GRPN,spring,long_call,"Spring at support 17.73 (close 17.76) -- bullish bias, review for a LONG CALL",17.76
 2026-10-14T23:26:47Z,watchlist,ORCL,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 131.58 -- bearish bias, review for a LONG PUT",130.55
 2026-10-14T23:27:47Z,watchlist,CRWV,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 78.27 -- bearish bias, review for a LONG PUT",65.78
+2026-10-14T23:20:53Z,sp500_sweep,BAC,spring,long_call,"Spring at support 49.30 (close 51.39) -- bullish bias, review for a LONG CALL",51.39
+2026-10-14T23:28:53Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,139.98
+2026-10-14T23:29:53Z,sp500_sweep,HPE,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 63.44 (close 63.11) -- bearish bias, review for a LONG PUT",63.11
