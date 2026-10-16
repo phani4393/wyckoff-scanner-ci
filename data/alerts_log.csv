@@ -591,3 +591,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-16T23:00:02Z,watchlist,SNOW,sc,long_call,"Selling Climax @ 306.84 -- bullish bias, review for a LONG CALL",306.84
 2026-10-16T23:01:02Z,watchlist,OKTA,sc,long_call,"Selling Climax @ 187.26 -- bullish bias, review for a LONG CALL",187.25999
 2026-10-16T23:02:03Z,watchlist,PLTR,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 194.68 (close 186.03) -- bearish bias, review for a LONG PUT",186.029999
+2026-10-16T22:56:52Z,sp500_sweep,BAC,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,51.23
+2026-10-16T23:03:53Z,sp500_sweep,C,spring,long_call,"Spring at support 123.57 (close 124.26) -- bullish bias, review for a LONG CALL",124.26
+2026-10-16T23:04:53Z,sp500_sweep,NOW,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 149.60 (close 141.97) -- bearish bias, review for a LONG PUT",141.97
+2026-10-16T23:04:54Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,245.2
