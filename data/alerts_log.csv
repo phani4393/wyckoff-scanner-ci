@@ -595,3 +595,14 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-16T23:03:53Z,sp500_sweep,C,spring,long_call,"Spring at support 123.57 (close 124.26) -- bullish bias, review for a LONG CALL",124.26
 2026-10-16T23:04:53Z,sp500_sweep,NOW,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 149.60 (close 141.97) -- bearish bias, review for a LONG PUT",141.97
 2026-10-16T23:04:54Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,245.2
+2026-10-19T23:47:45Z,sp500_sweep,NVDA,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,217.089996
+2026-10-19T23:47:46Z,sp500_sweep,AMZN,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,262.45001
+2026-10-19T23:48:47Z,sp500_sweep,MU,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,904.90002
+2026-10-19T23:49:46Z,sp500_sweep,AMD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,538.049988
+2026-10-19T23:49:47Z,sp500_sweep,INTC,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,92.029999
+2026-10-19T23:50:47Z,sp500_sweep,CAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,725.78998
+2026-10-19T23:52:47Z,sp500_sweep,PM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,201.050003
+2026-10-19T23:52:48Z,sp500_sweep,PANW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,346.95001
+2026-10-19T23:53:47Z,sp500_sweep,RTX,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,192.11
+2026-10-19T23:54:46Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,455.44
+2026-10-19T23:56:46Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,228.10001
