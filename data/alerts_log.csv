@@ -610,3 +610,9 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-19T23:57:47Z,watchlist,OKTA,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 31% of A, C extended 114% of A)",189.92999
 2026-10-19T23:57:48Z,watchlist,SHOP,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 54% of A, C extended 88% of A)",171.059998
 2026-10-19T23:59:50Z,watchlist,META,lps,long_call,"Last Point of Support @ 686.08 -- bullish bias, review for a LONG CALL",705.44
+2026-10-20T23:14:43Z,sp500_sweep,LLY,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,1283.66003
+2026-10-20T23:15:44Z,sp500_sweep,JNJ,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,259.35999
+2026-10-20T23:16:43Z,sp500_sweep,ABBV,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,289.079987
+2026-10-20T23:17:44Z,sp500_sweep,GE,spring,long_call,"Spring at support 296.61 (close 299.87) -- bullish bias, review for a LONG CALL",299.87
+2026-10-20T23:18:44Z,sp500_sweep,MRK,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,148.3
+2026-10-20T23:18:44Z,sp500_sweep,GS,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,884.81
