@@ -634,3 +634,8 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-22T23:36:20Z,sp500_sweep,KLAC,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,147.83
 2026-10-22T23:37:20Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,452.95001
 2026-10-22T23:39:20Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,33.72
+2026-10-23T23:15:41Z,sp500_sweep,V,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,407.92001
+2026-10-23T23:18:41Z,sp500_sweep,PLTR,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,196.75
+2026-10-23T23:19:41Z,sp500_sweep,AXP,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,313.22
+2026-10-23T23:20:41Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,248.57001
+2026-10-23T23:20:41Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,263.82001
