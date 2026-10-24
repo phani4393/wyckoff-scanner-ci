@@ -812,3 +812,8 @@ logged_at,sym,setup,direction,day_offset,check_date,cumulative_return_pct,trend
 2026-10-21T23:36:11Z,AVGO,spring,long_call,1,2026-10-22,-4.31,WEAKER
 2026-10-19T23:59:50Z,META,lps,long_call,3,2026-10-22,-8.022,WEAKER
 2026-10-19T23:57:47Z,ZS,abc,long_put,3,2026-10-22,-11.871,WEAKER
+2026-10-20T23:17:44Z,GE,spring,long_call,3,2026-10-23,-4.745,WEAKER
+2026-10-20T23:19:34Z,AAPL,abc,long_put,3,2026-10-23,-2.423,STRONGER
+2026-10-22T23:30:20Z,CSCO,spring,long_call,1,2026-10-23,1.535,STRONGER
+2026-10-21T23:27:16Z,AVGO,spring,long_call,2,2026-10-23,-4.772,WEAKER
+2026-10-21T23:36:11Z,AVGO,spring,long_call,2,2026-10-23,-4.772,WEAKER
