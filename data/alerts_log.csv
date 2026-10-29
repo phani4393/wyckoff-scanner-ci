@@ -657,3 +657,5 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-29T00:08:52Z,sp500_sweep,PLTR,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,196.81
 2026-10-29T00:10:53Z,sp500_sweep,C,spring,long_call,"Spring at support 123.57 (close 124.11) -- bullish bias, review for a LONG CALL",124.11
 2026-10-29T00:11:53Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,278.41
+2026-10-29T00:17:30Z,watchlist,MELI,spring,long_call,"Spring at support 1668.44 (close 1673.09) -- bullish bias, review for a LONG CALL",1673.089966
+2026-10-29T00:20:29Z,watchlist,ORCL,bc,long_put,"[REGIME-FILTERED] Buying Climax @ 144.54 -- bearish bias, review for a LONG PUT",144.53999
