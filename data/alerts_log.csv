@@ -683,3 +683,9 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-03T02:57:35Z,sp500_sweep,XOM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,179.67
 2026-11-03T02:58:35Z,sp500_sweep,LRCX,spring,long_call,"Spring at support 225.14 (close 227.56) -- bullish bias, review for a LONG CALL",227.56
 2026-11-03T03:01:35Z,sp500_sweep,GEV,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,862.25
+2026-11-03T03:01:34Z,watchlist,AMD,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 502.60 -- bearish bias, review for a LONG PUT",466.84
+2026-11-03T03:01:35Z,watchlist,AMZN,spring,long_call,"Spring at support 244.30 (close 245.63) -- bullish bias, review for a LONG CALL",245.63
+2026-11-03T03:02:35Z,watchlist,MELI,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 64% of A, C extended 89% of A)",1676.79004
+2026-11-03T03:03:34Z,watchlist,NET,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 285.05 -- bearish bias, review for a LONG PUT",265.17001
+2026-11-03T03:05:34Z,watchlist,OKTA,spring,long_call,"Spring at support 183.60 (close 184.87) -- bullish bias, review for a LONG CALL",184.87
+2026-11-03T03:06:34Z,watchlist,CME,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 43% of A, C extended 71% of A)",306.23999
