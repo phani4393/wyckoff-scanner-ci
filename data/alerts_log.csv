@@ -678,3 +678,8 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-10-30T23:59:24Z,watchlist,AMD,spring,long_call,"Spring at support 502.60 (close 504.80) -- bullish bias, review for a LONG CALL",504.79999
 2026-10-31T00:00:24Z,watchlist,NET,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 285.05 -- bearish bias, review for a LONG PUT",280.70001
 2026-10-31T00:01:23Z,watchlist,SNOW,spring,long_call,"Spring at support 302.24 (close 306.08) -- bullish bias, review for a LONG CALL",306.079987
+2026-11-03T02:55:35Z,sp500_sweep,AMZN,spring,long_call,"Spring at support 244.30 (close 245.63) -- bullish bias, review for a LONG CALL",245.63
+2026-11-03T02:56:35Z,sp500_sweep,BRK.B,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,556.10999
+2026-11-03T02:57:35Z,sp500_sweep,XOM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,179.67
+2026-11-03T02:58:35Z,sp500_sweep,LRCX,spring,long_call,"Spring at support 225.14 (close 227.56) -- bullish bias, review for a LONG CALL",227.56
+2026-11-03T03:01:35Z,sp500_sweep,GEV,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,862.25
