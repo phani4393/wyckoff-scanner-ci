@@ -702,3 +702,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-04T01:30:09Z,sp500_sweep,AXP,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,325.5
 2026-11-04T01:31:08Z,sp500_sweep,LIN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,511.54999
 2026-11-04T01:31:08Z,sp500_sweep,CRM,spring,long_call,"Spring at support 220.29 (close 222.20) -- bullish bias, review for a LONG CALL",222.2
+2026-11-04T01:36:47Z,watchlist,AMD,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 502.60 -- bearish bias, review for a LONG PUT",483.89999
+2026-11-04T01:36:47Z,watchlist,BKNG,spring,long_call,"Spring at support 154.06 (close 155.67) -- bullish bias, review for a LONG CALL",155.67
+2026-11-04T01:38:48Z,watchlist,ZS,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 44% of A, C extended 152% of A)",225.089996
