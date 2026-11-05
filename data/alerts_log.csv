@@ -720,3 +720,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-05T01:35:00Z,sp500_sweep,QCOM,spring,long_call,"Spring at support 168.84 (close 173.19) -- bullish bias, review for a LONG CALL",173.19
 2026-11-05T01:36:00Z,sp500_sweep,DDOG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,188.72
 2026-11-05T01:36:00Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,29.6
+2026-11-05T01:44:07Z,watchlist,BKNG,bc,long_put,"[REGIME-FILTERED] Buying Climax @ 170.97 -- bearish bias, review for a LONG PUT",170.97
+2026-11-05T01:47:07Z,watchlist,COST,sos,long_call,"Sign of Strength (breakout held) @ 1021.45 -- bullish bias, review for a LONG CALL",1046.57996
+2026-11-05T01:49:07Z,watchlist,XYZ,sos,long_call,"Sign of Strength (breakout held) @ 81.17 -- bullish bias, review for a LONG CALL",87.63
+2026-11-05T01:50:07Z,watchlist,SMCI,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 30.92 -- bearish bias, review for a LONG PUT",29.6
