@@ -734,3 +734,20 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-06T01:40:01Z,sp500_sweep,TXN,upthrust,long_put,"[REGIME-FILTERED] Upthrust at resistance 298.75 (close 278.15) -- bearish bias, review for a LONG PUT",278.14999
 2026-11-06T01:41:02Z,sp500_sweep,CRM,spring,long_call,"Spring at support 220.29 (close 222.41) -- bullish bias, review for a LONG CALL",222.41
 2026-11-06T01:41:02Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,102.36
+2026-11-06T01:46:01Z,watchlist,AMD,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 502.60 -- bearish bias, review for a LONG PUT",404.39999
+2026-11-06T01:47:01Z,watchlist,MELI,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 1570.76 -- bearish bias, review for a LONG PUT",1530.28003
+2026-11-06T01:48:01Z,watchlist,NVDA,sc,long_call,"Selling Climax @ 181.60 -- bullish bias, review for a LONG CALL",181.60001
+2026-11-06T01:48:01Z,watchlist,NVDA,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 190.01 -- bearish bias, review for a LONG PUT",181.60001
+2026-11-06T01:48:01Z,watchlist,SPY,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 749.60 -- bearish bias, review for a LONG PUT",733.0
+2026-11-06T01:49:02Z,watchlist,AVGO,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 335.81 -- bearish bias, review for a LONG PUT",291.53
+2026-11-06T01:50:01Z,watchlist,CRWD,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 221.36 -- bearish bias, review for a LONG PUT",217.2
+2026-11-06T01:50:02Z,watchlist,TSLA,sc,long_call,"Selling Climax @ 343.69 -- bullish bias, review for a LONG CALL",343.69
+2026-11-06T01:50:02Z,watchlist,TSLA,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 345.88 -- bearish bias, review for a LONG PUT",343.69
+2026-11-06T01:50:02Z,watchlist,PLTR,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 164.55 -- bearish bias, review for a LONG PUT",154.99001
+2026-11-06T01:50:03Z,watchlist,HOOD,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 94.52 -- bearish bias, review for a LONG PUT",78.39
+2026-11-06T01:50:03Z,watchlist,RKLB,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 49.25 -- bearish bias, review for a LONG PUT",45.99
+2026-11-06T01:50:04Z,watchlist,MDB,spring,long_call,"Spring at support 300.00 (close 304.59) -- bullish bias, review for a LONG CALL",304.59
+2026-11-06T01:51:01Z,watchlist,MU,sc,long_call,"Selling Climax @ 656.39 -- bullish bias, review for a LONG CALL",656.39001
+2026-11-06T01:51:01Z,watchlist,MU,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 849.25 -- bearish bias, review for a LONG PUT",656.39001
+2026-11-06T01:51:02Z,watchlist,XYZ,lps,long_call,"Last Point of Support @ 81.17 -- bullish bias, review for a LONG CALL",84.040001
+2026-11-06T01:51:04Z,watchlist,LUNR,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 10.04 -- bearish bias, review for a LONG PUT",8.62
