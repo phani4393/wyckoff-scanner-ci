@@ -751,3 +751,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-06T01:51:01Z,watchlist,MU,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 849.25 -- bearish bias, review for a LONG PUT",656.39001
 2026-11-06T01:51:02Z,watchlist,XYZ,lps,long_call,"Last Point of Support @ 81.17 -- bullish bias, review for a LONG CALL",84.040001
 2026-11-06T01:51:04Z,watchlist,LUNR,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 10.04 -- bearish bias, review for a LONG PUT",8.62
+2026-11-07T01:01:06Z,sp500_sweep,KO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,95.67
