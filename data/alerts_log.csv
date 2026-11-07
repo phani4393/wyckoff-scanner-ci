@@ -752,3 +752,13 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-06T01:51:02Z,watchlist,XYZ,lps,long_call,"Last Point of Support @ 81.17 -- bullish bias, review for a LONG CALL",84.040001
 2026-11-06T01:51:04Z,watchlist,LUNR,sow,long_put,"[REGIME-FILTERED] Sign of Weakness (breakdown held) @ 10.04 -- bearish bias, review for a LONG PUT",8.62
 2026-11-07T01:01:06Z,sp500_sweep,KO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,95.67
+2026-11-07T01:07:01Z,watchlist,AMZN,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 49% of A, C extended 84% of A)",259.29999
+2026-11-07T01:07:01Z,watchlist,BABA,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 74% of A, C extended 64% of A)",109.45
+2026-11-07T01:08:00Z,watchlist,GOOGL,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 64% of A, C extended 154% of A)",284.78
+2026-11-07T01:08:01Z,watchlist,MELI,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 1570.76 -- bearish bias, review for a LONG PUT",1510.0
+2026-11-07T01:09:01Z,watchlist,TDC,sc,long_call,"Selling Climax @ 31.80 -- bullish bias, review for a LONG CALL",31.8
+2026-11-07T01:10:00Z,watchlist,AFRM,spring,long_call,"Spring at support 66.03 (close 68.11) -- bullish bias, review for a LONG CALL",68.11
+2026-11-07T01:11:01Z,watchlist,PLTR,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 164.55 -- bearish bias, review for a LONG PUT",160.38
+2026-11-07T01:11:02Z,watchlist,RKLB,spring,long_call,"Spring at support 49.25 (close 53.07) -- bullish bias, review for a LONG CALL",53.07
+2026-11-07T01:12:02Z,watchlist,LUNR,spring,long_call,"Spring at support 10.04 (close 10.47) -- bullish bias, review for a LONG CALL",10.47
+2026-11-07T01:13:01Z,watchlist,SMCI,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 30.92 -- bearish bias, review for a LONG PUT",28.76
