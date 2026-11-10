@@ -771,3 +771,7 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-10T03:42:01Z,sp500_sweep,C,spring,long_call,"Spring at support 119.98 (close 121.97) -- bullish bias, review for a LONG CALL",121.97
 2026-11-10T03:42:01Z,sp500_sweep,QCOM,spring,long_call,"Spring at support 168.84 (close 171.47) -- bullish bias, review for a LONG CALL",171.47
 2026-11-10T03:43:01Z,sp500_sweep,CRWD,spring,long_call,"Spring at support 221.36 (close 228.58) -- bullish bias, review for a LONG CALL",228.58
+2026-11-10T03:46:54Z,watchlist,GRPN,spring,long_call,"Spring at support 15.81 (close 16.25) -- bullish bias, review for a LONG CALL",16.25
+2026-11-10T03:46:55Z,watchlist,NET,spring,long_call,"Spring at support 285.05 (close 293.75) -- bullish bias, review for a LONG CALL",293.75
+2026-11-10T03:47:54Z,watchlist,SPY,spring,long_call,"Spring at support 749.60 (close 752.69) -- bullish bias, review for a LONG CALL",752.69
+2026-11-10T03:49:55Z,watchlist,TSLA,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 46% of A, C extended 76% of A)",378.049988
