@@ -781,3 +781,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-11T01:21:21Z,sp500_sweep,GEV,spring,long_call,"Spring at support 796.41 (close 797.04) -- bullish bias, review for a LONG CALL",797.039978
 2026-11-11T01:22:21Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,213.48
 2026-11-11T01:23:21Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,225.75999
+2026-11-11T01:29:45Z,watchlist,AVGO,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 335.81 -- bearish bias, review for a LONG PUT",331.98001
