@@ -782,3 +782,8 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-11T01:22:21Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,213.48
 2026-11-11T01:23:21Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,225.75999
 2026-11-11T01:29:45Z,watchlist,AVGO,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 335.81 -- bearish bias, review for a LONG PUT",331.98001
+2026-11-12T02:16:25Z,sp500_sweep,NVDA,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,173.73
+2026-11-12T02:17:25Z,sp500_sweep,META,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,628.77002
+2026-11-12T02:20:26Z,sp500_sweep,PG,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,167.67
+2026-11-12T02:21:25Z,sp500_sweep,MRK,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,147.17999
+2026-11-12T02:23:26Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,237.60001
