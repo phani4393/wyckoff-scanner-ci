@@ -789,3 +789,11 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-12T02:23:26Z,sp500_sweep,ADBE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,237.60001
 2026-11-12T02:30:38Z,watchlist,AFRM,spring,long_call,"Spring at support 66.03 (close 67.84) -- bullish bias, review for a LONG CALL",67.84
 2026-11-12T02:32:39Z,watchlist,MU,lpsy,long_put,"[REGIME-FILTERED] Last Point of Supply @ 849.25 -- bearish bias, review for a LONG PUT",811.29999
+2026-11-13T01:52:32Z,sp500_sweep,V,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,420.31
+2026-11-13T01:52:32Z,sp500_sweep,MA,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,652.59998
+2026-11-13T01:52:32Z,sp500_sweep,INTC,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,61.2
+2026-11-13T01:53:32Z,sp500_sweep,BAC,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,50.51
+2026-11-13T01:54:32Z,sp500_sweep,GE,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,330.85999
+2026-11-13T01:55:32Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,348.26001
+2026-11-13T01:55:32Z,sp500_sweep,GS,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,913.59998
+2026-11-13T01:56:32Z,sp500_sweep,GEV,spring,long_call,"Spring at support 796.41 (close 818.49) -- bullish bias, review for a LONG CALL",818.48999
