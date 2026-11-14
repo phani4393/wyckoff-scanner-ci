@@ -801,3 +801,6 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-13T02:09:06Z,watchlist,MU,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 72% of A, C extended 89% of A)",798.44
 2026-11-13T02:09:07Z,watchlist,CRWV,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 73% of A, C extended 99% of A)",56.6
 2026-11-13T02:10:07Z,watchlist,MARA,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 68% of A, C extended 107% of A)",7.2
+2026-11-14T01:30:31Z,sp500_sweep,ABBV,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,295.029999
+2026-11-14T01:30:31Z,sp500_sweep,CSCO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,95.64
+2026-11-14T01:35:31Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,26.865
