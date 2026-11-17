@@ -806,3 +806,13 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-14T01:35:31Z,sp500_sweep,SMCI,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,26.865
 2026-11-14T01:44:05Z,watchlist,AVGO,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 46% of A, C extended 94% of A)",347.01001
 2026-11-14T01:45:05Z,watchlist,ORCL,abc,long_call,"ABC correction complete, bullish (C down, expect resumption up) -- review for a LONG CALL (B retraced 54% of A, C extended 82% of A)",125.35
+2026-11-17T03:55:17Z,sp500_sweep,AAPL,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,352.78
+2026-11-17T03:57:17Z,sp500_sweep,JPM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,338.20999
+2026-11-17T03:57:17Z,sp500_sweep,JNJ,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,282.54999
+2026-11-17T04:00:17Z,sp500_sweep,HD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,347.51001
+2026-11-17T04:00:17Z,sp500_sweep,PM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,196.039993
+2026-11-17T04:00:18Z,sp500_sweep,PANW,spring,long_call,"Spring at support 312.12 (close 316.09) -- bullish bias, review for a LONG CALL",316.089996
+2026-11-17T04:01:17Z,sp500_sweep,WFC,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,84.84
+2026-11-17T04:02:17Z,sp500_sweep,LIN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,523.46002
+2026-11-17T04:02:17Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,121.32
+2026-11-17T04:02:18Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,214.83
