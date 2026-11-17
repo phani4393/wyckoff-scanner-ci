@@ -816,3 +816,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-17T04:02:17Z,sp500_sweep,LIN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,523.46002
 2026-11-17T04:02:17Z,sp500_sweep,C,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,121.32
 2026-11-17T04:02:18Z,sp500_sweep,CRM,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,214.83
+2026-11-17T04:13:30Z,watchlist,XYZ,abc,long_put,"[REGIME-FILTERED] ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 68% of A, C extended 80% of A)",82.96
