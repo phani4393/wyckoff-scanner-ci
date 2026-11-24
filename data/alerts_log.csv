@@ -856,3 +856,15 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-21T02:50:13Z,watchlist,MU,sow,long_put,"Sign of Weakness (breakdown held) @ 650.00 -- bearish bias, review for a LONG PUT",594.51001
 2026-11-21T02:50:14Z,watchlist,XYZ,sow,long_put,"Sign of Weakness (breakdown held) @ 72.28 -- bearish bias, review for a LONG PUT",69.66
 2026-11-21T02:51:14Z,watchlist,MARA,sow,long_put,"Sign of Weakness (breakdown held) @ 5.69 -- bearish bias, review for a LONG PUT",5.0801
+2026-11-24T05:19:51Z,sp500_sweep,NVDA,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,165.050003
+2026-11-24T05:19:51Z,sp500_sweep,AAPL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,349.079987
+2026-11-24T05:19:52Z,sp500_sweep,GOOGL,spring,long_call,"[REGIME-FILTERED] Spring at support 276.92 (close 282.10) -- bullish bias, review for a LONG CALL",282.10001
+2026-11-24T05:20:51Z,sp500_sweep,META,spring,long_call,"[REGIME-FILTERED] Spring at support 583.80 (close 597.60) -- bullish bias, review for a LONG CALL",597.59998
+2026-11-24T05:23:51Z,sp500_sweep,UNH,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,336.079987
+2026-11-24T05:23:51Z,sp500_sweep,ORCL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,113.68
+2026-11-24T05:23:52Z,sp500_sweep,KO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,95.88
+2026-11-24T05:24:51Z,sp500_sweep,MRK,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,135.47
+2026-11-24T05:24:53Z,sp500_sweep,NFLX,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,58.099998
+2026-11-24T05:25:53Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,334.91
+2026-11-24T05:25:53Z,sp500_sweep,AXP,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,306.89999
+2026-11-24T05:26:53Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,91.72
