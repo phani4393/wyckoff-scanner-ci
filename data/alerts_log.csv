@@ -868,3 +868,10 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-24T05:25:53Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,334.91
 2026-11-24T05:25:53Z,sp500_sweep,AXP,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,306.89999
 2026-11-24T05:26:53Z,sp500_sweep,NOW,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,91.72
+2026-11-24T05:29:32Z,watchlist,MSFT,lpsy,long_put,"Last Point of Supply @ 504.96 -- bearish bias, review for a LONG PUT",492.5
+2026-11-24T05:30:32Z,watchlist,SPY,lpsy,long_put,"Last Point of Supply @ 732.71 -- bearish bias, review for a LONG PUT",722.28998
+2026-11-24T05:30:33Z,watchlist,ZM,lpsy,long_put,"Last Point of Supply @ 87.73 -- bearish bias, review for a LONG PUT",86.029999
+2026-11-24T05:31:32Z,watchlist,SHOP,lpsy,long_put,"Last Point of Supply @ 135.65 -- bearish bias, review for a LONG PUT",134.3
+2026-11-24T05:31:33Z,watchlist,CME,abc,long_put,"ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 43% of A, C extended 87% of A)",304.42999
+2026-11-24T05:32:32Z,watchlist,CRWD,sow,long_put,"Sign of Weakness (breakdown held) @ 213.22 -- bearish bias, review for a LONG PUT",208.97
+2026-11-24T05:33:33Z,watchlist,XYZ,spring,long_call,"[REGIME-FILTERED] Spring at support 72.28 (close 73.24) -- bullish bias, review for a LONG CALL",73.24
