@@ -875,3 +875,17 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-24T05:31:33Z,watchlist,CME,abc,long_put,"ABC correction complete, bearish (C up, expect resumption down) -- review for a LONG PUT (B retraced 43% of A, C extended 87% of A)",304.42999
 2026-11-24T05:32:32Z,watchlist,CRWD,sow,long_put,"Sign of Weakness (breakdown held) @ 213.22 -- bearish bias, review for a LONG PUT",208.97
 2026-11-24T05:33:33Z,watchlist,XYZ,spring,long_call,"[REGIME-FILTERED] Spring at support 72.28 (close 73.24) -- bullish bias, review for a LONG CALL",73.24
+2026-11-25T04:14:40Z,sp500_sweep,AVGO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,301.079987
+2026-11-25T04:14:41Z,sp500_sweep,MU,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,629.78998
+2026-11-25T04:15:41Z,sp500_sweep,AMD,spring,long_call,"[REGIME-FILTERED] Spring at support 402.10 (close 413.27) -- bullish bias, review for a LONG CALL",413.26999
+2026-11-25T04:16:41Z,sp500_sweep,CSCO,spring,long_call,"[REGIME-FILTERED] Spring at support 93.35 (close 93.99) -- bullish bias, review for a LONG CALL",93.99
+2026-11-25T04:16:41Z,sp500_sweep,CSCO,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,93.99
+2026-11-25T04:16:41Z,sp500_sweep,AMAT,spring,long_call,"[REGIME-FILTERED] Spring at support 316.95 (close 323.76) -- bullish bias, review for a LONG CALL",323.76001
+2026-11-25T04:16:41Z,sp500_sweep,AMAT,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,323.76001
+2026-11-25T04:16:41Z,sp500_sweep,LRCX,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,196.16
+2026-11-25T04:17:41Z,sp500_sweep,ORCL,spring,long_call,"[REGIME-FILTERED] Spring at support 109.21 (close 109.50) -- bullish bias, review for a LONG CALL",109.5
+2026-11-25T04:18:41Z,sp500_sweep,MRK,spring,long_call,"[REGIME-FILTERED] Spring at support 138.80 (close 141.57) -- bullish bias, review for a LONG CALL",141.57001
+2026-11-25T04:18:41Z,sp500_sweep,GS,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,806.02002
+2026-11-25T04:19:41Z,sp500_sweep,TXN,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,258.44
+2026-11-25T04:20:42Z,sp500_sweep,ADBE,spring,long_call,"[REGIME-FILTERED] Spring at support 231.82 (close 232.08) -- bullish bias, review for a LONG CALL",232.080002
+2026-11-25T04:21:41Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,210.86
