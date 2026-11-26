@@ -893,3 +893,14 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-25T04:33:51Z,watchlist,ZM,spring,long_call,"[REGIME-FILTERED] Spring at support 87.73 (close 88.40) -- bullish bias, review for a LONG CALL",88.4
 2026-11-25T04:35:51Z,watchlist,CRWD,lpsy,long_put,"Last Point of Supply @ 213.22 -- bearish bias, review for a LONG PUT",210.86
 2026-11-25T04:36:51Z,watchlist,GTLB,spring,long_call,"[REGIME-FILTERED] Spring at support 44.74 (close 44.96) -- bullish bias, review for a LONG CALL",44.96
+2026-11-26T03:36:30Z,sp500_sweep,AVGO,spring,long_call,"[REGIME-FILTERED] Spring at support 289.77 (close 300.86) -- bullish bias, review for a LONG CALL",300.85999
+2026-11-26T03:36:30Z,sp500_sweep,META,spring,long_call,"[REGIME-FILTERED] Spring at support 583.80 (close 609.89) -- bullish bias, review for a LONG CALL",609.89001
+2026-11-26T03:37:31Z,sp500_sweep,JNJ,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,273.94
+2026-11-26T03:37:31Z,sp500_sweep,INTC,spring,long_call,"[REGIME-FILTERED] Spring at support 51.51 (close 54.47) -- bullish bias, review for a LONG CALL",54.47
+2026-11-26T03:38:31Z,sp500_sweep,LRCX,spring,long_call,"[REGIME-FILTERED] Spring at support 184.24 (close 185.01) -- bullish bias, review for a LONG CALL",185.0099945
+2026-11-26T03:40:31Z,sp500_sweep,PLTR,spring,long_call,"[REGIME-FILTERED] Spring at support 152.60 (close 163.59) -- bullish bias, review for a LONG CALL",163.59
+2026-11-26T03:40:31Z,sp500_sweep,PM,spring,long_call,"[REGIME-FILTERED] Spring at support 184.00 (close 184.32) -- bullish bias, review for a LONG CALL",184.32001
+2026-11-26T03:41:31Z,sp500_sweep,KLAC,spring,long_call,"[REGIME-FILTERED] Spring at support 128.17 (close 134.20) -- bullish bias, review for a LONG CALL",134.2
+2026-11-26T03:41:31Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,297.059998
+2026-11-26T03:43:31Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,209.3
+2026-11-26T03:43:31Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,40.82
