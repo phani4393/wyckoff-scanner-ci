@@ -923,3 +923,11 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-27T03:44:44Z,sp500_sweep,DELL,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,297.059998
 2026-11-27T03:46:43Z,sp500_sweep,CRWD,weis_wave,,Weis Wave volume-exhaustion flag on new up wave -- context only,209.3
 2026-11-27T03:46:44Z,sp500_sweep,HPE,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,40.82
+2026-11-27T03:47:51Z,watchlist,SNOW,spring,long_call,"[REGIME-FILTERED] Spring at support 266.36 (close 267.72) -- bullish bias, review for a LONG CALL",267.72
+2026-11-27T03:49:48Z,watchlist,AVGO,spring,long_call,"[REGIME-FILTERED] Spring at support 289.77 (close 300.86) -- bullish bias, review for a LONG CALL",300.85999
+2026-11-27T03:49:53Z,watchlist,PLTR,spring,long_call,"[REGIME-FILTERED] Spring at support 152.60 (close 163.59) -- bullish bias, review for a LONG CALL",163.59
+2026-11-27T03:50:49Z,watchlist,RKLB,spring,long_call,"[REGIME-FILTERED] Spring at support 43.89 (close 47.02) -- bullish bias, review for a LONG CALL",47.02
+2026-11-27T03:50:49Z,watchlist,MDB,spring,long_call,"[REGIME-FILTERED] Spring at support 296.54 (close 313.53) -- bullish bias, review for a LONG CALL",313.53
+2026-11-27T03:51:48Z,watchlist,CRWV,spring,long_call,"[REGIME-FILTERED] Spring at support 40.58 (close 42.57) -- bullish bias, review for a LONG CALL",42.57
+2026-11-27T03:51:49Z,watchlist,META,spring,long_call,"[REGIME-FILTERED] Spring at support 583.80 (close 609.89) -- bullish bias, review for a LONG CALL",609.89001
+2026-11-27T03:51:49Z,watchlist,LUNR,spring,long_call,"[REGIME-FILTERED] Spring at support 8.24 (close 9.14) -- bullish bias, review for a LONG CALL",9.14
