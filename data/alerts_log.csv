@@ -941,3 +941,4 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-28T03:25:30Z,sp500_sweep,DELL,spring,long_call,"[REGIME-FILTERED] Spring at support 315.00 (close 316.96) -- bullish bias, review for a LONG CALL",316.95999
 2026-11-28T03:26:30Z,sp500_sweep,MRVL,spring,long_call,"[REGIME-FILTERED] Spring at support 132.54 (close 140.54) -- bullish bias, review for a LONG CALL",140.53999
 2026-11-28T03:27:29Z,sp500_sweep,CRWD,spring,long_call,"[REGIME-FILTERED] Spring at support 213.22 (close 217.20) -- bullish bias, review for a LONG CALL",217.2
+2026-11-28T03:29:35Z,watchlist,NFLX,lpsy,long_put,"Last Point of Supply @ 61.39 -- bearish bias, review for a LONG PUT",60.93
