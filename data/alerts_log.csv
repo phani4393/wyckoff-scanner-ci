@@ -931,3 +931,13 @@ logged_at,source,sym,setup,direction,thesis,underlying
 2026-11-27T03:51:48Z,watchlist,CRWV,spring,long_call,"[REGIME-FILTERED] Spring at support 40.58 (close 42.57) -- bullish bias, review for a LONG CALL",42.57
 2026-11-27T03:51:49Z,watchlist,META,spring,long_call,"[REGIME-FILTERED] Spring at support 583.80 (close 609.89) -- bullish bias, review for a LONG CALL",609.89001
 2026-11-27T03:51:49Z,watchlist,LUNR,spring,long_call,"[REGIME-FILTERED] Spring at support 8.24 (close 9.14) -- bullish bias, review for a LONG CALL",9.14
+2026-11-28T03:19:29Z,sp500_sweep,GOOG,spring,long_call,"[REGIME-FILTERED] Spring at support 272.00 (close 272.44) -- bullish bias, review for a LONG CALL",272.44
+2026-11-28T03:21:29Z,sp500_sweep,XOM,spring,long_call,"[REGIME-FILTERED] Spring at support 160.11 (close 160.18) -- bullish bias, review for a LONG CALL",160.17999
+2026-11-28T03:21:29Z,sp500_sweep,XOM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,160.17999
+2026-11-28T03:22:29Z,sp500_sweep,AMAT,spring,long_call,"[REGIME-FILTERED] Spring at support 316.95 (close 322.04) -- bullish bias, review for a LONG CALL",322.040009
+2026-11-28T03:24:29Z,sp500_sweep,MRK,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,141.32001
+2026-11-28T03:24:30Z,sp500_sweep,PM,weis_wave,,Weis Wave volume-exhaustion flag on new down wave -- context only,187.8
+2026-11-28T03:25:30Z,sp500_sweep,TXN,spring,long_call,"[REGIME-FILTERED] Spring at support 271.23 (close 281.85) -- bullish bias, review for a LONG CALL",281.85001
+2026-11-28T03:25:30Z,sp500_sweep,DELL,spring,long_call,"[REGIME-FILTERED] Spring at support 315.00 (close 316.96) -- bullish bias, review for a LONG CALL",316.95999
+2026-11-28T03:26:30Z,sp500_sweep,MRVL,spring,long_call,"[REGIME-FILTERED] Spring at support 132.54 (close 140.54) -- bullish bias, review for a LONG CALL",140.53999
+2026-11-28T03:27:29Z,sp500_sweep,CRWD,spring,long_call,"[REGIME-FILTERED] Spring at support 213.22 (close 217.20) -- bullish bias, review for a LONG CALL",217.2
